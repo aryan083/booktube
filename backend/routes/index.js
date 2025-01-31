@@ -1,8 +1,9 @@
-const express = require("express");
-const router = express.Router();
+var express = require('express');
+var router = express.Router();
 
-const v1ApiRoutes = require("./v1");
-
-router.use("/v1", v1ApiRoutes);
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
 
 module.exports = router;
