@@ -12,8 +12,13 @@ import { AppSidebar } from "./components/app-sidebar"
 import { ThemeToggle } from "./components/theme-toggle"
 import { CardContainer } from "./components/ui/3d-card"
 import { Enhanced3DCard } from "./components/ui/enhanced-3d-card"
+import { HoverBorderGradient } from "./components/ui/hover-border-gradient"
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import PdfUpload from './components/PdfUpload'
 
-export default function App() {
+function MainContent() {
+  const navigate = useNavigate();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -36,6 +41,13 @@ export default function App() {
             
           </div>
           <ThemeToggle/>
+          <HoverBorderGradient 
+            className="ml-auto" 
+            as="button"
+            onClick={() => navigate('/upload')}
+          >
+            CREATE 
+          </HoverBorderGradient>
         </header>
         <div className="h-[calc(100vh-4rem)] w-full overflow-y-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-0">
@@ -54,5 +66,16 @@ export default function App() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainContent />} />
+        <Route path="/upload" element={<PdfUpload />} />
+      </Routes>
+    </Router>
+  );
 }

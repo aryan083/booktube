@@ -46,7 +46,7 @@ export function Enhanced3DCard({
       className="relative w-full transition-all duration-700 ease-out transform-gpu perspective-1000"
     >
       <div className={`relative w-full transition-all duration-700 ease-out ${
-        isHovered ? "aspect-[4/4.2]" : "aspect-video"
+        isHovered ? "aspect-[16/14]" : "aspect-video"
       }`}>
         {/* Background Image */}
         <img
