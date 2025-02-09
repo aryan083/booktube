@@ -22,8 +22,8 @@ export const CardContainer = ({
     if (!containerRef.current) return
     const { left, width } = containerRef.current.getBoundingClientRect()
     const mouseX = e.clientX - left
-    const xRotation = ((mouseX - width / 2) / width) *10  // Increased rotation range for better effect
-    containerRef.current.style.transform = `rotateY(${xRotation}deg)`
+    const xRotation = ((mouseX - width / 2) / width) * 10
+    containerRef.current.style.transform = `rotateY(${xRotation}deg) scale(1.1)`
   }
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -35,25 +35,34 @@ export const CardContainer = ({
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return
     setIsMouseEntered(false)
-    containerRef.current.style.transform = `rotateY(0deg)`
-    containerRef.current.style.transition = 'transform 0.5s ease-in'
+    containerRef.current.style.transform = `rotateY(0deg) scale(1)`
+    containerRef.current.style.transition = 'transform 0.3s ease-out'
   }
+
   return (
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
       <div
         className={cn("py-5 flex items-center justify-center", containerClassName)}
-        style={{
-          perspective: "1000px",
-        }}
+        style={{ perspective: "1000px" }}
       >
+        {/* Placeholder to maintain space */}
+        <div className={cn("invisible", className)}>
+          {children}
+        </div>
+        
+        {/* Interactive card with hover effect */}
         <div
           ref={containerRef}
           onMouseEnter={handleMouseEnter}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className={cn("flex items-center justify-center relative transition-all duration-200 ease-linear", className)}
+          className={cn(
+            "absolute top-0 left-0 w-full h-full flex items-center justify-center",
+            className
+          )}
           style={{
             transformStyle: "preserve-3d",
+            zIndex: isMouseEntered ? 10 : 1
           }}
         >
           {children}
