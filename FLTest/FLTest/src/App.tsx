@@ -20,12 +20,16 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import {GlowingEffectDemo} from './components/glow-effect'
 import { useState } from 'react';
 import UploadModal from './components/upload-modal';
+import SecondModal from './components/second-modal';
 
 function MainContent() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
 
   return (
+    <>
+      
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -87,9 +91,26 @@ function MainContent() {
       ))}
     </BentoGrid> */}
         </div>
-        <UploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <UploadModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          onUpload={() => {}} 
+          onNext={() => {
+            setIsModalOpen(false);
+            setIsSecondModalOpen(true);
+          }}
+        />
+        <SecondModal
+          isOpen={isSecondModalOpen}
+          onClose={() => setIsSecondModalOpen(false)}
+          onBack={() => {
+            setIsSecondModalOpen(false);
+            setIsModalOpen(true);
+          }}
+        />
       </SidebarInset>
     </SidebarProvider>
+    </>
   );
 }
 

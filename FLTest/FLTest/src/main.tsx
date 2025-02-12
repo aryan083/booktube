@@ -21,8 +21,8 @@ createRoot(document.getElementById('root')!).render(
 )
 
 // Initialize Preline
-document.addEventListener('DOMContentLoaded', () => {
-  import('preline/preline').then((HSStaticMethods) => {
-    HSStaticMethods.default.init()
-  })
-})
+// document.addEventListener('DOMContentLoaded', () => {
+//   import('preline/preline').then((HSStaticMethods) => {
+//     HSStaticMethods.default.init()
+//   })
+// })
