@@ -134,7 +134,7 @@ const data = {
   projects: [
     {
       name: "Design Engineering",
-      url: "#",
+      url: "/design-engineering",
       icon: Frame,
     },
     {
@@ -167,4 +167,3 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
-
