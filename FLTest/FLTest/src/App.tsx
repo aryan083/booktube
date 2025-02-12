@@ -9,11 +9,13 @@ import { HoverBorderGradient } from './components/ui/hover-border-gradient';
 import { GlowingEffectDemo } from './components/glow-effect';
 import UploadModal from './components/upload-modal';
 import SecondModal from './components/second-modal';
+import ThirdModal from './components/third-modal';
 import DesignEngineeringPage from './pages/DesignEngineering';
 
 function MainContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
 
   return (
     <SidebarProvider>
@@ -61,6 +63,22 @@ function MainContent() {
         onBack={() => {
           setIsSecondModalOpen(false);
           setIsModalOpen(true);
+        }}
+        onNext={() => {
+          setIsSecondModalOpen(false);
+          setIsThirdModalOpen(true);
+        }}
+      />
+      <ThirdModal
+        isOpen={isThirdModalOpen}
+        onClose={() => setIsThirdModalOpen(false)}
+        onBack={() => {
+          setIsThirdModalOpen(false);
+          setIsSecondModalOpen(true);
+        }}
+        onNext={() => {
+          setIsThirdModalOpen(false);
+          // Add any final step logic here
         }}
       />
     </SidebarProvider>

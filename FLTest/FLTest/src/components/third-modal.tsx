@@ -1,13 +1,13 @@
 import React from 'react';
 
-interface SecondModalProps {
+interface ThirdModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onBack: () => void;
   onNext: () => void;
+  onBack: () => void;
 }
 
-const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNext }) => {
+const ThirdModal: React.FC<ThirdModalProps> = ({ isOpen, onClose, onBack, onNext }) => {
   if (!isOpen) return null;
 
   return (
@@ -31,7 +31,7 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
         {/* Modal Body */}
         <div className="p-4">
           <div className="space-y-4">
-            <p className="text-gray-200">This is the second step content.</p>
+            <p className="text-gray-200">This is the third step content.</p>
           </div>
         </div>
 
@@ -57,4 +57,4 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
   );
 };
 
-export default SecondModal;
+export default ThirdModal;
