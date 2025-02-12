@@ -33,11 +33,11 @@ function MainContent() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12  bg-[#131314]">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
+            <SidebarTrigger className="ml-1" />
+            {/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
+            {/* <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
@@ -47,7 +47,7 @@ function MainContent() {
                   <BreadcrumbPage>Data Fetching</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
-            </Breadcrumb>
+            </Breadcrumb> */}
             
           </div>
           <ThemeToggle/>
@@ -56,10 +56,11 @@ function MainContent() {
             as="button"
             onClick={() => setIsModalOpen(true)}
           >
-            CREATE 
+            Create 
+
           </HoverBorderGradient>
         </header>
-        <div className="h-[calc(100vh-4rem)] w-full overflow-y-auto px-6">
+        <div className="h-[calc(100vh-4rem)] w-full overflow-y-auto px-6 bg-[#131314]">
         {/* <div className="w-full min-h-screen flex items-center justify-center p-5 sm:p-8"> */}
           {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-0">
             {[1, 2, 3, 4, 5, 6, 7].map((item) => (
