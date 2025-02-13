@@ -13,32 +13,13 @@ import ThirdModal from './components/third-modal';
 import DesignEngineeringPage from './pages/DesignEngineering';
 
 function MainContent() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-  const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
-  const { state: sidebarState } = useSidebar();
+  const { state: sidebarState, isModalOpen, setIsModalOpen, isSecondModalOpen, setIsSecondModalOpen, isThirdModalOpen, setIsThirdModalOpen, flowStartTime, setFlowStartTime } = useSidebar();
 
   return (
     <>
       <AppSidebar />
       <SidebarInset>
-        {/* <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="ml-1" />
-
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Home</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          <ThemeToggle />
-        </header> */}
-        <div className={`w-full pt-2 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide ${sidebarState === 'collapsed' ? 'pl-16' : ''}`}>
-
+        <div className={`w-full pt-2 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide ${sidebarState === 'collapsed' ? 'pl-10' : ''}`}>
           <div className="grid pl-6 pr-4">
             <GlowingEffectDemo />
             <GlowingEffectDemo />
@@ -47,8 +28,10 @@ function MainContent() {
       </SidebarInset>
       <UploadModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        // onUpload={() => {}}
+        onClose={() => {
+          setIsModalOpen(false);
+          setFlowStartTime(0);
+        }}
         onNext={() => {
           setIsModalOpen(false);
           setIsSecondModalOpen(true);
@@ -56,7 +39,10 @@ function MainContent() {
       />
       <SecondModal
         isOpen={isSecondModalOpen}
-        onClose={() => setIsSecondModalOpen(false)}
+        onClose={() => {
+          setIsSecondModalOpen(false);
+          setFlowStartTime(0);
+        }}
         onBack={() => {
           setIsSecondModalOpen(false);
           setIsModalOpen(true);
@@ -65,16 +51,21 @@ function MainContent() {
           setIsSecondModalOpen(false);
           setIsThirdModalOpen(true);
         }}
+        flowStartTime={flowStartTime}
       />
       <ThirdModal
         isOpen={isThirdModalOpen}
-        onClose={() => setIsThirdModalOpen(false)}
+        onClose={() => {
+          setIsThirdModalOpen(false);
+          setFlowStartTime(0);
+        }}
         onBack={() => {
           setIsThirdModalOpen(false);
           setIsSecondModalOpen(true);
         }}
         onComplete={() => {
-          // Add any final step logic here
+          setIsThirdModalOpen(false);
+          setFlowStartTime(0);
         }}
       />
     </>

@@ -61,7 +61,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onNext }) =>
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden">
+    <div className="fixed inset-0 z-[9999] overflow-hidden">
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         aria-hidden="true"
@@ -69,7 +69,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onNext }) =>
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div className="relative w-full max-w-xl bg-black border border-gray-700 rounded-xl shadow-lg">
+        <div
+          className="relative w-full max-w-2xl h-[610px] bg-black border border-gray-700 rounded-xl shadow-lg overflow-y-auto z-[10000]"
+        >
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
             <div className="flex-grow text-center">
               <h3 className="font-bold text-white">

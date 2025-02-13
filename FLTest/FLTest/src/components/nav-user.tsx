@@ -23,31 +23,39 @@ export function NavUser({
     avatar: string
   }
 }) {
-  const { isMobile } = useSidebar()
+  const { state } = useSidebar()
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className={state === 'collapsed' ? 'w-full flex justify-center' : ''}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className={`
+                ${state === 'collapsed' ? 'w-full max-w-[2.5rem] justify-center' : ''}
+                data-[state=open]:bg-sidebar-accent 
+                data-[state=open]:text-sidebar-accent-foreground
+              `}
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className={`h-8 w-8 rounded-lg ${state === 'collapsed' ? 'mx-auto' : ''}`}>
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              {state === 'expanded' && (
+                <>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">{user.name}</span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4" />
+                </>
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={state === 'mobile' ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
@@ -96,4 +104,3 @@ export function NavUser({
     </SidebarMenu>
   )
 }
-
