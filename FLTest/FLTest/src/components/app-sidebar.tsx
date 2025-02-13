@@ -18,7 +18,15 @@ import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "./ui/sidebar"
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarFooter, 
+  SidebarHeader, 
+  SidebarRail,
+  useSidebar 
+} from "./ui/sidebar"
+import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 // Sample data
 const data = {
@@ -137,33 +145,59 @@ const data = {
       url: "/design-engineering",
       icon: Frame,
     },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
+    
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar()
+
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
+    <Sidebar 
+      {...props} 
+      className={`
+        fixed top-4 left-4 bottom-4 right z-50
+        ${state === 'collapsed' ? 'w-[5rem]' : 'w-[280px]'}
+        transition-all duration-300 ease-in-out
+      `}
+      collapsible="icon"
+    >
+      <div 
+        className="
+
+        h-[96%]
+          
+          bg-background/70 backdrop-blur-sm 
+          shadow-xl rounded-3xl 
+          border border-white/10
+          p-0
+        "
+      >
+        <GlowingEffect
+          spread={60}
+          glow={true}
+          disabled={false}
+          proximity={64}
+          inactiveZone={0.01}
+        />
+        
+        <div className="relative z-10 h-full flex flex-col rounded-2xl overflow-hidden">
+          <SidebarHeader className="p-4 border-b border-border/50">
+            <TeamSwitcher teams={data.teams} />
+          </SidebarHeader>
+          
+          <SidebarContent className="flex-1 px-2 py-4 overflow-y-auto">
+            <NavMain items={data.navMain} />
+            <div className="mt-6">
+              <NavProjects projects={data.projects} />
+            </div>
+          </SidebarContent>
+          
+          <SidebarFooter className="p-4 border-t border-border/50">
+            <NavUser user={data.user} />
+          </SidebarFooter>
+        </div>
+      </div>
     </Sidebar>
   )
 }
