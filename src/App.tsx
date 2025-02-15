@@ -1,19 +1,38 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SidebarProvider, SidebarInset, useSidebar } from './components/ui/sidebar';
 import { AppSidebar } from './components/app-sidebar';
-import { SidebarProvider, SidebarInset, SidebarTrigger, useSidebar } from './components/ui/sidebar';
-import { Separator } from './components/ui/separator';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from './components/ui/breadcrumb';
-import { ThemeToggle } from './components/theme-toggle';
-import { HoverBorderGradient } from './components/ui/hover-border-gradient';
 import { GlowingEffectDemo } from './components/glow-effect';
 import UploadModal from './components/upload-modal';
 import SecondModal from './components/second-modal';
 import ThirdModal from './components/third-modal';
 import DesignEngineeringPage from './pages/DesignEngineering';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { CommandPalette } from "@/components/CommandPalette";
+import Index from "./pages/Index";
+// import { TooltipProvider } from "@/components/ui/tooltip";
+
+import NotFound from "./pages/NotFound";
+// import { Separator } from './components/ui/separator';
+// import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from './components/ui/breadcrumb';
+// import { ThemeToggle } from './components/theme-toggle';
+// import { HoverBorderGradient } from './components/ui/hover-border-gradient';
 
 function MainContent() {
-  const { state: sidebarState, isModalOpen, setIsModalOpen, isSecondModalOpen, setIsSecondModalOpen, isThirdModalOpen, setIsThirdModalOpen, flowStartTime, setFlowStartTime } = useSidebar();
+  const { 
+    state: sidebarState, 
+    isModalOpen, 
+    setIsModalOpen, 
+    isSecondModalOpen, 
+    setIsSecondModalOpen, 
+    isThirdModalOpen, 
+    setIsThirdModalOpen, 
+    flowStartTime, 
+    setFlowStartTime 
+  } = useSidebar();
 
   return (
     <>
@@ -23,6 +42,7 @@ function MainContent() {
           <div className="grid pl-6 pr-4">
             <GlowingEffectDemo />
             <GlowingEffectDemo />
+            <Index />
           </div>
         </div>
       </SidebarInset>
@@ -72,17 +92,26 @@ function MainContent() {
   );
 }
 
-function App() {
-  return (
-    <SidebarProvider>
-      <Router>
-        <Routes>
-          <Route path="/design-engineering" element={<DesignEngineeringPage />} />
-          <Route path="/" element={<MainContent />} />
-        </Routes>
-      </Router>
-    </SidebarProvider>
-  );
-}
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <SidebarProvider>
+        <Router>
+          <CommandPalette />
+          <Toaster />
+          <Sonner />
+          
+          <Routes>
+            <Route path="/design-engineering" element={<DesignEngineeringPage />} />
+            <Route path="/" element={<MainContent />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </SidebarProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;

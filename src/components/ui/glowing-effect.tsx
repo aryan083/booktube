@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { animate } from "motion/react";
+import { animate } from "motion";
 
 interface GlowingEffectProps {
   blur?: number;
@@ -15,6 +15,7 @@ interface GlowingEffectProps {
   disabled?: boolean;
   movementDuration?: number;
   borderWidth?: number;
+  children: React.ReactNode;
 }
 const GlowingEffect = memo(
   ({
@@ -28,6 +29,7 @@ const GlowingEffect = memo(
     movementDuration = 2,
     borderWidth = 1,
     disabled = true,
+    children,
   }: GlowingEffectProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const lastPosition = useRef({ x: 0, y: 0 });
@@ -178,7 +180,9 @@ const GlowingEffect = memo(
               "after:[mask-composite:intersect]",
               "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]"
             )}
-          />
+          >
+            {children}
+          </div>
         </div>
       </>
     );
