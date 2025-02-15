@@ -15,6 +15,8 @@ import {
   PanelLeftOpen,
   Settings2,
   SquareTerminal,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
@@ -26,7 +28,6 @@ import {
   SidebarContent, 
   SidebarFooter, 
   SidebarHeader, 
-  SidebarRail,
   useSidebar 
 } from "./ui/sidebar"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
@@ -42,6 +43,7 @@ import SecondModal from "@/components/second-modal"
 import ThirdModal from "@/components/third-modal"
 
 import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 // Sample data
 const data = {
@@ -164,7 +166,11 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  onCreateClick: () => void;
+}
+
+export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
   const { state, toggleSidebar } = useSidebar()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false)
@@ -180,119 +186,99 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <>
       <Sidebar 
         {...props} 
-        className={`
-          fixed top-4 left-4 bottom-4 right z-50
-          ${state === 'collapsed' ? 'w-[5rem]' : 'w-[280px]'}
-          transition-all duration-300 ease-in-out
-        `}
-        collapsible="icon"
+        className={cn(
+          "fixed top-4 left-4 bottom-4 right z-50",
+          "transition-all duration-300 ease-in-out",
+          state === 'collapsed' ? 'w-[5rem]' : 'w-[280px]',
+          "md:block",
+          "hidden"
+        )}
       >
-        <div 
-          className="
-          h-[96%]
-            bg-background/70 backdrop-blur-sm 
-            shadow-xl rounded-3xl 
-            border border-white/10
-            p-0
-          "
-        >
+        <div className={cn(
+          "h-[96%]",
+          "bg-background/95",
+          "backdrop-blur-md",
+          "shadow-xl rounded-3xl",
+          "border border-border/10",
+          "p-0",
+          "transition-all duration-300"
+        )}>
           <GlowingEffect
             spread={60}
-            glow={true}
-            disabled={false}
-            proximity={64}
-            inactiveZone={0.01}
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
           />
           
           <div className="relative z-10 h-full flex flex-col rounded-2xl overflow-hidden">
             <SidebarHeader 
-              className={`
-                p-4 border-b border-border/50 
-                ${state === 'collapsed' ? 'flex flex-col items-center' : 'flex flex-col space-y-2'}
-              `}
+              className={cn(
+                "p-4 border-b border-border/50",
+                state === 'collapsed' ? 'flex flex-col items-center' : 'flex flex-col space-y-2'
+              )}
             >
               <div className="flex items-center justify-between w-full">
                 <TeamSwitcher teams={data.teams} />
-
-                {state === 'expanded' && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={toggleSidebar}
-                          className="h-8 w-8"
-                        >
-                          <PanelLeftClose className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Collapse Sidebar</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      onClick={toggleSidebar}
+                    >
+                      {state === 'collapsed' ? (
+                        <ChevronRight className="h-4 w-4" />
+                      ) : (
+                        <ChevronLeft className="h-4 w-4" />
+                      )}
+                      <span className="sr-only">Toggle Sidebar</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    Toggle Sidebar
+                  </TooltipContent>
+                </Tooltip>
               </div>
-
-              {state === 'expanded' && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
+            </SidebarHeader>
+            
+            <SidebarContent className="flex-1 overflow-hidden">
+              <div className="flex h-[calc(100vh-8rem)] flex-col gap-2">
+                <div className="flex-1 overflow-auto">
+                  {state === 'expanded' ? (
+                    <div className="grid gap-1 p-4">
                       <Button 
                         variant="outline" 
                         size="lg" 
                         className="w-full justify-start"
-                        onClick={startFlow}
+                        onClick={onCreateClick}
                       >
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create
                       </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Create New Project</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-
-              {state === 'collapsed' && (
-                <div className="flex flex-col items-center w-full mt-2 space-y-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={toggleSidebar}
-                          className="h-8 w-8"
-                        >
-                          <PanelLeftOpen className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Expand Sidebar</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          className="h-8 w-8"
-                          onClick={startFlow}
-                        >
-                          <PlusCircle className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Create New Project</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                    </div>
+                  ) : (
+                    <div className="grid gap-1 p-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={onCreateClick}
+                          >
+                            <PlusCircle className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          Create
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  )}
+                  <NavMain items={data.navMain} />
                 </div>
-              )}
-            </SidebarHeader>
-            
-            <SidebarContent className="flex-1 px-2 py-4 overflow-y-auto">
-              <NavMain items={data.navMain} />
-              <div className="mt-6">
-                <NavProjects projects={data.projects} />
+                <div className="mt-auto">
+                  <NavProjects projects={data.projects} />
+                </div>
               </div>
             </SidebarContent>
             
