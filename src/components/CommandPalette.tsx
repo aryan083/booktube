@@ -76,7 +76,7 @@ export function CommandPalette() {
                   }
                 `}</style>
                 <div className="flex items-center px-3 border-b border-[#303030]/50">
-                  <Search className="w-4 h-4 mr-2 text-[#666]" />
+                  {/* <Search className="w-4 h-4 mr-2 text-[#666]" /> */}
                   <CommandInput 
                     placeholder="Search..." 
                     className="h-14 bg-transparent border-0 focus:ring-0 focus:outline-none text-white placeholder:text-[#666]"
