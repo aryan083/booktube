@@ -207,8 +207,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             glow={true}
             disabled={false}
             proximity={64}
-            inactiveZone={0.01}
-          />
+            inactiveZone={0.01} children={undefined}          />
           
           <div className="relative z-10 h-full flex flex-col rounded-2xl overflow-hidden">
             <SidebarHeader 
@@ -336,7 +335,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
         }}
         flowStartTime={flowStartTime}
       />
-      <ThirdModal
+      {/* <ThirdModal
         isOpen={isThirdModalOpen}
         onClose={() => {
           setIsThirdModalOpen(false);
@@ -350,7 +349,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
           setIsThirdModalOpen(false);
           setFlowStartTime(0);
         }}
-      />
+      /> */}
     </>
   )
 }

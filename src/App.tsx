@@ -8,10 +8,12 @@ import { GlowingEffectDemo } from './components/glow-effect';
 import { CommandPalette } from "@/components/CommandPalette";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import Index from "./pages/Index";
+// import Index from "src/components/ui/index"; 
 import WorkflowModal from "./components/WorkflowModal";
 import NotFound from "./pages/NotFound";
 import DesignEngineeringPage from './pages/DesignEngineering';
+// import Index from './components';
+import Index from './components';
 
 function MainContent() {
   const { state: sidebarState } = useSidebar();
@@ -24,7 +26,8 @@ function MainContent() {
         <div className={`w-full pt-2 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide ${sidebarState === 'collapsed' ? 'pl-10' : ''}`}> 
           <div className="grid pl-6 pr-4">
             <GlowingEffectDemo />
-            <Index />
+            <GlowingEffectDemo />
+       
           </div>
         </div>
       </SidebarInset>
@@ -45,7 +48,7 @@ const App = () => (
           <Sonner />
           
           <Routes>
-            <Route path="/design-engineering" element={<DesignEngineeringPage />} />
+            <Route path="/design-engineering" element={<Index />} />
             <Route path="/" element={<MainContent />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
