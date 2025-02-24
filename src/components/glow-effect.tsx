@@ -16,6 +16,7 @@ export function GlowingEffectDemo() {
           border: '0px solid gray',
           color: '#FFF',
         }}
+        backgroundImage="https://images.unsplash.com/photo-1519638399535-1b036603ac77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
@@ -28,6 +29,7 @@ export function GlowingEffectDemo() {
           border: '0px solid gray',
           color: '#000',
         }}
+        backgroundImage="https://images.unsplash.com/photo-1516259762381-22954d7d9dd0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
@@ -40,6 +42,7 @@ export function GlowingEffectDemo() {
           border: '0px solid gray',
           color: '#FFF',
         }}
+        backgroundImage="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
@@ -52,6 +55,7 @@ export function GlowingEffectDemo() {
           border: '0px solid gray',
           color: '#000',
         }}
+        backgroundImage="https://images.unsplash.com/photo-1531804055935-76f44d7c3621?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
@@ -64,6 +68,7 @@ export function GlowingEffectDemo() {
           border: '0px solid gray',
           color: '#FFF',
         }}
+        backgroundImage="https://images.unsplash.com/photo-1531804055935-76f44d7c3621?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
       />
     </ul>
   );
@@ -75,9 +80,10 @@ interface GridItemProps {
   title: string;
   description: React.ReactNode;
   cardStyle: React.CSSProperties;
+  backgroundImage?: string; // Optional background image URL
 }
 
-const GridItem = ({ area, icon, title, description, cardStyle }: GridItemProps) => {
+const GridItem = ({ area, icon, title, description, cardStyle, backgroundImage }: GridItemProps) => {
   // Function to darken the background color
   const darkenColor = (color: string, factor: number = 0.1): string => {
     let hex = color.replace('#', '');
@@ -114,7 +120,17 @@ const GridItem = ({ area, icon, title, description, cardStyle }: GridItemProps) 
           disabled={false}
           proximity={64}
           inactiveZone={0.01} children={undefined}        />
-        <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0.75 p-6  dark:shadow-[0px_0px_27px_0px_#2D2D2D] md:p-6" style={cardStyle}>
+        <div 
+          className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0.75 p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D] md:p-6" 
+          style={{
+            ...cardStyle,
+            backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: backgroundImage ? 'grayscale(0%)' : 'none', // Make image black and white
+          }}
+        >
           <div className="relative flex flex-1 flex-col justify-between gap-3">
             <div className="w-fit rounded-lg border border-gray-600 p-2 ">
               {icon}

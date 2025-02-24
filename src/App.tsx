@@ -8,12 +8,11 @@ import { GlowingEffectDemo } from './components/glow-effect';
 import { CommandPalette } from "@/components/CommandPalette";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-// import Index from "src/components/ui/index"; 
 import WorkflowModal from "./components/WorkflowModal";
 import NotFound from "./pages/NotFound";
-import DesignEngineeringPage from './pages/DesignEngineering';
-// import Index from './components';
-import Index from './components';
+import Index from "./pages/Index";
+import Courses from "./pages/Courses";
+
 
 function MainContent() {
   const { state: sidebarState } = useSidebar();
@@ -47,10 +46,14 @@ const App = () => (
           <Toaster />
           <Sonner />
           
+          
+          
           <Routes>
             <Route path="/design-engineering" element={<Index />} />
             <Route path="/" element={<MainContent />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/course/:courseId" element={<Index />} />
           </Routes>
         </Router>
       </SidebarProvider>
