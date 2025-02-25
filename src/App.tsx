@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SidebarProvider, SidebarInset, useSidebar } from './components/ui/sidebar';
@@ -12,53 +12,93 @@ import WorkflowModal from "./components/WorkflowModal";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
+import Auth from "./pages/Auth";
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-
-function MainContent() {
-  const { state: sidebarState } = useSidebar();
+// Home component that shows sidebar and glowing effect
+function Home() {
   const [modalOpen, setModalOpen] = useState(false);
+  const { state: sidebarState } = useSidebar();
 
   return (
-    <>
+    <div className="flex h-screen overflow-hidden">
       <AppSidebar onCreateClick={() => setModalOpen(true)} />
-      <SidebarInset>
-        <div className={`w-full pt-2 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide ${sidebarState === 'collapsed' ? 'pl-10' : ''}`}> 
-          <div className="grid pl-6 pr-4">
-            <GlowingEffectDemo />
-            <GlowingEffectDemo />
-       
+      <main className="flex-1 overflow-y-auto">
+        <SidebarInset>
+          <div className={`w-full pt-2 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide ${sidebarState === 'collapsed' ? 'pl-10' : ''}`}> 
+            <div className="grid pl-6 pr-4">
+              <GlowingEffectDemo />
+              <GlowingEffectDemo />
+            </div>
           </div>
-        </div>
-      </SidebarInset>
-      <WorkflowModal open={modalOpen} onOpenChange={setModalOpen} />
-    </>
+        </SidebarInset>
+      </main>
+      {modalOpen && <WorkflowModal open={modalOpen} onOpenChange={setModalOpen} />}
+    </div>
   );
 }
 
-const queryClient = new QueryClient();
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <SidebarProvider>
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function MainContent() {
+  const { user } = useAuth();
+
+  // If user is not logged in, only allow access to auth page
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="*" element={<Navigate to="/auth" replace />} />
+      </Routes>
+    );
+  }
+
+  // If user is logged in, handle other routes
+  return (
+    <Routes>
+      <Route path="/auth" element={<Navigate to="/" replace />} /> {/* Redirect if trying to access auth while logged in */}
+      <Route path="/" element={<Home />} />
+      <Route path="/courses" element={<Courses />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
+function App() {
+  const queryClient = new QueryClient();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
         <Router>
-          <CommandPalette />
-          <Toaster />
-          <Sonner />
-          
-          
-          
-          <Routes>
-            <Route path="/design-engineering" element={<Index />} />
-            <Route path="/" element={<MainContent />} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/course/:courseId" element={<Index />} />
-          </Routes>
+          <AuthProvider>
+            <SidebarProvider>
+              <div className="relative flex min-h-screen flex-col">
+                <div className="flex-1">
+                  <MainContent />
+                </div>
+              </div>
+              <CommandPalette />
+              <Toaster />
+              <Sonner />
+            </SidebarProvider>
+          </AuthProvider>
         </Router>
-      </SidebarProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;

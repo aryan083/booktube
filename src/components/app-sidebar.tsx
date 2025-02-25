@@ -41,6 +41,7 @@ import {
 import UploadModal from "@/components/upload-modal"
 import SecondModal from "@/components/second-modal"
 import ThirdModal from "@/components/third-modal"
+import { useAuth } from '../contexts/AuthContext'
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -172,6 +173,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
   const { state, toggleSidebar } = useSidebar()
+  const { user } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false)
   const [isThirdModalOpen, setIsThirdModalOpen] = useState(false)
@@ -302,54 +304,12 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             </SidebarContent>
             
             <SidebarFooter className="p-4 border-t border-border/50">
-              <NavUser user={data.user} />
+              <NavUser user={user} />
             </SidebarFooter>
           </div>
         </div>
       </Sidebar>
 
-      <UploadModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setFlowStartTime(0);
-        }}
-        onNext={() => {
-          setIsModalOpen(false);
-          setIsSecondModalOpen(true);
-        }}
-      />
-      <SecondModal
-        isOpen={isSecondModalOpen}
-        onClose={() => {
-          setIsSecondModalOpen(false);
-          setFlowStartTime(0);
-        }}
-        onBack={() => {
-          setIsSecondModalOpen(false);
-          setIsModalOpen(true);
-        }}
-        onNext={() => {
-          setIsSecondModalOpen(false);
-          setIsThirdModalOpen(true);
-        }}
-        flowStartTime={flowStartTime}
-      />
-      {/* <ThirdModal
-        isOpen={isThirdModalOpen}
-        onClose={() => {
-          setIsThirdModalOpen(false);
-          setFlowStartTime(0);
-        }}
-        onBack={() => {
-          setIsThirdModalOpen(false);
-          setIsSecondModalOpen(true);
-        }}
-        onComplete={() => {
-          setIsThirdModalOpen(false);
-          setFlowStartTime(0);
-        }}
-      /> */}
     </>
   )
 }
