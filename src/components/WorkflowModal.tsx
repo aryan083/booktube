@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +14,17 @@ import StepTwo from "./steps/StepTwo";
 import StepThree from "./steps/StepThree";
 import StepFour from "./steps/StepFour";
 import StepFive from "./steps/StepFive";
+import { appendArticle } from "@/services/AppendArticle";
 
 interface WorkflowModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const WorkflowModal: React.FC<WorkflowModalProps> = ({ open, onOpenChange }) => {
+const WorkflowModal: React.FC<WorkflowModalProps> = ({
+  open,
+  onOpenChange,
+}) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [textPrompt, setTextPrompt] = useState("");
@@ -42,20 +46,75 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({ open, onOpenChange }) => 
   // Set welcome message only when modal is opened
   useEffect(() => {
     if (open && !welcomeMessage) {
-      setWelcomeMessage("Welcome to your learning journey! Let's make this an exciting and productive experience. 🚀");
+      setWelcomeMessage(
+        "Welcome to your learning journey! Let's make this an exciting and productive experience. 🚀"
+      );
     }
   }, [open, welcomeMessage]);
-
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1 && selectedFiles.length === 0) {
       // Show error or notification that at least one PDF is required
       return;
     }
+
+    if (currentStep === 1) {
+      // Make API call for each selected file in the background
+      selectedFiles.forEach(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("document_type", "book");
+        formData.append("document_name", file.name.replace(".pdf", ""));
+        formData.append("extract_images", "true");
+        formData.append("extract_text", "true");
+        formData.append("save_json", "true");
+
+        try {
+          const response = await fetch(
+            "http://localhost:5000/api/upload_and_process",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Upload failed");
+          }
+
+          const data = await response.json();
+          console.log("Upload successful:", data);
+        } catch (error) {
+          console.error("Upload error:", error);
+          // Continue to next step even if upload fails
+        }
+      });
+    }
+
+    if (currentStep === 2) {
+      // Validate text prompt before saving
+      if (!textPrompt || !textPrompt.trim()) {
+        console.error("Text prompt cannot be empty");
+        return;
+      }
+      // Save text prompt to Supabase articles table
+      try {
+        const { error } = await appendArticle({
+          article_name: textPrompt.trim(),
+        });
+        if (error) {
+          console.error("Error saving article:", error);
+          return;
+        }
+      } catch (error) {
+        console.error("Error saving article:", error);
+        return;
+      }
+    }
+
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
-
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -75,7 +134,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({ open, onOpenChange }) => 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogOverlay className="bg-black/30 backdrop-blur-[10px]" />
-      <DialogContent 
+      <DialogContent
         className="
           max-w-[600px] max-h-[704px] 
           bg-gray-900/95 border-gray-800 
@@ -115,7 +174,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({ open, onOpenChange }) => 
             />
           )}
           {currentStep === 3 && (
-            <StepThree 
+            <StepThree
               className="animate-in fade-in-50"
               welcomeMessage={welcomeMessage}
             />
@@ -145,7 +204,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({ open, onOpenChange }) => 
             Back
           </Button>
           {currentStep < 5 ? (
-            <Button 
+            <Button
               onClick={handleNext}
               disabled={currentStep === 1 && selectedFiles.length === 0}
             >

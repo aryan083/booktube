@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Pencil } from 'lucide-react';
+import React, { useEffect, useState, useRef } from "react";
+import { Pencil } from "lucide-react";
 
 interface SecondModalProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const welcomeMessages = [
   "Hello, and welcome to your personal learning space! 🌱\nEvery new chapter is an opportunity. Get ready for an interactive and exciting journey of growth!",
   "Welcome to your learning adventure! 🌟\nThe journey ahead is full of discoveries, challenges, and rewards. Let's make every moment count together!",
   "Welcome! 🚀\nYou're about to embark on a thrilling learning experience, and we're here every step of the way.\nLet's make it exciting and memorable!",
-  "Congratulations on starting your journey! 📚✨\nYou're about to unlock new knowledge in the most engaging way. Let's get started and explore everything that's waiting for you!"
+  "Congratulations on starting your journey! 📚✨\nYou're about to unlock new knowledge in the most engaging way. Let's get started and explore everything that's waiting for you!",
 ];
 
 const topics = [
@@ -29,10 +29,16 @@ const topics = [
   { name: "Decision tree", color: "#96CEB4" },
   { name: "K-means", color: "#FFEEAD" },
   { name: "CNN", color: "#D4A5A5" },
-  { name: "LSTM", color: "#9B9B9B" }
+  { name: "LSTM", color: "#9B9B9B" },
 ];
 
-const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNext, flowStartTime }) => {
+const SecondModal: React.FC<SecondModalProps> = ({
+  isOpen,
+  onClose,
+  onBack,
+  onNext,
+  flowStartTime,
+}) => {
   const [welcomeMessage, setWelcomeMessage] = useState<string>("");
   const [lastFlowTime, setLastFlowTime] = useState<number>(0);
   const [courseTitle, setCourseTitle] = useState<string>("Course Title");
@@ -41,12 +47,13 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
 
   useEffect(() => {
     if (isOpen && flowStartTime && flowStartTime !== lastFlowTime) {
-      const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+      const randomMessage =
+        welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
       setWelcomeMessage(randomMessage);
       setLastFlowTime(flowStartTime);
     }
   }, [isOpen, flowStartTime, lastFlowTime]);
-  const messageLines = welcomeMessage.split('\n');
+  const messageLines = welcomeMessage.split("\n");
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -68,7 +75,7 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       setIsEditing(false);
     }
   };
@@ -77,12 +84,17 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
 
   return (
     <div className="fixed inset-0 z-[9999] overflow-hidden">
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        aria-hidden="true"
+        onClick={onClose}
+      />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <div className="relative w-full max-w-2xl h-[610px] bg-black border border-gray-700 rounded-xl shadow-lg overflow-y-auto z-[10000]">
           {/* Modal Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-            <div className="w-7"></div> {/* Spacer to balance the close button */}
+            <div className="w-7"></div>{" "}
+            {/* Spacer to balance the close button */}
             <h3 className="font-bold text-white text-center flex-grow">
               Welcome!
             </h3>
@@ -91,7 +103,21 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
               className="flex justify-center items-center w-7 h-7 text-sm font-semibold rounded-full border border-transparent text-gray-400 hover:text-white hover:bg-gray-700"
             >
               <span className="sr-only">Close</span>
-              <svg className="flex-shrink-0 w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              <svg
+                className="flex-shrink-0 w-4 h-4"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
             </button>
           </div>
 
@@ -120,16 +146,24 @@ const SecondModal: React.FC<SecondModalProps> = ({ isOpen, onClose, onBack, onNe
                   />
                 ) : (
                   <div className="flex items-center gap-2 justify-center">
-                    <h1 className= "font-semibold text-white text-center">{courseTitle}</h1>
-                    <button onClick={handleEditClick} className="text-gray-400 hover:text-white ">
+                    <h1 className="font-semibold text-white text-center">
+                      {courseTitle}
+                    </h1>
+                    <button
+                      onClick={handleEditClick}
+                      className="text-gray-400 hover:text-white "
+                    >
                       <Pencil size={26} />
                     </button>
                   </div>
                 )}
-              </div><br />
-                
+              </div>
+              <br />
+
               {/* Topics Label */}
-              <h2 className="text-xl font-bold text-white text-center mb-4">Topics Detected</h2>
+              <h2 className="text-xl font-bold text-white text-center mb-4">
+                Topics Detected
+              </h2>
               {/* Topic Pills */}
               <div className="flex flex-wrap gap-3 justify-center mb-6">
                 {topics.map((topic, index) => (
