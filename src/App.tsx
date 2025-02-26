@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import SignUpForm from "./pages/SignUp";
 import { SignInForm } from "./pages/SignIn";
+import Profile01 from './components/kokonutui/profile-01';
 
 // Home component that shows sidebar and glowing effect
 function Home() {
@@ -62,6 +63,11 @@ function MainContent() {
       {/* Public routes - accessible to everyone */}
       <Route path="/signin" element={<SignInForm />} />
       <Route path="/signup" element={<SignUpForm />} />
+      <Route path="/profile1" element={
+        <AuthGuard>
+          <Profile01 />
+        </AuthGuard>
+      } />
       {/* <Route path="/auth" element={<Auth />} /> */}
       
       {/* Protected routes - require authentication */}

@@ -2,7 +2,8 @@
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
 import { useAuth } from '../contexts/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
+import Profile01 from "./kokonutui/profile-01"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/c
 export function NavUser() {
   const { state } = useSidebar()
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   // Get user's metadata
   const displayName = user?.user_metadata?.display_name || 'User';
@@ -79,7 +81,7 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/profile1')} className="flex items-center gap-2">
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>

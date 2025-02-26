@@ -36,7 +36,7 @@ export function NavMain({ items }: NavMainProps) {
       <SidebarGroupLabel 
         className={state === 'collapsed' ? 'hidden' : ''}
       >
-        Platform
+        My Learnings
       </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
