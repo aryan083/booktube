@@ -128,7 +128,7 @@ const GridItem = ({ area, icon, title, description, cardStyle, backgroundImage }
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            filter: backgroundImage ? 'grayscale(0%)' : 'none', // Make image black and white
+            filter: backgroundImage ? 'grayscale(100%)' : 'none', // Make image black and white
           }}
         >
           <div className="relative flex flex-1 flex-col justify-between gap-3">
