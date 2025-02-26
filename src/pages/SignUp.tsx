@@ -20,8 +20,8 @@ const SignUpForm = () => {
     try {
       setLoading(true);
       await signUp(data.email, data.password, { display_name: data.username });
-      toast.success("Account created successfully!");
-      navigate('/');
+      toast.success("Account created successfully! Please check your email to verify your account.");
+      navigate('/signin');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Something went wrong";
       toast.error(errorMessage);
@@ -35,8 +35,8 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#121212] p-4">
-      <div className="w-full max-w-md bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in shadow-xl">
+    <div className="flex items-center justify-center bg-[#121212] p-4 py-16">
+      <div className="w-full max-w-xl bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in shadow-xl">
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <Lock className="w-8 h-8 text-primary" />

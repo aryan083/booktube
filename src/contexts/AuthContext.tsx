@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 
 interface AuthContextType {
   user: User | null
+  loading: boolean
   signUp: (email: string, password: string, metadata: { display_name: string }) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -23,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     // Listen for changes on auth state (signed in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
     })
 
@@ -35,24 +36,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string, 
     metadata: { display_name: string }
   ) => {
-    const { error } = await supabase.auth.signUp({
+    const { error, data } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: metadata
+        data: metadata,
+        emailRedirectTo: `${window.location.origin}/signin`
       }
     })
 
     if (error) throw error
+
+    // Sign out immediately after registration to ensure email verification
+    if (data.user) {
+      await supabase.auth.signOut()
+    }
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: { user }, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
     if (error) throw error
+
+    if (user && !user.email_confirmed_at) {
+      await signOut()
+      throw new Error('Please verify your email before signing in.')
+    }
   }
 
   const signOut = async () => {
@@ -62,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
+    loading,
     signUp,
     signIn,
     signOut,
