@@ -31,7 +31,8 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
@@ -188,5 +189,16 @@ button:hover {
   .no-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+  }
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

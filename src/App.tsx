@@ -14,6 +14,8 @@ import Index from "./pages/Index";
 import Courses from "./pages/Courses";
 import Auth from "./pages/Auth";
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import SignUpForm from "./pages/SignUp";
+import { SignInForm } from "./pages/SignIn";
 
 // Home component that shows sidebar and glowing effect
 function Home() {
@@ -46,32 +48,44 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/signin" replace />;
   }
 
   return <>{children}</>;
 }
 
 function MainContent() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  // If user is not logged in, only allow access to auth page
-  if (!user) {
-    return (
-      <Routes>
-        <Route path="/auth" element={<Auth />} />
-        <Route path="*" element={<Navigate to="/auth" replace />} />
-      </Routes>
-    );
-  }
-
-  // If user is logged in, handle other routes
   return (
     <Routes>
-      <Route path="/auth" element={<Navigate to="/" replace />} /> {/* Redirect if trying to access auth while logged in */}
-      <Route path="/" element={<Home />} />
-      <Route path="/courses" element={<Courses />} />
-      <Route path="*" element={<NotFound />} />
+      {/* Public routes - accessible to everyone */}
+      <Route path="/signin" element={<SignInForm />} />
+      <Route path="/signup" element={<SignUpForm />} />
+      {/* <Route path="/auth" element={<Auth />} /> */}
+      
+      {/* Protected routes - require authentication */}
+      <Route path="/" element={
+        <AuthGuard>
+          <Home />
+        </AuthGuard>
+      } />
+      <Route path="/courses" element={
+        <AuthGuard>
+          <Courses />
+        </AuthGuard>
+      } />
+      
+      {/* Redirect to signin if user is not authenticated and tries to access other pages */}
+      <Route path="*" element={
+        loading ? (
+          <div className="flex items-center justify-center min-h-screen">Loading...</div>
+        ) : user ? (
+          <NotFound />
+        ) : (
+          <Navigate to="/signin" replace />
+        )
+      } />
     </Routes>
   );
 }

@@ -4,8 +4,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card"
-import Card from "@/components/ui/Card"
-import Label from "@/components/ui/Label"
+import {Card} from "@/components/ui/Card"
+import {Label} from "@/components/ui/Label"
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false)
