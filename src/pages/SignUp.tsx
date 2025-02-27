@@ -12,7 +12,11 @@ import { useAuth } from "@/contexts/AuthContext";
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<SignUpFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>();
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -20,10 +24,13 @@ const SignUpForm = () => {
     try {
       setLoading(true);
       await signUp(data.email, data.password, { display_name: data.username });
-      toast.success("Account created successfully! Please check your email to verify your account.");
-      navigate('/signin');
+      toast.success(
+        "Account created successfully! Please check your email to verify your account."
+      );
+      navigate("/signin");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+      const errorMessage =
+        error instanceof Error ? error.message : "Something went wrong";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -35,14 +42,16 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-[#121212] p-4 py-16">
+    <div className="flex items-center justify-center p-4 py-16">
       <div className="w-full max-w-xl bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in shadow-xl">
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <Lock className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-2xl font-semibold mb-2">Create your account</h1>
-          <p className="text-muted-foreground">Join our community to get started</p>
+          <p className="text-muted-foreground">
+            Join our community to get started
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -55,7 +64,9 @@ const SignUpForm = () => {
                 className="pl-10 bg-black/50 border-white/10 focus:border-primary"
               />
               {errors.username && (
-                <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.username.message}
+                </p>
               )}
             </div>
 
@@ -74,7 +85,9 @@ const SignUpForm = () => {
                 className="pl-10 bg-black/50 border-white/10 focus:border-primary"
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -104,7 +117,9 @@ const SignUpForm = () => {
                 )}
               </button>
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
           </div>
@@ -112,15 +127,12 @@ const SignUpForm = () => {
           <div className="flex items-start space-x-2 mt-4">
             <Checkbox
               {...register("agreeToTerms", {
-                required: "You must agree to the terms and conditions"
+                required: "You must agree to the terms and conditions",
               })}
               id="terms"
               className="mt-1 h-4 w-4 rounded border-white/10 bg-black/50"
             />
-            <label
-              htmlFor="terms"
-              className="text-sm text-muted-foreground"
-            >
+            <label htmlFor="terms" className="text-sm text-muted-foreground">
               I agree to the{" "}
               <button type="button" className="text-primary hover:underline">
                 terms and conditions
@@ -128,7 +140,9 @@ const SignUpForm = () => {
             </label>
           </div>
           {errors.agreeToTerms && (
-            <p className="text-red-500 text-sm">{errors.agreeToTerms.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.agreeToTerms.message}
+            </p>
           )}
 
           <Button
@@ -144,9 +158,7 @@ const SignUpForm = () => {
               <div className="w-full border-t border-white/10"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-black/40 px-2 text-muted-foreground">
-                OR
-              </span>
+              <span className="bg-black/40 px-2 text-muted-foreground">OR</span>
             </div>
           </div>
 
@@ -173,7 +185,7 @@ const SignUpForm = () => {
             Already have an account?{" "}
             <button
               type="button"
-              onClick={() => navigate('/signin')}
+              onClick={() => navigate("/signin")}
               className="text-primary hover:underline"
             >
               Sign in

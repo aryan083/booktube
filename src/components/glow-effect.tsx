@@ -8,67 +8,67 @@ export function GlowingEffectDemo() {
     <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 py-2">
       <GridItem
         area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-        icon={<Box className="h-4 w-4" style={{ color: '#FFF' }} />}
+        icon={<Box className="h-4 w-4" style={{ color: "#FFF" }} />}
         title="Do things the right way"
         description="Running out of copy so I'll write anything."
         cardStyle={{
-          backgroundColor: '#FF1744', // Bright Red from gradient
-          border: '0px solid gray',
-          color: '#FFF',
+          backgroundColor: "#FF1744",
+          border: "0.2px solid zinc",
+          color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1519638399535-1b036603ac77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
         area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-        icon={<Settings className="h-4 w-4" style={{ color: '#FFF' }} />}
+        icon={<Settings className="h-4 w-4" style={{ color: "#FFF" }} />}
         title="The best AI code editor ever."
         description="Yes, it's true. I'm not even kidding. Ask my mom if you don't believe me."
         cardStyle={{
-          backgroundColor: '#1DE9B6', // Bright Teal from gradient
-          border: '0px solid gray',
-          color: '#000',
+          backgroundColor: "#1DE9B6",
+          border: "0.2px solid zinc",
+          color: "#000",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1516259762381-22954d7d9dd0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1550537687-c91072c4792d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
         area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
-        icon={<Lock className="h-4 w-4" style={{ color: '#FFF' }} />}
+        icon={<Lock className="h-4 w-4" style={{ color: "#FFF" }} />}
         title="You should buy Aceternity UI Pro"
         description="It's the best money you'll ever spend"
         cardStyle={{
-          backgroundColor: '#2979FF', // Bright Blue from gradient
-          border: '0px solid gray',
-          color: '#FFF',
+          backgroundColor: "#2979FF",
+          border: "0.2px solid zinc",
+          color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
         area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
-        icon={<Sparkles className="h-4 w-4" style={{ color: '#000' }} />}
+        icon={<Sparkles className="h-4 w-4" style={{ color: "#000" }} />}
         title="This card is also built by Cursor"
         description="I'm not even kidding. Ask my mom if you don't believe me."
         cardStyle={{
-          backgroundColor: '#FFEA00', // Bright Yellow from gradient
-          border: '0px solid gray',
-          color: '#000',
+          backgroundColor: "#FFEA00",
+          border: "0.2px solid zinc",
+          color: "#000",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1531804055935-76f44d7c3621?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1550537687-c91072c4792d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
       />
 
       <GridItem
         area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-        icon={<Search className="h-4 w-4" style={{ color: '#FFF' }} />}
+        icon={<Search className="h-4 w-4" style={{ color: "#FFF" }} />}
         title="Coming soon on Aceternity UI"
         description="I'm writing the code as I record this, no shit."
         cardStyle={{
-          backgroundColor: '#AA00FF', // Bright Purple from gradient
-          border: '0px solid gray',
-          color: '#FFF',
+          backgroundColor: "#AA00FF",
+          border: "0.2px solid zinc",
+          color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1531804055935-76f44d7c3621?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
       />
     </ul>
   );
@@ -83,10 +83,17 @@ interface GridItemProps {
   backgroundImage?: string; // Optional background image URL
 }
 
-const GridItem = ({ area, icon, title, description, cardStyle, backgroundImage }: GridItemProps) => {
+const GridItem = ({
+  area,
+  icon,
+  title,
+  description,
+  cardStyle,
+  backgroundImage,
+}: GridItemProps) => {
   // Function to darken the background color
   const darkenColor = (color: string, factor: number = 0.1): string => {
-    let hex = color.replace('#', '');
+    let hex = color.replace("#", "");
     if (hex.length === 3) {
       hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
@@ -100,35 +107,42 @@ const GridItem = ({ area, icon, title, description, cardStyle, backgroundImage }
 
     const toHex = (c: number): string => {
       const hex = c.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
+      return hex.length === 1 ? "0" + hex : hex;
     };
 
-    return '#' + toHex(r) + toHex(g) + toHex(b);
+    return "#" + toHex(r) + toHex(g) + toHex(b);
   };
 
   const outerCardStyle = {
     ...cardStyle,
-    backgroundColor: darkenColor(cardStyle.backgroundColor as string, 0.75),
+    backgroundColor: darkenColor(cardStyle.backgroundColor as string, 0.9999),
   };
 
   return (
     <li className={`min-h-[14rem] list-none ${area}`}>
-      <div className="relative h-full rounded-2.5xl border  p-2  md:rounded-3xl md:p-3" style={outerCardStyle}>
+      <div
+        className="relative h-full rounded-2.5xl border  p-2  md:rounded-3xl md:p-3"
+        style={outerCardStyle}
+      >
         <GlowingEffect
           spread={40}
           glow={true}
           disabled={false}
           proximity={64}
-          inactiveZone={0.01} children={undefined}        />
-        <div 
-          className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0.75 p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D] md:p-6" 
+          inactiveZone={0.01}
+          children={undefined}
+        />
+        <div
+          className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0.75 p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D] md:p-6"
           style={{
             ...cardStyle,
-            backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            filter: backgroundImage ? 'grayscale(100%)' : 'none', // Make image black and white
+            backgroundImage: backgroundImage
+              ? `url(${backgroundImage})`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            filter: backgroundImage ? "grayscale(00%)" : "none", // Make image black and white
           }}
         >
           <div className="relative flex flex-1 flex-col justify-between gap-3">

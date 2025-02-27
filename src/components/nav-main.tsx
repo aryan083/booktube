@@ -47,18 +47,19 @@ export function NavMain({ items }: NavMainProps) {
             className={`
               group/collapsible 
               ${state === 'collapsed' ? 'flex justify-center' : ''}
+              transition-all duration-700 ease-in-out
             `}
           >
             <SidebarMenuItem className={state === 'collapsed' ? 'w-full flex justify-center' : ''}>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton 
                   tooltip={item.title}
-                  className={state === 'collapsed' ? 'w-full max-w-[2.5rem] justify-center' : ''}
+                  className={state === 'collapsed' ? 'w-full max-w-[2.5rem] justify-center transition-all duration-700 ease-in-out' : ''}
                 >
                   {item.icon && <item.icon className={state === 'collapsed' ? 'mx-auto' : ''} />}
                   {state === 'expanded' && <span>{item.title}</span>}
                   {state === 'expanded' && (
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    <ChevronRight className="ml-auto transition-transform duration-700 ease-in-out group-data-[state=open]/collapsible:rotate-90" />
                   )}
                 </SidebarMenuButton>
               </CollapsibleTrigger>

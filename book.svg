@@ -1,0 +1,11 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Book cover with perspective -->
+  <path d="M4 4L14 2v16l-10 2V4z" fill="white" opacity="0.9"/>
+  <!-- Book spine and pages -->
+  <path d="M14 2l3 1v16l-3 1V2z" fill="#e6e6e6" opacity="0.8"/>
+  <path d="M17 3l3 1v16l-3-1V3z" fill="#f2f2f2" opacity="0.7"/>
+  <!-- Play button on cover -->
+  <path d="M7 8L11 11L7 14V8z" fill="#1a1a1a" opacity="0.8"/>
+  <!-- Bottom edge -->
+  <path d="M4 20l10-2 6 1-10 2-6-1z" fill="#d9d9d9" opacity="0.6"/>
+</svg>
