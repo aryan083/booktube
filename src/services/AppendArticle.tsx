@@ -14,22 +14,6 @@ export const appendArticle = async ({
   topic_id = null,
 }: AppendArticleParams) => {
   try {
-    // Validate article_name is not empty or just whitespace
-    if (!article_name || !article_name.trim()) {
-      return { data: null, error: new Error("Article name cannot be empty") };
-    }
-    // Check if an article with the same name already exists
-    const { data: existingArticle } = await supabase
-      .from("articles")
-      .select()
-      .eq("article_name", article_name)
-      .single();
-
-    if (existingArticle) {
-      return { data: existingArticle, error: null };
-    }
-
-    // Insert the article into the articles table if it doesn't exist
     const { data, error } = await supabase
       .from("articles")
       .insert([

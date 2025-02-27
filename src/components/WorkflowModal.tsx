@@ -91,15 +91,10 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
     }
 
     if (currentStep === 2) {
-      // Validate text prompt before saving
-      if (!textPrompt || !textPrompt.trim()) {
-        console.error("Text prompt cannot be empty");
-        return;
-      }
       // Save text prompt to Supabase articles table
       try {
         const { error } = await appendArticle({
-          article_name: textPrompt.trim(),
+          article_name: textPrompt,
         });
         if (error) {
           console.error("Error saving article:", error);
@@ -136,29 +131,30 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       <DialogOverlay className="bg-black/30 backdrop-blur-[10px]" />
       <DialogContent
         className="
-          max-w-[600px] max-h-[704px] 
-          bg-gray-900/95 border-gray-800 
+          max-w-[94vh] h-[94vh] 
+          bg-zinc-900/95 border-zinc-800/50 
           backdrop-blur-lg
-          overflow-y-auto
           fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]
           shadow-xl
           animate-in fade-in-0 zoom-in-95
+          p-5
+          flex flex-col
         "
       >
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white">
+        <DialogHeader className="mb-0">
+          <DialogTitle className="text-2xl font-bold text-white text-center">
             Create Learning Flow
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          {/* <DialogDescription className="text-gray-400">
             Follow the steps to create your personalized learning experience
-          </DialogDescription>
+          </DialogDescription> */}
         </DialogHeader>
 
-        <div className="mt-4">
+        <div className="mt-2">
           <Stepper currentStep={currentStep} totalSteps={5} />
         </div>
 
-        <div className="mt-8 min-h-[400px] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto mt-4 ">
           {currentStep === 1 && (
             <StepOne
               selectedFiles={selectedFiles}
@@ -195,7 +191,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           )}
         </div>
 
-        <div className="mt-8 flex justify-between">
+        <div className=" flex justify-between bg-zinc  border-zinc-800 pt-0">
           <Button
             variant="outline"
             onClick={handleBack}

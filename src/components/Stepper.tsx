@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface StepperProps {
   currentStep: number;
@@ -8,7 +9,7 @@ interface StepperProps {
 
 const Stepper: React.FC<StepperProps> = ({ currentStep, totalSteps }) => {
   return (
-    <div className="flex items-center w-full">
+    <div className="flex items-center justify-between w-full px-8 pb-4">
       {Array.from({ length: totalSteps }).map((_, index) => {
         const stepNumber = index + 1;
         const isActive = stepNumber === currentStep;
@@ -16,30 +17,80 @@ const Stepper: React.FC<StepperProps> = ({ currentStep, totalSteps }) => {
 
         return (
           <React.Fragment key={stepNumber}>
-            <div className="flex items-center">
-              <div
+            <motion.div
+              className="flex items-center relative"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <motion.div
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200",
-                  isActive && "bg-primary text-white",
-                  isCompleted && "bg-primary/20 text-primary",
-                  !isActive && !isCompleted && "bg-gray-200 text-gray-500"
+                  "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                  "border-2 relative z-10 cursor-pointer hover:scale-110",
+                  isActive &&
+                    "border-primary bg-primary/10 text-primary shadow-lg shadow-primary/25",
+                  isCompleted && "border-primary/50 bg-primary/5 text-primary",
+                  !isActive &&
+                    !isCompleted &&
+                    "border-zinc-600/30 bg-zinc-800/30 text-zinc-400 hover:border-zinc-500/50 hover:bg-zinc-700/50"
                 )}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {stepNumber}
-              </div>
-              <div className="text-sm ml-2 hidden sm:block">
-                {`Step ${stepNumber}`}
-              </div>
-            </div>
-            {stepNumber < totalSteps && (
-              <div
-                className={cn(
-                  "flex-1 h-0.5 mx-4 transition-all duration-200",
-                  stepNumber < currentStep
-                    ? "bg-primary"
-                    : "bg-gray-200"
+                {stepNumber === 1
+                  ? "📄"
+                  : stepNumber === 2
+                  ? "✍️"
+                  : stepNumber === 3
+                  ? "🎯"
+                  : stepNumber === 4
+                  ? "📚"
+                  : stepNumber === 5
+                  ? "🎓"
+                  : stepNumber}
+                {(isActive || isCompleted) && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-primary/10"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                    }}
+                  />
                 )}
-              />
+              </motion.div>
+              <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-8 text-xs text-center font-medium transition-colors duration-300 whitespace-nowrap">
+                <span
+                  className={cn(
+                    "px-2 py-1 rounded-full transition-colors duration-300",
+                    isActive ? "text-primary" : "text-zinc-500"
+                  )}
+                >
+                  {`Step ${stepNumber}`}
+                </span>
+              </div>
+            </motion.div>
+            {stepNumber < totalSteps && (
+              <div className="flex-1 relative">
+                <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-[2px]">
+                  <div
+                    className={cn(
+                      "absolute inset-0 rounded-full",
+                      "bg-gradient-to-r from-zinc-700/50 to-zinc-600/30"
+                    )}
+                  />
+                  {isCompleted && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/50 to-primary/30"
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+                  )}
+                </div>
+              </div>
             )}
           </React.Fragment>
         );
