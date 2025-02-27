@@ -169,24 +169,25 @@ const StepOne: React.FC<StepOneProps> = ({
     <div
       className={`${className} py-3 rounded-xl backdrop-blur-sm bg-zinc-900/30 border-zinc-800/50`}
     >
-      <div className="space-y-2 w-full max-w-lg mx-auto">
+      <div className="space-y-2 w-full px-4">
         <div className="text-center space-y-3">
           <h3 className="text-lg font-semibold text-white">Upload PDF Files</h3>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 w-full">
           {[0, 1].map((index) => (
-            <div key={index} className="space-y-3">
+            <div key={index} className="space-y-3 w-full">
               <p className="text-sm text-gray-400">
-                PDF {index + 1} {index === 0 ? "(Required)" : "(Optional)"}
+                {/* {index + 1}{" "} */}
+                {index === 0 ? "Book PDF (Required)" : "Course PDF (Optional)"}
               </p>
               {!fileInfos[index] ? (
-                <div className="relative flex flex-col items-center p-8 bg-zinc-800/30 backdrop-blur-md border-2 border-dashed border-zinc-700/50 rounded-xl hover:bg-zinc-800/40 transition-all duration-300 group">
+                <div className="relative flex flex-col items-center p-8 w-full bg-zinc-800/30 backdrop-blur-md border-2 border-dashed border-zinc-700/50 rounded-xl hover:bg-zinc-800/40 transition-all duration-300 group">
                   <input
                     type="file"
                     onChange={(e) => handleFileChange(e, index)}
                     accept=".pdf"
-                    className="absolute inset-0 w-full  opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full opacity-0 cursor-pointer"
                     id={`file-upload-${index}`}
                   />
                   <div className="flex flex-col items-center justify-center w-full gap-1">
@@ -205,7 +206,7 @@ const StepOne: React.FC<StepOneProps> = ({
                 </div>
               ) : (
                 <div
-                  className={`bg-zinc-900/80 rounded-lg p-4 border shadow-lg transition-all duration-300 group ${
+                  className={`bg-zinc-900/80 rounded-lg p-4 border shadow-lg transition-all duration-300 group w-full ${
                     fileInfos[index].error
                       ? "border-red-500/50 hover:border-red-400/50"
                       : "border-zinc-700/30 hover:border-zinc-600/50"
