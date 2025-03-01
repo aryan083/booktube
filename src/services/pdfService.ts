@@ -12,6 +12,7 @@ interface GeminiResponse {
   skills: TechnicalTerm[];
   technologies: TechnicalTerm[];
   welcome_message: string;
+  course_title: string;
 }
 
 /**

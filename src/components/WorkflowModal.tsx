@@ -35,6 +35,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const [selectedMethods, setSelectedMethods] = useState<string[]>([]);
   const [skillLevel, setSkillLevel] = useState(1);
   const [welcomeMessage, setWelcomeMessage] = useState("");
+  const [courseTitle, setCourseTitle] = useState("");
   const [technicalTerms, setTechnicalTerms] = useState<Array<{ name: string; color: string }>>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -81,7 +82,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       
       if (response) {
         setWelcomeMessage(response.welcome_message || '');
-        
+        setCourseTitle(response.course_title || '');
         // Extract all terms from the keywords response
         const { technical_terms = [], skills = [], technologies = [] } = response.keywords || {};
         
@@ -227,6 +228,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
               className="animate-in fade-in-50"
               welcomeMessage={welcomeMessage}
               technicalTerms={technicalTerms}
+              courseTitle={courseTitle}
               isProcessing={isProcessing}
             />
           )}

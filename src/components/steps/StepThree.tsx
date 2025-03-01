@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface StepThreeProps {
   className?: string;
   welcomeMessage: string;
+  courseTitle: string;
   technicalTerms: Array<{
     name: string;
     color: string;
@@ -28,11 +29,11 @@ const pillColors = [
 
 /**
  * StepThree Component - Displays course title, welcome message, and technical skills
- * @param {StepThreeProps} props - Component props containing welcome message and technical terms
+ * @param {StepThreeProps} props - Component props containing welcome message, course title and technical terms
  * @returns {JSX.Element} Rendered component with animated technical skill pills
  */
-const StepThree: React.FC<StepThreeProps> = ({ className, welcomeMessage, technicalTerms, isProcessing }) => {
-  const [courseTitle, setCourseTitle] = useState("Machine Learning Fundamentals");
+const StepThree: React.FC<StepThreeProps> = ({ className, welcomeMessage, courseTitle: initialTitle, technicalTerms, isProcessing }) => {
+  const [editableTitle, setEditableTitle] = useState(initialTitle || "Enter Course Title");
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [displayedTerms, setDisplayedTerms] = useState<Array<{
@@ -46,6 +47,13 @@ const StepThree: React.FC<StepThreeProps> = ({ className, welcomeMessage, techni
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  // Update title when prop changes
+  useEffect(() => {
+    if (initialTitle) {
+      setEditableTitle(initialTitle);
+    }
+  }, [initialTitle]);
 
   useEffect(() => {
     // Process the technical terms and ensure we have exactly 10 items
@@ -88,8 +96,8 @@ const StepThree: React.FC<StepThreeProps> = ({ className, welcomeMessage, techni
             {isEditing ? (
               <input
                 ref={inputRef}
-                value={courseTitle}
-                onChange={(e) => setCourseTitle(e.target.value)}
+                value={editableTitle}
+                onChange={(e) => setEditableTitle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && setIsEditing(false)}
                 className="text-2xl md:text-4xl font-bold text-white bg-transparent border-b-2 border-primary/50 focus:border-primary outline-none text-center w-full max-w-md px-4 py-2 transition-all duration-300"
               />
@@ -99,7 +107,7 @@ const StepThree: React.FC<StepThreeProps> = ({ className, welcomeMessage, techni
                   className="text-3xl md:text-3xl p-2 font-bold text-white bg-clip-text bg-gradient-to-r from-white to-white/80"
                   layoutId="courseTitle"
                 >
-                  {courseTitle}
+                  {editableTitle}
                 </motion.h2>
                 <button
                   onClick={() => setIsEditing(true)}
