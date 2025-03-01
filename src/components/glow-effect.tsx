@@ -19,7 +19,7 @@ export function GlowingEffectDemo() {
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1733044271325-3017e877218b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8Q0R3dXdYSkFiRXd8fGVufDB8fHx8fA%3D%3D"
       />
       <GridItem
         area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
@@ -31,7 +31,7 @@ export function GlowingEffectDemo() {
           border: "0.2px solid zinc",
           color: "#000",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1550537687-c91072c4792d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1676552676584-3ee0aef1bd39?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       />
 
       <GridItem
@@ -44,7 +44,7 @@ export function GlowingEffectDemo() {
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1739372425262-1642d83a10c5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI2fENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D"
       />
 
       <GridItem
@@ -57,7 +57,7 @@ export function GlowingEffectDemo() {
           border: "0.2px solid zinc",
           color: "#000",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1550537687-c91072c4792d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1735919828689-6f300b3b194d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D"
       />
 
       <GridItem
@@ -70,7 +70,7 @@ export function GlowingEffectDemo() {
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1692607038343-8b811ec1fc55?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM4fENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D"
       />
     </ul>
   );
@@ -212,6 +212,149 @@ interface ModalProps {
   onClose: React.MouseEventHandler<HTMLElement>;
 }
 
+// Color extraction utility functions
+interface ExtractedColors {
+  primary: string;
+  secondary: string;
+  textColor: string;
+  accentColor: string;
+}
+
+const getContrastYIQ = (hexcolor: string): number => {
+  // Convert hex to RGB
+  hexcolor = hexcolor.replace("#", "");
+  if (hexcolor.length === 3) {
+    hexcolor =
+      hexcolor[0] +
+      hexcolor[0] +
+      hexcolor[1] +
+      hexcolor[1] +
+      hexcolor[2] +
+      hexcolor[2];
+  }
+
+  const r = parseInt(hexcolor.substring(0, 2), 16);
+  const g = parseInt(hexcolor.substring(2, 4), 16);
+  const b = parseInt(hexcolor.substring(4, 6), 16);
+
+  // Calculate YIQ ratio (brightness)
+  return (r * 299 + g * 587 + b * 114) / 1000;
+};
+
+const getTextColor = (bgColor: string): string => {
+  // Determine if text should be light or dark based on background color
+  return getContrastYIQ(bgColor) >= 128 ? "#000000" : "#ffffff";
+};
+
+const extractColorsFromImage = (imageUrl: string): Promise<ExtractedColors> => {
+  return new Promise((resolve) => {
+    // Default colors in case extraction fails
+    const defaultColors: ExtractedColors = {
+      primary: "#2979FF",
+      secondary: "#1A237E",
+      textColor: "#ffffff",
+      accentColor: "#FF9800",
+    };
+
+    if (!imageUrl) {
+      resolve(defaultColors);
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(defaultColors);
+          return;
+        }
+
+        // Scale down for performance
+        const scaleFactor = Math.min(1, 100 / Math.max(img.width, img.height));
+        canvas.width = img.width * scaleFactor;
+        canvas.height = img.height * scaleFactor;
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const imageData = ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        ).data;
+        const colorCounts: Record<string, number> = {};
+
+        // Sample pixels to find dominant colors
+        for (let i = 0; i < imageData.length; i += 16) {
+          const r = imageData[i];
+          const g = imageData[i + 1];
+          const b = imageData[i + 2];
+
+          // Skip transparent pixels
+          if (imageData[i + 3] < 128) continue;
+
+          // Convert to hex and count occurrences
+          const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b)
+            .toString(16)
+            .slice(1)}`;
+          colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+        }
+
+        // Sort colors by frequency
+        const sortedColors = Object.entries(colorCounts)
+          .sort((a, b) => b[1] - a[1])
+          .map((entry) => entry[0]);
+
+        if (sortedColors.length > 0) {
+          const primary = sortedColors[0];
+          // Find a contrasting secondary color
+          const secondary =
+            sortedColors.find((color) => {
+              const contrast = Math.abs(
+                getContrastYIQ(color) - getContrastYIQ(primary)
+              );
+              return contrast > 50;
+            }) || sortedColors[Math.min(1, sortedColors.length - 1)];
+
+          // Find an accent color that stands out
+          const accentColor =
+            sortedColors.find((color) => {
+              const contrast = Math.abs(
+                getContrastYIQ(color) - getContrastYIQ(primary)
+              );
+              return contrast > 100;
+            }) || sortedColors[Math.min(2, sortedColors.length - 1)];
+
+          const textColor = getTextColor(primary);
+
+          resolve({
+            primary,
+            secondary,
+            textColor,
+            accentColor,
+          });
+        } else {
+          resolve(defaultColors);
+        }
+      } catch (error) {
+        console.error("Error extracting colors:", error);
+        resolve(defaultColors);
+      }
+    };
+
+    img.onerror = () => {
+      console.error("Error loading image for color extraction");
+      resolve(defaultColors);
+    };
+
+    img.src = imageUrl;
+  });
+};
+
 // Fix Modal component definition to use proper props
 function Modal({
   id,
@@ -223,23 +366,52 @@ function Modal({
   cardStyle,
   backgroundImage,
 }: ModalProps & Omit<GridItemProps, "area"> & { area: string }) {
+  const [extractedColors, setExtractedColors] = useState<ExtractedColors>({
+    primary: (cardStyle.backgroundColor as string) || "#2979FF",
+    secondary: cardStyle.backgroundColor as string,
+    textColor: (cardStyle.color as string) || "#ffffff",
+    accentColor: "#FF9800",
+  });
+
   useEffect(() => {
     console.log("Modal mounted with ID:", id);
+
+    // Extract colors from background image if available
+    if (backgroundImage) {
+      extractColorsFromImage(backgroundImage).then((colors) => {
+        setExtractedColors(colors);
+      });
+    }
+
     return () => {
       console.log("Modal unmounting with ID:", id);
     };
-  }, [id]);
+  }, [id, backgroundImage]);
+
+  // Compute styles based on extracted colors
+  const modalStyle = {
+    backgroundColor: extractedColors.primary,
+    color: extractedColors.textColor,
+  };
+
+  const headerStyle = {
+    backgroundColor: extractedColors.primary,
+    color: extractedColors.textColor,
+  };
+
+  const buttonStyle = {
+    backgroundColor: extractedColors.accentColor,
+    color: getTextColor(extractedColors.accentColor),
+  };
+
+  const textStyle = {
+    color: extractedColors.textColor === "#ffffff" ? "#e0e0e0" : "#303030",
+  };
 
   return (
-    <div
-      className="modal"
-      data-blendy-to={id}
-      style={{
-        backgroundColor: cardStyle.backgroundColor,
-      }}
-    >
+    <div className="modal" data-blendy-to={id} style={modalStyle}>
       <div>
-        <div className="modal__header">
+        <div className="modal__header" style={headerStyle}>
           <h2 className="modal__title flex items-center gap-2 text-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -258,9 +430,10 @@ function Modal({
             BookTube
           </h2>
           <button
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+            className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
             onClick={onClose}
             aria-label="Close modal"
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -268,11 +441,10 @@ function Modal({
               height="24"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="currentColor"
+              stroke={extractedColors.textColor}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-gray-600 hover:text-gray-900"
             >
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -280,7 +452,7 @@ function Modal({
           </button>
         </div>
         <div className="modal__content">
-          <article className="text-black max-w-5xl mx-auto">
+          <article className="max-w-5xl mx-auto" style={textStyle}>
             <div
               className="relative rounded-xl overflow-hidden mb-6"
               style={{
@@ -294,19 +466,37 @@ function Modal({
             />
             <div className="space-y-6 px-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg" style={cardStyle}>
+                <div
+                  className="p-2 rounded-lg"
+                  style={{
+                    backgroundColor: extractedColors.secondary,
+                    color: extractedColors.textColor,
+                  }}
+                >
                   {icon}
                 </div>
                 <h1 className="text-3xl font-bold">{title}</h1>
               </div>
-              <div className="prose prose-lg">
-                <p className="text-gray-700">{description}</p>
+              <div
+                className="prose prose-lg"
+                style={{ color: "inherit", maxWidth: "100%" }}
+              >
+                <p style={{ color: "inherit" }}>{description}</p>
               </div>
               <div className="flex gap-4">
-                <div className="px-4 py-2 rounded-lg text-sm" style={cardStyle}>
+                <div
+                  className="px-4 py-2 rounded-lg text-sm"
+                  style={buttonStyle}
+                >
                   View Details
                 </div>
-                <div className="px-4 py-2 rounded-lg text-sm border border-current">
+                <div
+                  className="px-4 py-2 rounded-lg text-sm border"
+                  style={{
+                    borderColor: extractedColors.textColor,
+                    color: extractedColors.textColor,
+                  }}
+                >
                   Share
                 </div>
               </div>
