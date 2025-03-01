@@ -8,6 +8,7 @@ import {
   DialogOverlay,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Toast } from "@/components/ui/toast";
 import Stepper from "./Stepper";
 import StepOne from "./steps/StepOne";
 import StepTwo from "./steps/StepTwo";
@@ -15,6 +16,8 @@ import StepThree from "./steps/StepThree";
 import StepFour from "./steps/StepFour";
 import StepFive from "./steps/StepFive";
 import { appendArticle } from "@/services/AppendArticle";
+import { createCourse } from "@/services/courseService";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface WorkflowModalProps {
   open: boolean;
@@ -31,6 +34,9 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const [selectedMethods, setSelectedMethods] = useState<string[]>([]);
   const [skillLevel, setSkillLevel] = useState(1);
   const [welcomeMessage, setWelcomeMessage] = useState("");
+
+  // const { toast } = useToast();
+  const { user } = useAuth();
 
   // Reset all state when modal is closed
   useEffect(() => {
@@ -51,65 +57,49 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       );
     }
   }, [open, welcomeMessage]);
+
   const handleNext = async () => {
-    if (currentStep === 1 && selectedFiles.length === 0) {
-      // Show error or notification that at least one PDF is required
-      return;
-    }
-
-    if (currentStep === 1) {
-      // Make API call for each selected file in the background
-      selectedFiles.forEach(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("document_type", "book");
-        formData.append("document_name", file.name.replace(".pdf", ""));
-        formData.append("extract_images", "true");
-        formData.append("extract_text", "true");
-        formData.append("save_json", "true");
-
-        try {
-          const response = await fetch(
-            "http://localhost:5000/api/upload_and_process",
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Upload failed");
-          }
-
-          const data = await response.json();
-          console.log("Upload successful:", data);
-        } catch (error) {
-          console.error("Upload error:", error);
-          // Continue to next step even if upload fails
-        }
-      });
-    }
-
-    if (currentStep === 2) {
-      // Save text prompt to Supabase articles table
+    if (currentStep === 5) {
       try {
-        const { error } = await appendArticle({
-          article_name: textPrompt,
-        });
+        // First, save the course data to Supabase with only the required fields
+        const courseData = {
+          course_name: '', // Leave empty for now
+          tags: {}, // Leave empty for now
+          metadata: '', // Leave empty
+          chapters_json: {}, // Leave empty
+          skill_level: skillLevel,
+          teaching_pattern: selectedMethods, // Only store the selected methods
+          user_prompt: textPrompt,
+          progress: 0 // Initial progress
+        };
+
+        const { error } = await createCourse(courseData);
+        
         if (error) {
-          console.error("Error saving article:", error);
+          console.error("Failed to save course data:", error);
           return;
         }
-      } catch (error) {
-        console.error("Error saving article:", error);
-        return;
-      }
-    }
 
-    if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
+        // Then proceed with file processing
+        if (selectedFiles.length > 0) {
+          const formData = new FormData();
+          selectedFiles.forEach((file) => {
+            formData.append("files", file);
+          });
+          formData.append("prompt", textPrompt);
+          formData.append("skill_level", skillLevel.toString());
+          formData.append("teaching_pattern", JSON.stringify(selectedMethods));
+        }
+        
+        onOpenChange(false);
+      } catch (error) {
+        console.error("Error in handleNext:", error);
+      }
+    } else {
+      setCurrentStep((prev) => prev + 1);
     }
   };
+
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -207,7 +197,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
               Next
             </Button>
           ) : (
-            <Button onClick={handleComplete}>Complete</Button>
+            <Button onClick={handleNext}>Complete</Button>
           )}
         </div>
       </DialogContent>
