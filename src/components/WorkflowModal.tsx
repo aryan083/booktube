@@ -17,6 +17,7 @@ import StepFour from "./steps/StepFour";
 import StepFive from "./steps/StepFive";
 import { appendArticle } from "@/services/AppendArticle";
 import { createCourse } from "@/services/courseService";
+import { sendPdfToGemini } from "@/services/pdfService";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface WorkflowModalProps {
@@ -34,6 +35,22 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const [selectedMethods, setSelectedMethods] = useState<string[]>([]);
   const [skillLevel, setSkillLevel] = useState(1);
   const [welcomeMessage, setWelcomeMessage] = useState("");
+  const [technicalTerms, setTechnicalTerms] = useState<Array<{ name: string; color: string }>>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Array of distinct colors for pills
+  const pillColors = [
+    "#FF6B6B",  // Red
+    "#4ECDC4",  // Teal
+    "#45B7D1",  // Blue
+    "#96CEB4",  // Green
+    "#FFEEAD",  // Yellow
+    "#D4A5A5",  // Pink
+    "#9B59B6",  // Purple
+    "#3498DB",  // Light Blue
+    "#E67E22",  // Orange
+    "#2ECC71"   // Emerald
+  ];
 
   // const { toast } = useToast();
   const { user } = useAuth();
@@ -49,14 +66,60 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
     }
   }, [open]);
 
-  // Set welcome message only when modal is opened
-  useEffect(() => {
-    if (open && !welcomeMessage) {
-      setWelcomeMessage(
-        "Welcome to your learning journey! Let's make this an exciting and productive experience. 🚀"
-      );
+  const processPdfFile = async (file: File) => {
+    try {
+      if (!file) {
+        console.error('No file provided');
+        return;
+      }
+
+      setIsProcessing(true);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await sendPdfToGemini(formData);
+      
+      if (response) {
+        setWelcomeMessage(response.welcome_message || '');
+        
+        // Extract all terms from the keywords response
+        const { technical_terms = [], skills = [], technologies = [] } = response.keywords || {};
+        
+        // Combine all terms into a single array
+        const allTerms = [
+          ...technical_terms,
+          ...skills,
+          ...technologies
+        ]
+        .map(term => term.trim())
+        .filter(term => term.length > 0);
+
+        // Remove duplicates and map to objects with colors
+        const uniqueTerms = Array.from(new Set(allTerms))
+          .map((term, index) => ({
+            name: term,
+            color: pillColors[index % pillColors.length]
+          }));
+
+        setTechnicalTerms(uniqueTerms);
+      }
+    } catch (error) {
+      console.error('Error processing PDF:', error);
+      setWelcomeMessage('Error processing your PDF. Please try again.');
+      setTechnicalTerms([]);
+    } finally {
+      setIsProcessing(false);
     }
-  }, [open, welcomeMessage]);
+  };
+
+  useEffect(() => {
+    if (selectedFiles.length > 1 && selectedFiles[1]) {
+      console.log('Selected files changed, processing course PDF...');
+      // Process only the course PDF (index 1)
+      processPdfFile(selectedFiles[1]);
+    }
+  }, [selectedFiles]);
+
 
   const handleNext = async () => {
     if (currentStep === 5) {
@@ -129,7 +192,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           animate-in fade-in-0 zoom-in-95
           p-5
           flex flex-col
-        "
+        " 
       >
         <DialogHeader className="mb-0">
           <DialogTitle className="text-2xl font-bold text-white text-center">
@@ -163,6 +226,8 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             <StepThree
               className="animate-in fade-in-50"
               welcomeMessage={welcomeMessage}
+              technicalTerms={technicalTerms}
+              isProcessing={isProcessing}
             />
           )}
           {currentStep === 4 && (

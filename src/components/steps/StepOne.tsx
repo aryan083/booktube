@@ -104,7 +104,7 @@ const StepOne: React.FC<StepOneProps> = ({
     reader.readAsArrayBuffer(file);
   };
 
-  const MAX_FILE_SIZE = 10; // Maximum file size in MB
+  const MAX_FILE_SIZE = 100; // Maximum file size in MB
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, index: number) => {

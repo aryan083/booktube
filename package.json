@@ -50,6 +50,7 @@
     "@tensorflow/tfjs-backend-webgl": "^4.22.0",
     "@tensorflow/tfjs-converter": "^4.22.0",
     "@types/dropzone": "^5.7.9",
+    "axios": "^1.8.1",
     "blendy": "^0.0.1",
     "booktube": "file:",
     "class-variance-authority": "^0.7.1",
