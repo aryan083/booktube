@@ -15,7 +15,7 @@ export function GlowingEffectDemo() {
         title="Do things the right way"
         description="Running out of copy so I'll write anything."
         cardStyle={{
-          backgroundColor: "#FF1744",
+          backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
@@ -27,7 +27,7 @@ export function GlowingEffectDemo() {
         title="The best AI code editor ever."
         description="Yes, it's true. I'm not even kidding. Ask my mom if you don't believe me."
         cardStyle={{
-          backgroundColor: "#1DE9B6",
+          backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#000",
         }}
@@ -40,7 +40,7 @@ export function GlowingEffectDemo() {
         title="You should buy Aceternity UI Pro"
         description="It's the best money you'll ever spend"
         cardStyle={{
-          backgroundColor: "#2979FF",
+          backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
@@ -53,7 +53,7 @@ export function GlowingEffectDemo() {
         title="This card is also built by Cursor"
         description="I'm not even kidding. Ask my mom if you don't believe me."
         cardStyle={{
-          backgroundColor: "#FFEA00",
+          backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#000",
         }}
@@ -66,7 +66,7 @@ export function GlowingEffectDemo() {
         title="Coming soon on Aceternity UI"
         description="I'm writing the code as I record this, no shit."
         cardStyle={{
-          backgroundColor: "#AA00FF",
+          backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
