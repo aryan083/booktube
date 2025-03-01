@@ -136,6 +136,12 @@ const GridItem = ({
         createPortal(
           <Modal
             {...{
+              area,
+              icon,
+              title,
+              description,
+              cardStyle,
+              backgroundImage,
               id,
               onClose: () => {
                 blendy.current?.untoggle(id, () => {
@@ -207,7 +213,16 @@ interface ModalProps {
 }
 
 // Fix Modal component definition to use proper props
-function Modal({ id, onClose }: ModalProps) {
+function Modal({
+  id,
+  onClose,
+  area,
+  icon,
+  title,
+  description,
+  cardStyle,
+  backgroundImage,
+}: ModalProps & Omit<GridItemProps, "area"> & { area: string }) {
   useEffect(() => {
     console.log("Modal mounted with ID:", id);
     return () => {
@@ -216,88 +231,85 @@ function Modal({ id, onClose }: ModalProps) {
   }, [id]);
 
   return (
-    <div className="modal" data-blendy-to={id}>
+    <div
+      className="modal"
+      data-blendy-to={id}
+      style={{
+        backgroundColor: cardStyle.backgroundColor,
+      }}
+    >
       <div>
         <div className="modal__header">
-          <h2 className="modal__title">BookTube</h2>
-          <button className="modal__close" onClick={onClose}></button>
+          <h2 className="modal__title flex items-center gap-2 text-lg">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            BookTube
+          </h2>
+          <button
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
         <div className="modal__content">
           <article className="text-black max-w-5xl mx-auto">
-            <h1 className="text-4xl font-extrabold mb-6 tracking-tight">
-              Blendy: Revolutionizing Web Animations
-            </h1>
-
-            <div className="space-y-8">
-              <section>
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  🚀 Transform Your Web Experience
-                </h2>
-                <p className="text-lg leading-relaxed mb-4">
-                  In the fast-paced world of modern web development, standing
-                  out is more crucial than ever. Blendy emerges as a
-                  game-changing solution, offering developers unprecedented
-                  control over element transitions with minimal effort.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  ⚡ Lightning-Fast Implementation
-                </h2>
-                <p className="text-lg leading-relaxed mb-4">
-                  Gone are the days of complex animation code and browser
-                  compatibility issues. With Blendy, you can implement stunning
-                  transitions in minutes, not hours. Our framework-agnostic
-                  approach means you can integrate Blendy seamlessly into any
-                  project, regardless of your tech stack.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  💡 Features That Matter
-                </h2>
-                <ul className="list-disc list-inside space-y-2 text-lg mb-4 ml-4">
-                  <li>Framework-agnostic architecture</li>
-                  <li>Butter-smooth transitions</li>
-                  <li>Minimal code footprint</li>
-                  <li>Extensive customization options</li>
-                  <li>Built-in performance optimization</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  🎯 Perfect For Every Project
-                </h2>
-                <p className="text-lg leading-relaxed mb-4">
-                  Whether you're building a cutting-edge web application, an
-                  interactive portfolio, or a corporate dashboard, Blendy adapts
-                  to your needs. Our flexible API allows for endless
-                  possibilities in animation design and implementation.
-                </p>
-              </section>
-
-              <blockquote className="border-l-4 border-gray-900 pl-4 my-6">
-                <p className="text-xl italic font-medium">
-                  "Blendy has transformed how we think about web animations.
-                  It's not just a tool; it's a revolution in user experience
-                  design."
-                </p>
-              </blockquote>
-
-              <section className="bg-gray-50 p-6 rounded-lg">
-                <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                  🚀 Get Started Today
-                </h2>
-                <p className="text-lg leading-relaxed">
-                  Join thousands of developers who have already discovered the
-                  power of Blendy. Transform your web applications into dynamic,
-                  engaging experiences that users love. The future of web
-                  animations is here – and it's more accessible than ever.
-                </p>
-              </section>
+            <div
+              className="relative rounded-xl overflow-hidden mb-6"
+              style={{
+                backgroundImage: backgroundImage
+                  ? `url(${backgroundImage})`
+                  : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                height: "300px",
+              }}
+            />
+            <div className="space-y-6 px-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg" style={cardStyle}>
+                  {icon}
+                </div>
+                <h1 className="text-3xl font-bold">{title}</h1>
+              </div>
+              <div className="prose prose-lg">
+                <p className="text-gray-700">{description}</p>
+              </div>
+              <div className="flex gap-4">
+                <div className="px-4 py-2 rounded-lg text-sm" style={cardStyle}>
+                  View Details
+                </div>
+                <div className="px-4 py-2 rounded-lg text-sm border border-current">
+                  Share
+                </div>
+              </div>
             </div>
           </article>
         </div>

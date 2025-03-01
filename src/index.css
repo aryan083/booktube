@@ -210,7 +210,7 @@ button:hover {
   width: calc(100%  );
   height: 100%;
   /* max-width: ; */
-  background: rgb(82, 164, 94);
+  /* background: rgb(82, 164, 94); */
   border-radius: 0px;
   padding: 30px 30px; 
   z-index: 1000000;
