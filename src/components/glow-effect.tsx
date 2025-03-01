@@ -1,9 +1,15 @@
 "use client";
 
-import { Box, Lock, Search, Settings, Sparkles } from "lucide-react";
+import { Box, Lock, Moon, Search, Settings, Sparkles, Sun } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Blendy, createBlendy } from "blendy";
 import { useEffect, useId, useRef, useState } from "react";
+import {
+  extractColorsFromImage,
+  ColorPalette,
+  generateThemePalette,
+  ColorMode,
+} from "@/utils/materialColorUtils";
 import { createPortal } from "react-dom";
 
 export function GlowingEffectDemo() {
@@ -222,148 +228,8 @@ interface ModalProps {
   onClose: React.MouseEventHandler<HTMLElement>;
 }
 
-// Color extraction utility functions
-interface ExtractedColors {
-  primary: string;
-  secondary: string;
-  textColor: string;
-  accentColor: string;
-}
-
-const getContrastYIQ = (hexcolor: string): number => {
-  // Convert hex to RGB
-  hexcolor = hexcolor.replace("#", "");
-  if (hexcolor.length === 3) {
-    hexcolor =
-      hexcolor[0] +
-      hexcolor[0] +
-      hexcolor[1] +
-      hexcolor[1] +
-      hexcolor[2] +
-      hexcolor[2];
-  }
-
-  const r = parseInt(hexcolor.substring(0, 2), 16);
-  const g = parseInt(hexcolor.substring(2, 4), 16);
-  const b = parseInt(hexcolor.substring(4, 6), 16);
-
-  // Calculate YIQ ratio (brightness)
-  return (r * 299 + g * 587 + b * 114) / 1000;
-};
-
-const getTextColor = (bgColor: string): string => {
-  // Determine if text should be light or dark based on background color
-  return getContrastYIQ(bgColor) >= 128 ? "#000000" : "#ffffff";
-};
-
-const extractColorsFromImage = (imageUrl: string): Promise<ExtractedColors> => {
-  return new Promise((resolve) => {
-    // Default colors in case extraction fails
-    const defaultColors: ExtractedColors = {
-      primary: "#2979FF",
-      secondary: "#1A237E",
-      textColor: "#ffffff",
-      accentColor: "#FF9800",
-    };
-
-    if (!imageUrl) {
-      resolve(defaultColors);
-      return;
-    }
-
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          resolve(defaultColors);
-          return;
-        }
-
-        // Scale down for performance
-        const scaleFactor = Math.min(1, 100 / Math.max(img.width, img.height));
-        canvas.width = img.width * scaleFactor;
-        canvas.height = img.height * scaleFactor;
-
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        const imageData = ctx.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        ).data;
-        const colorCounts: Record<string, number> = {};
-
-        // Sample pixels to find dominant colors
-        for (let i = 0; i < imageData.length; i += 16) {
-          const r = imageData[i];
-          const g = imageData[i + 1];
-          const b = imageData[i + 2];
-
-          // Skip transparent pixels
-          if (imageData[i + 3] < 128) continue;
-
-          // Convert to hex and count occurrences
-          const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b)
-            .toString(16)
-            .slice(1)}`;
-          colorCounts[hex] = (colorCounts[hex] || 0) + 1;
-        }
-
-        // Sort colors by frequency
-        const sortedColors = Object.entries(colorCounts)
-          .sort((a, b) => b[1] - a[1])
-          .map((entry) => entry[0]);
-
-        if (sortedColors.length > 0) {
-          const primary = sortedColors[0];
-          // Find a contrasting secondary color
-          const secondary =
-            sortedColors.find((color) => {
-              const contrast = Math.abs(
-                getContrastYIQ(color) - getContrastYIQ(primary)
-              );
-              return contrast > 50;
-            }) || sortedColors[Math.min(1, sortedColors.length - 1)];
-
-          // Find an accent color that stands out
-          const accentColor =
-            sortedColors.find((color) => {
-              const contrast = Math.abs(
-                getContrastYIQ(color) - getContrastYIQ(primary)
-              );
-              return contrast > 100;
-            }) || sortedColors[Math.min(2, sortedColors.length - 1)];
-
-          const textColor = getTextColor(primary);
-
-          resolve({
-            primary,
-            secondary,
-            textColor,
-            accentColor,
-          });
-        } else {
-          resolve(defaultColors);
-        }
-      } catch (error) {
-        console.error("Error extracting colors:", error);
-        resolve(defaultColors);
-      }
-    };
-
-    img.onerror = () => {
-      console.error("Error loading image for color extraction");
-      resolve(defaultColors);
-    };
-
-    img.src = imageUrl;
-  });
-};
+// Import ExtractedColors interface from materialColorUtils.ts
+import { ExtractedColors, getTextColor } from "@/utils/materialColorUtils";
 
 // Fix Modal component definition to use proper props
 function Modal({
@@ -376,6 +242,8 @@ function Modal({
   cardStyle,
   backgroundImage,
 }: ModalProps & Omit<GridItemProps, "area"> & { area: string }) {
+  const [colorMode, setColorMode] = useState<ColorMode>("light");
+  const [themePalette, setThemePalette] = useState<ColorPalette | null>(null);
   const [extractedColors, setExtractedColors] = useState<ExtractedColors>({
     primary: (cardStyle.backgroundColor as string) || "#2979FF",
     secondary: cardStyle.backgroundColor as string,
@@ -383,13 +251,31 @@ function Modal({
     accentColor: "#FF9800",
   });
 
+  // Toggle between light and dark mode
+  const toggleColorMode = () => {
+    setColorMode(colorMode === "light" ? "dark" : "light");
+  };
+
   useEffect(() => {
     console.log("Modal mounted with ID:", id);
 
     // Extract colors from background image if available
     if (backgroundImage) {
+      // First get the extracted colors for the UI
       extractColorsFromImage(backgroundImage).then((colors) => {
         setExtractedColors(colors);
+
+        // Then generate a full theme palette with light/dark variants
+        import("@/utils/materialColorUtils").then(({ extractColors }) => {
+          extractColors(backgroundImage)
+            .then((colorHexes) => {
+              const palette = generateThemePalette(colorHexes);
+              setThemePalette(palette);
+            })
+            .catch((error) => {
+              console.error("Error generating theme palette:", error);
+            });
+        });
       });
     }
 
@@ -398,24 +284,40 @@ function Modal({
     };
   }, [id, backgroundImage]);
 
-  // Compute styles based on extracted colors
+  // Get the appropriate colors based on the current color mode
+  const getThemeColors = () => {
+    if (themePalette) {
+      return colorMode === "light" ? themePalette.light : themePalette.dark;
+    }
+    return null;
+  };
+
+  const themeColors = getThemeColors();
+
+  // Compute styles based on extracted colors or theme palette
   const modalStyle = {
-    backgroundColor: extractedColors.primary,
-    color: extractedColors.textColor,
+    backgroundColor: themeColors?.background || extractedColors.primary,
+    color: themeColors
+      ? getTextColor(themeColors.background)
+      : extractedColors.textColor,
   };
 
   const headerStyle = {
-    backgroundColor: extractedColors.primary,
-    color: extractedColors.textColor,
+    backgroundColor: themeColors?.background || extractedColors.primary,
+    color: themeColors
+      ? getTextColor(themeColors.secondary)
+      : extractedColors.secondary,
   };
 
   const buttonStyle = {
-    backgroundColor: extractedColors.accentColor,
-    color: getTextColor(extractedColors.accentColor),
+    backgroundColor: themeColors?.tertiary || extractedColors.accentColor,
+    color: themeColors
+      ? getTextColor(themeColors.tertiary)
+      : getTextColor(extractedColors.accentColor),
   };
 
   const textStyle = {
-    color: extractedColors.textColor === "#ffffff" ? "#e0e0e0" : "#303030",
+    color: modalStyle.color === "#ffffff" ? "#e0e0e0" : "#303030",
   };
 
   return (
@@ -429,7 +331,7 @@ function Modal({
               height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="currentColor"
+              stroke={modalStyle.color}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -437,29 +339,49 @@ function Modal({
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
-            BookTube
+            <span style={{ color: modalStyle.color }}>BookTube</span>
           </h2>
-          <button
-            className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
-            onClick={onClose}
-            aria-label="Close modal"
-            style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke={extractedColors.textColor}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="flex items-center gap-2">
+            {/* Theme toggle button */}
+            <button
+              className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
+              onClick={toggleColorMode}
+              aria-label={
+                colorMode === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+              }
+              style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
             >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+              {colorMode === "dark" ? (
+                <Sun className="h-4 w-4" style={{ color: modalStyle.color }} />
+              ) : (
+                <Moon className="h-4 w-4" style={{ color: modalStyle.color }} />
+              )}
+            </button>
+            {/* Close button */}
+            <button
+              className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
+              onClick={onClose}
+              aria-label="Close modal"
+              style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={modalStyle.color}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
         <div className="modal__content">
           <article className="max-w-5xl mx-auto" style={textStyle}>
@@ -479,13 +401,16 @@ function Modal({
                 <div
                   className="p-2 rounded-lg"
                   style={{
-                    backgroundColor: extractedColors.secondary,
-                    color: extractedColors.textColor,
+                    backgroundColor:
+                      themeColors?.secondary || extractedColors.secondary,
+                    color: themeColors
+                      ? getTextColor(themeColors.secondary)
+                      : extractedColors.textColor,
                   }}
                 >
                   {icon}
                 </div>
-                <h1 className="text-3xl font-bold">{title}</h1>
+                <h1 className="text-5xl font-bold">{title}</h1>
               </div>
               <div
                 className="prose prose-lg"
@@ -503,13 +428,34 @@ function Modal({
                 <div
                   className="px-4 py-2 rounded-lg text-sm border"
                   style={{
-                    borderColor: extractedColors.textColor,
-                    color: extractedColors.textColor,
+                    borderColor: modalStyle.color,
+                    color: modalStyle.color,
                   }}
                 >
                   Share
                 </div>
               </div>
+              {themePalette && (
+                <div
+                  className="mt-6 pt-6 border-t border-opacity-20"
+                  style={{ borderColor: modalStyle.color }}
+                >
+                  <h3 className="text-lg font-semibold mb-3">
+                    Material You Theme
+                  </h3>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    {Object.entries(themeColors || {}).map(([key, color]) => (
+                      <div key={key} className="flex flex-col items-center">
+                        <div
+                          className="w-10 h-10 rounded-full mb-1"
+                          style={{ backgroundColor: color }}
+                        />
+                        <span className="text-xs capitalize">{key}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </article>
         </div>

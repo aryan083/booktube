@@ -56,6 +56,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
+    "color-thief-node": "^1.0.4",
+    "colorthief": "^2.6.0",
     "date-fns": "^3.6.0",
     "dropzone": "^6.0.0-beta.2",
     "embla-carousel-react": "^8.3.0",
