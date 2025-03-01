@@ -36,7 +36,7 @@ function Home() {
   return (
     <div className="flex h-screen overflow-hidden">
       <AppSidebar onCreateClick={() => setModalOpen(true)} />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto scrollbar-hide">
         <SidebarInset>
           <div
             className={`w-full pt-2 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide ${

@@ -8,69 +8,69 @@ import { createPortal } from "react-dom";
 
 export function GlowingEffectDemo() {
   return (
-    <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 py-2">
+    <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 py-2 overflow-y-auto scrollbar-hide">
       <GridItem
         area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-        icon={<Box className="h-4 w-4" style={{ color: "#FFF" }} />}
-        title="Do things the right way"
-        description="Running out of copy so I'll write anything."
+        icon={<Box className="h-4 w-4" style={{ color: "#000" }} />}
+        title="Neural Networks Fundamentals"
+        description="Learn the core concepts of neural networks, including neurons, layers, and basic architectures."
         cardStyle={{
           backgroundColor: "none",
           border: "0.2px solid zinc",
-          color: "#FFF",
+          color: "#000",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1733044271325-3017e877218b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8Q0R3dXdYSkFiRXd8fGVufDB8fHx8fA%3D%3D"
+        backgroundImage="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=60"
       />
       <GridItem
         area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
         icon={<Settings className="h-4 w-4" style={{ color: "#FFF" }} />}
-        title="The best AI code editor ever."
-        description="Yes, it's true. I'm not even kidding. Ask my mom if you don't believe me."
+        title="Deep Learning Architecture Design"
+        description="Master the principles of designing and optimizing deep neural network architectures for various applications."
         cardStyle={{
           backgroundColor: "none",
           border: "0.2px solid zinc",
-          color: "#000",
+          color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1676552676584-3ee0aef1bd39?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        backgroundImage="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=60"
       />
 
       <GridItem
         area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
-        icon={<Lock className="h-4 w-4" style={{ color: "#FFF" }} />}
-        title="You should buy Aceternity UI Pro"
-        description="It's the best money you'll ever spend"
+        icon={<Lock className="h-4 w-4" style={{ color: "#000" }} />}
+        title="Computer Vision Applications"
+        description="Explore image processing, object detection, and visual recognition using deep learning techniques."
         cardStyle={{
           backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1739372425262-1642d83a10c5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDI2fENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D"
+        backgroundImage="https://images.unsplash.com/photo-1527430253228-e93688616381?w=800&auto=format&fit=crop&q=60"
       />
 
       <GridItem
         area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
-        icon={<Sparkles className="h-4 w-4" style={{ color: "#000" }} />}
-        title="This card is also built by Cursor"
-        description="I'm not even kidding. Ask my mom if you don't believe me."
+        icon={<Sparkles className="h-4 w-4" style={{ color: "#FFF" }} />}
+        title="Natural Language Processing"
+        description="Discover text analysis, language understanding, and generation using advanced NLP models."
+        cardStyle={{
+          backgroundColor: "none",
+          border: "0.2px solid zinc",
+          color: "#FFF",
+        }}
+        backgroundImage="https://images.unsplash.com/photo-1555952494-efd681c7e3f9?w=800&auto=format&fit=crop&q=60"
+      />
+
+      <GridItem
+        area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
+        icon={<Search className="h-4 w-4" style={{ color: "#000" }} />}
+        title="Reinforcement Learning Basics"
+        description="Learn about agents, environments, and reward systems in reinforcement learning applications."
         cardStyle={{
           backgroundColor: "none",
           border: "0.2px solid zinc",
           color: "#000",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1735919828689-6f300b3b194d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDIyfENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D"
-      />
-
-      <GridItem
-        area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-        icon={<Search className="h-4 w-4" style={{ color: "#FFF" }} />}
-        title="Coming soon on Aceternity UI"
-        description="I'm writing the code as I record this, no shit."
-        cardStyle={{
-          backgroundColor: "none",
-          border: "0.2px solid zinc",
-          color: "#FFF",
-        }}
-        backgroundImage="https://images.unsplash.com/photo-1692607038343-8b811ec1fc55?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDM4fENEd3V3WEpBYkV3fHxlbnwwfHx8fHw%3D"
+        backgroundImage="https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=800&auto=format&fit=crop&q=60"
       />
     </ul>
   );
@@ -128,7 +128,22 @@ const GridItem = ({
 
   useEffect(() => {
     blendy.current = createBlendy({ animation: "dynamic" });
-  }, []);
+
+    // Cleanup function
+    return () => {
+      if (showModal) {
+        blendy.current?.untoggle(id, () => {
+          setShowModal(false);
+        });
+      }
+    };
+  }, []); // Empty dependency array since we only want to run this once
+
+  const handleModalClose = () => {
+    blendy.current?.untoggle(id, () => {
+      setShowModal(false);
+    });
+  };
 
   return (
     <li className={`min-h-[14rem] list-none ${area}`}>
@@ -143,11 +158,7 @@ const GridItem = ({
               cardStyle,
               backgroundImage,
               id,
-              onClose: () => {
-                blendy.current?.untoggle(id, () => {
-                  setShowModal(false);
-                });
-              },
+              onClose: handleModalClose,
             }}
           />,
           document.body
@@ -159,7 +170,6 @@ const GridItem = ({
         style={outerCardStyle}
         onClick={() => {
           setShowModal(true);
-          console.log("Hello there ", id);
           blendy.current?.toggle(id);
         }}
       >
@@ -188,7 +198,7 @@ const GridItem = ({
             <div className="w-fit rounded-lg border border-gray-600 p-2 ">
               {icon}
             </div>
-            <div className="space-y-3">
+            <div className="">
               <h3 className="pt-0.5 text-xl/[1.375rem] font-semibold font-sans -tracking-4 md:text-2xl/[1.875rem] text-balance">
                 {title}
               </h3>
@@ -196,7 +206,7 @@ const GridItem = ({
                 className="[&_b]:md:font-semibold [&_strong]:md:font-semibold font-sans text-sm/[1.125rem] 
               md:text-base/[1.375rem] "
               >
-                {description}
+                {/* {description} */}
               </h2>
             </div>
           </div>
