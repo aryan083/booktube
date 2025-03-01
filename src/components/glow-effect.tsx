@@ -2,6 +2,9 @@
 
 import { Box, Lock, Search, Settings, Sparkles } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { Blendy, createBlendy } from "blendy";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export function GlowingEffectDemo() {
   return (
@@ -18,7 +21,6 @@ export function GlowingEffectDemo() {
         }}
         backgroundImage="https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
       />
-
       <GridItem
         area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
         icon={<Settings className="h-4 w-4" style={{ color: "#FFF" }} />}
@@ -117,12 +119,43 @@ const GridItem = ({
     ...cardStyle,
     backgroundColor: darkenColor(cardStyle.backgroundColor as string, 0.9999),
   };
+  const blendy = useRef<Blendy | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const rawId = useId();
+  // Create a valid ID by removing colons and other invalid characters
+  const id = rawId.replace(/:/g, "_");
+
+  useEffect(() => {
+    blendy.current = createBlendy({ animation: "dynamic" });
+  }, []);
 
   return (
     <li className={`min-h-[14rem] list-none ${area}`}>
+      {showModal &&
+        createPortal(
+          <Modal
+            {...{
+              id,
+              onClose: () => {
+                blendy.current?.untoggle(id, () => {
+                  setShowModal(false);
+                });
+              },
+            }}
+          />,
+          document.body
+        )}
+
       <div
-        className="relative h-full rounded-2.5xl border  p-2  md:rounded-3xl md:p-3"
+        className="relative h-full rounded-2.5xl border p-2 md:rounded-3xl md:p-3"
+        data-blendy-from={id}
         style={outerCardStyle}
+        onClick={() => {
+          setShowModal(true);
+          console.log("Hello there ", id);
+          blendy.current?.toggle(id);
+        }}
       >
         <GlowingEffect
           spread={40}
@@ -166,3 +199,109 @@ const GridItem = ({
     </li>
   );
 };
+
+// Define proper interface for Modal props
+interface ModalProps {
+  id: string;
+  onClose: React.MouseEventHandler<HTMLElement>;
+}
+
+// Fix Modal component definition to use proper props
+function Modal({ id, onClose }: ModalProps) {
+  useEffect(() => {
+    console.log("Modal mounted with ID:", id);
+    return () => {
+      console.log("Modal unmounting with ID:", id);
+    };
+  }, [id]);
+
+  return (
+    <div className="modal" data-blendy-to={id}>
+      <div>
+        <div className="modal__header">
+          <h2 className="modal__title">BookTube</h2>
+          <button className="modal__close" onClick={onClose}></button>
+        </div>
+        <div className="modal__content">
+          <article className="text-black max-w-5xl mx-auto">
+            <h1 className="text-4xl font-extrabold mb-6 tracking-tight">
+              Blendy: Revolutionizing Web Animations
+            </h1>
+
+            <div className="space-y-8">
+              <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">
+                  🚀 Transform Your Web Experience
+                </h2>
+                <p className="text-lg leading-relaxed mb-4">
+                  In the fast-paced world of modern web development, standing
+                  out is more crucial than ever. Blendy emerges as a
+                  game-changing solution, offering developers unprecedented
+                  control over element transitions with minimal effort.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">
+                  ⚡ Lightning-Fast Implementation
+                </h2>
+                <p className="text-lg leading-relaxed mb-4">
+                  Gone are the days of complex animation code and browser
+                  compatibility issues. With Blendy, you can implement stunning
+                  transitions in minutes, not hours. Our framework-agnostic
+                  approach means you can integrate Blendy seamlessly into any
+                  project, regardless of your tech stack.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">
+                  💡 Features That Matter
+                </h2>
+                <ul className="list-disc list-inside space-y-2 text-lg mb-4 ml-4">
+                  <li>Framework-agnostic architecture</li>
+                  <li>Butter-smooth transitions</li>
+                  <li>Minimal code footprint</li>
+                  <li>Extensive customization options</li>
+                  <li>Built-in performance optimization</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">
+                  🎯 Perfect For Every Project
+                </h2>
+                <p className="text-lg leading-relaxed mb-4">
+                  Whether you're building a cutting-edge web application, an
+                  interactive portfolio, or a corporate dashboard, Blendy adapts
+                  to your needs. Our flexible API allows for endless
+                  possibilities in animation design and implementation.
+                </p>
+              </section>
+
+              <blockquote className="border-l-4 border-gray-900 pl-4 my-6">
+                <p className="text-xl italic font-medium">
+                  "Blendy has transformed how we think about web animations.
+                  It's not just a tool; it's a revolution in user experience
+                  design."
+                </p>
+              </blockquote>
+
+              <section className="bg-gray-50 p-6 rounded-lg">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">
+                  🚀 Get Started Today
+                </h2>
+                <p className="text-lg leading-relaxed">
+                  Join thousands of developers who have already discovered the
+                  power of Blendy. Transform your web applications into dynamic,
+                  engaging experiences that users love. The future of web
+                  animations is here – and it's more accessible than ever.
+                </p>
+              </section>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  );
+}
