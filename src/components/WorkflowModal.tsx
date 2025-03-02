@@ -2,23 +2,24 @@ import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  // DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogOverlay,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Toast } from "@/components/ui/toast";
+// import { Toast } from "@/components/ui/toast";
 import Stepper from "./Stepper";
 import StepOne from "./steps/StepOne";
 import StepTwo from "./steps/StepTwo";
 import StepThree from "./steps/StepThree";
 import StepFour from "./steps/StepFour";
 import StepFive from "./steps/StepFive";
-import { appendArticle } from "@/services/AppendArticle";
+// import { appendArticle } from "@/services/AppendArticle";
 import { createCourse } from "@/services/courseService";
 import { sendPdfToGemini } from "@/services/pdfService";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface WorkflowModalProps {
   open: boolean;
@@ -29,6 +30,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   open,
   onOpenChange,
 }) => {
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [textPrompt, setTextPrompt] = useState("");
@@ -36,26 +38,25 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const [skillLevel, setSkillLevel] = useState(1);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [courseTitle, setCourseTitle] = useState("");
-  const [technicalTerms, setTechnicalTerms] = useState<Array<{ name: string; color: string }>>([]);
+  const [technicalTerms, setTechnicalTerms] = useState<
+    Array<{ name: string; color: string }>
+  >([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Array of distinct colors for pills
   const pillColors = [
-    "#FF6B6B",  // Red
-    "#4ECDC4",  // Teal
-    "#45B7D1",  // Blue
-    "#96CEB4",  // Green
-    "#FFEEAD",  // Yellow
-    "#D4A5A5",  // Pink
-    "#9B59B6",  // Purple
-    "#3498DB",  // Light Blue
-    "#E67E22",  // Orange
-    "#2ECC71"   // Emerald
+    "#FF6B6B", // Red
+    "#4ECDC4", // Teal
+    "#45B7D1", // Blue
+    "#96CEB4", // Green
+    "#FFEEAD", // Yellow
+    "#D4A5A5", // Pink
+    "#9B59B6", // Purple
+    "#3498DB", // Light Blue
+    "#E67E22", // Orange
+    "#2ECC71", // Emerald
   ];
-
-  // const { toast } = useToast();
   const { user } = useAuth();
-
   // Reset all state when modal is closed
   useEffect(() => {
     if (!open) {
@@ -70,43 +71,44 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const processPdfFile = async (file: File) => {
     try {
       if (!file) {
-        console.error('No file provided');
+        console.error("No file provided");
         return;
       }
 
       setIsProcessing(true);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       const response = await sendPdfToGemini(formData);
-      
+
       if (response) {
-        setWelcomeMessage(response.welcome_message || '');
-        setCourseTitle(response.course_title || '');
+        setWelcomeMessage(response.welcome_message || "");
+        setCourseTitle(response.course_title || "");
         // Extract all terms from the keywords response
-        const { technical_terms = [], skills = [], technologies = [] } = response.keywords || {};
-        
+        const {
+          technical_terms = [],
+          skills = [],
+          technologies = [],
+        } = response.keywords || {};
+
         // Combine all terms into a single array
-        const allTerms = [
-          ...technical_terms,
-          ...skills,
-          ...technologies
-        ]
-        .map(term => term.trim())
-        .filter(term => term.length > 0);
+        const allTerms = [...technical_terms, ...skills, ...technologies]
+          .map((term) => term.trim())
+          .filter((term) => term.length > 0);
 
         // Remove duplicates and map to objects with colors
-        const uniqueTerms = Array.from(new Set(allTerms))
-          .map((term, index) => ({
+        const uniqueTerms = Array.from(new Set(allTerms)).map(
+          (term, index) => ({
             name: term,
-            color: pillColors[index % pillColors.length]
-          }));
+            color: pillColors[index % pillColors.length],
+          })
+        );
 
         setTechnicalTerms(uniqueTerms);
       }
     } catch (error) {
-      console.error('Error processing PDF:', error);
-      setWelcomeMessage('Error processing your PDF. Please try again.');
+      console.error("Error processing PDF:", error);
+      setWelcomeMessage("Error processing your PDF. Please try again.");
       setTechnicalTerms([]);
     } finally {
       setIsProcessing(false);
@@ -115,32 +117,36 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
   useEffect(() => {
     if (selectedFiles.length > 1 && selectedFiles[1]) {
-      console.log('Selected files changed, processing course PDF...');
+      console.log("Selected files changed, processing course PDF...");
       // Process only the course PDF (index 1)
       processPdfFile(selectedFiles[1]);
     }
   }, [selectedFiles]);
-
 
   const handleNext = async () => {
     if (currentStep === 5) {
       try {
         // First, save the course data to Supabase with only the required fields
         const courseData = {
-          course_name: courseTitle, // Leave empty for now
-          tags: {}, // Leave empty for now
-          metadata: '', // Leave empty
-          chapters_json: {}, // Leave empty
+          course_name: courseTitle,
+          tags: {},
+          metadata: "",
+          chapters_json: {},
           skill_level: skillLevel,
-          teaching_pattern: selectedMethods, // Only store the selected methods
+          teaching_pattern: selectedMethods,
           user_prompt: textPrompt,
-          progress: 0 // Initial progress
+          progress: 0,
         };
 
         const { error } = await createCourse(courseData);
-        
+
         if (error) {
           console.error("Failed to save course data:", error);
+          toast({
+            title: "Error",
+            description: "Failed to create course. Please try again.",
+            variant: "destructive",
+          });
           return;
         }
 
@@ -154,10 +160,22 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           formData.append("skill_level", skillLevel.toString());
           formData.append("teaching_pattern", JSON.stringify(selectedMethods));
         }
-        
+        toast({
+          title: "Success",
+          description: `Course "${courseTitle}" created successfully!`,
+          variant: "default",
+          className:
+            "text-green-500 [&>div>div:first-child]:text-green-500 [&>div>div:last-child]:text-white",
+        });
+
         onOpenChange(false);
       } catch (error) {
         console.error("Error in handleNext:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
       }
     } else {
       setCurrentStep((prev) => prev + 1);
@@ -193,7 +211,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           animate-in fade-in-0 zoom-in-95
           p-5
           flex flex-col
-        " 
+        "
       >
         <DialogHeader className="mb-0">
           <DialogTitle className="text-2xl font-bold text-white text-center">

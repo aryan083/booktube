@@ -5,7 +5,7 @@ import "dropzone/dist/dropzone.css";
 import App from "./App.tsx";
 import "preline";
 import { IStaticMethods } from "preline/preline";
-import Dropzone from "dropzone";
+// import Dropzone from "dropzone";
 
 declare global {
   interface Window {
