@@ -127,7 +127,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       try {
         // First, save the course data to Supabase with only the required fields
         const courseData = {
-          course_name: '', // Leave empty for now
+          course_name: courseTitle, // Leave empty for now
           tags: {}, // Leave empty for now
           metadata: '', // Leave empty
           chapters_json: {}, // Leave empty
