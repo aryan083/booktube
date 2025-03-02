@@ -63,7 +63,7 @@ export function GlowingEffectDemo() {
           border: "0.2px solid zinc",
           color: "#FFF",
         }}
-        backgroundImage="https://images.unsplash.com/photo-1555952494-efd681c7e3f9?w=800&auto=format&fit=crop&q=60"
+        backgroundImage="https://images.unsplash.com/photo-1527430253228-e93688616381?w=800&auto=format&fit=crop&q=60"
       />
 
       <GridItem

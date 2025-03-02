@@ -146,7 +146,7 @@ function App() {
         <Router>
           <AuthProvider>
             <SidebarProvider>
-              <div className="relative flex min-h-screen flex-col">
+              <div className="relative flex min-h-screen ">
                 <div className="flex-1">
                   <MainContent />
                 </div>
