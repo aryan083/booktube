@@ -8,12 +8,11 @@ const Index = () => {
     <div className="min-h-screen bg-black">
       <Navbar />
       <SidebarProvider>
-        <div className="flex min-h-screen pt-16">
-          <CourseSidebar />
-          <main className=" bg-black w-100">
-            <CourseContent />
-          </main>
-        </div>
+        {/* <div className="flex min-h-screen "> */}
+        <CourseSidebar />
+
+        <CourseContent />
+        {/* </div> */}
       </SidebarProvider>
     </div>
   );

@@ -1,12 +1,12 @@
-import { 
-  Video, 
-  BookOpen, 
-  CheckSquare, 
-  ChevronDown, 
-  ChevronRight, 
-  BarChart, 
+import {
+  Video,
+  BookOpen,
+  CheckSquare,
+  ChevronDown,
+  ChevronRight,
+  // BarChart,
   Beaker,
-  ClipboardCheck 
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { chapters } from "./CourseSidebar";
@@ -14,13 +14,13 @@ import { useState } from "react";
 
 const getContentTypeIcon = (type: string) => {
   switch (type) {
-    case 'video':
+    case "video":
       return <Video className="h-4 w-4 text-gray-500" />;
-    case 'reading':
+    case "reading":
       return <BookOpen className="h-4 w-4 text-gray-500" />;
-    case 'quiz':
+    case "quiz":
       return <ClipboardCheck className="h-4 w-4 text-gray-500" />;
-    case 'lab':
+    case "lab":
       return <Beaker className="h-4 w-4 text-gray-500" />;
     default:
       return <Video className="h-4 w-4 text-gray-500" />;
@@ -32,19 +32,31 @@ const chapterContent = [
     title: "Stay informed about AI",
     expanded: true,
     items: [
-      { title: "Introduction to AI Fundamentals", type: "video", duration: "5 min" },
-      { title: "Understanding AI Concepts", type: "reading", duration: "10 min" },
+      {
+        title: "Introduction to AI Fundamentals",
+        type: "video",
+        duration: "5 min",
+      },
+      {
+        title: "Understanding AI Concepts",
+        type: "reading",
+        duration: "10 min",
+      },
       { title: "AI Foundations Quiz", type: "quiz", duration: "15 min" },
       { title: "Hands-on AI Lab", type: "lab", duration: "30 min" },
-    ]
+    ],
   },
   {
     title: "Learn from AI Innovation",
     items: [
       { title: "AI Use Cases in Industry", type: "video", duration: "8 min" },
-      { title: "Case Study: AI Implementation", type: "reading", duration: "15 min" },
+      {
+        title: "Case Study: AI Implementation",
+        type: "reading",
+        duration: "15 min",
+      },
       { title: "AI Innovation Assessment", type: "quiz", duration: "20 min" },
-    ]
+    ],
   },
   {
     title: "Continue your AI Journey",
@@ -52,26 +64,33 @@ const chapterContent = [
       { title: "Advanced AI Concepts", type: "video", duration: "10 min" },
       { title: "Future of AI", type: "reading", duration: "12 min" },
       { title: "Course Feedback", type: "survey", duration: "5 min" },
-    ]
-  }
+    ],
+  },
 ];
 
 export const CourseContent = () => {
-  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
-    "Stay informed about AI": true
+  const [expandedSections, setExpandedSections] = useState<{
+    [key: string]: boolean;
+  }>({
+    "Stay informed about AI": true,
   });
 
-  const currentChapter = chapters.find(chapter => chapter.current) || chapters[0];
-  
+  const currentChapter =
+    chapters.find((chapter) => chapter.current) || chapters[0];
+
   const chapterProgress = () => {
-    const completedTopics = currentChapter.subtopics.filter(topic => topic.completed).length;
-    return Math.round((completedTopics / currentChapter.subtopics.length) * 100);
+    const completedTopics = currentChapter.subtopics.filter(
+      (topic) => topic.completed
+    ).length;
+    return Math.round(
+      (completedTopics / currentChapter.subtopics.length) * 100
+    );
   };
 
   const toggleSection = (title: string) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [title]: !prev[title]
+      [title]: !prev[title],
     }));
   };
 
@@ -82,8 +101,12 @@ export const CourseContent = () => {
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-medium text-white mb-1">{currentChapter.title}</h2>
-              <p className="text-sm text-gray-400">Master the fundamentals of {currentChapter.title}</p>
+              <h2 className="text-xl font-medium text-white mb-1">
+                {currentChapter.title}
+              </h2>
+              <p className="text-sm text-gray-400">
+                Master the fundamentals of {currentChapter.title}
+              </p>
             </div>
             <div className="h-1 w-32 bg-[#282828] rounded-full overflow-hidden">
               <div
@@ -112,35 +135,45 @@ export const CourseContent = () => {
       {/* Chapter Content Sections */}
       <div className="space-y-2">
         {chapterContent.map((section, sectionIndex) => (
-          <div key={sectionIndex} className="bg-[#050505] rounded-lg overflow-hidden">
-            <button 
+          <div
+            key={sectionIndex}
+            className="bg-[#050505] rounded-lg overflow-hidden"
+          >
+            <button
               onClick={() => toggleSection(section.title)}
               className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#282828] transition-colors"
             >
-              <span className="text-base font-medium text-white">{section.title}</span>
-              {expandedSections[section.title] ? 
-                <ChevronDown className="h-5 w-5 text-gray-400" /> : 
+              <span className="text-base font-medium text-white">
+                {section.title}
+              </span>
+              {expandedSections[section.title] ? (
+                <ChevronDown className="h-5 w-5 text-gray-400" />
+              ) : (
                 <ChevronRight className="h-5 w-5 text-gray-400" />
-              }
+              )}
             </button>
 
             {expandedSections[section.title] && (
               <div className="divide-y divide-[#282828]">
                 {section.items.map((item, itemIndex) => (
-                  <div 
+                  <div
                     key={itemIndex}
                     className="px-6 py-4 flex items-center justify-between hover:bg-[#282828] transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       {getContentTypeIcon(item.type)}
                       <div>
-                        <h4 className="text-sm font-medium text-white">{item.title}</h4>
+                        <h4 className="text-sm font-medium text-white">
+                          {item.title}
+                        </h4>
                         <p className="text-xs text-gray-500">
-                          {item.type.charAt(0).toUpperCase() + item.type.slice(1)} • {item.duration}
+                          {item.type.charAt(0).toUpperCase() +
+                            item.type.slice(1)}{" "}
+                          • {item.duration}
                         </p>
                       </div>
                     </div>
-                    <Button 
+                    <Button
                       size="sm"
                       className="bg-[#1E364D] hover:bg-[#254563] text-[#B4D0F3] text-xs px-4 py-1 rounded font-medium transition-colors"
                     >

@@ -73,7 +73,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "Courses",
+      title: "Ongoing Courses",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
@@ -160,9 +160,14 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "/design-engineering",
-      icon: Frame,
+      name: "Courses",
+      url: "/courses",
+      icon: BookOpen,
+    },
+    {
+      name: "History",
+      url: "/history",
+      icon: GalleryVerticalEnd,
     },
   ],
 };
@@ -292,16 +297,6 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                           <PlusCircle className="h-5 w-5 bg-none hover:bg-none " />
                           {/* <span>Create a Course</span> */}
                         </HoverBorderGradient>
-
-                        {/* 
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={onCreateClick}
-                        >
-                          <PlusCircle className="h-4 w-4" />
-                        </Button> */}
                       </TooltipTrigger>
                       <TooltipContent>Create New Project</TooltipContent>
                     </Tooltip>
@@ -309,10 +304,18 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                 </div>
               )}
             </SidebarHeader>
+            <NavProjects
+              projects={data.projects}
+              // className={`transition-all duration-500 ${
+              //   state === "collapsed"
+              //     ? "opacity-0 transform -translate-x-4"
+              //     : "opacity-100 transform translate-x-0"
+              // }`}
+            />
 
             <SidebarContent
               className={`
-                flex-1 px-2 py-4 overflow-y-auto
+                flex-1  py-2  overflow-y-auto
                 transition-all duration-500 ease-in-out
                 ${state === "collapsed" ? "opacity-100" : "opacity-100"}
               `}
@@ -328,16 +331,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                     }`}
                   />
                 </div>
-                <div className="mt-6 flex min-w-max items-center gap-2 overflow-hidden transition-all duration-500">
-                  <NavProjects
-                    projects={data.projects}
-                    className={`transition-all duration-500 ${
-                      state === "collapsed"
-                        ? "opacity-0 transform -translate-x-4"
-                        : "opacity-100 transform translate-x-0"
-                    }`}
-                  />
-                </div>
+                <div className="mt-6 flex min-w-max items-center gap-2 overflow-hidden transition-all duration-500"></div>
               </div>
             </SidebarContent>
 
