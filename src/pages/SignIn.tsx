@@ -171,7 +171,7 @@ export function SignInForm({
               </form>
               <div className="relative hidden md:block">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10" />
-                <div className="absolute inset-0 bg-[url('/images/auth-illustration.jpg')] bg-cover bg-center opacity-30" />
+                <div className="absolute inset-0  bg-cover bg-center opacity-30" />
                 <div className="relative h-full p-12 flex items-center justify-center">
                   <blockquote className="space-y-2">
                     <p className="text-lg">
