@@ -244,43 +244,50 @@ function Modal({
 }: ModalProps & Omit<GridItemProps, "area"> & { area: string }) {
   const [colorMode, setColorMode] = useState<ColorMode>("light");
   const [themePalette, setThemePalette] = useState<ColorPalette | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
   const [extractedColors, setExtractedColors] = useState<ExtractedColors>({
-    primary: (cardStyle.backgroundColor as string) || "#2979FF",
-    secondary: cardStyle.backgroundColor as string,
-    textColor: (cardStyle.color as string) || "#ffffff",
-    accentColor: "#FF9800",
+    primary: "#ffffff",
+    secondary: "#ffffff",
+    textColor: "#000000",
+    accentColor: "#ffffff",
   });
 
-  // Toggle between light and dark mode
   const toggleColorMode = () => {
     setColorMode(colorMode === "light" ? "dark" : "light");
   };
 
   useEffect(() => {
-    console.log("Modal mounted with ID:", id);
-
-    // Extract colors from background image if available
-    if (backgroundImage) {
-      // First get the extracted colors for the UI
-      extractColorsFromImage(backgroundImage).then((colors) => {
-        setExtractedColors(colors);
-
-        // Then generate a full theme palette with light/dark variants
-        import("@/utils/materialColorUtils").then(({ extractColors }) => {
-          extractColors(backgroundImage)
-            .then((colorHexes) => {
-              const palette = generateThemePalette(colorHexes);
-              setThemePalette(palette);
-            })
-            .catch((error) => {
-              console.error("Error generating theme palette:", error);
-            });
+    // First stage: Show white screen
+    const initialDelay = setTimeout(() => {
+      // Second stage: Extract colors
+      if (backgroundImage) {
+        extractColorsFromImage(backgroundImage).then((colors) => {
+          setExtractedColors(colors);
+          import("@/utils/materialColorUtils").then(({ extractColors }) => {
+            extractColors(backgroundImage)
+              .then((colorHexes) => {
+                const palette = generateThemePalette(colorHexes);
+                setThemePalette(palette);
+                setIsLoading(false);
+                // Third stage: Animate content
+                setTimeout(() => setShowContent(true), 50);
+              })
+              .catch((error) => {
+                console.error("Error generating theme palette:", error);
+                setIsLoading(false);
+                setTimeout(() => setShowContent(true), 50);
+              });
+          });
         });
-      });
-    }
+      } else {
+        setIsLoading(false);
+        setTimeout(() => setShowContent(true), 100);
+      }
+    }, 500); // Initial white screen delay
 
     return () => {
-      console.log("Modal unmounting with ID:", id);
+      clearTimeout(initialDelay);
     };
   }, [id, backgroundImage]);
 
@@ -321,144 +328,170 @@ function Modal({
   };
 
   return (
-    <div className="modal" data-blendy-to={id} style={modalStyle}>
-      <div>
-        <div className="modal__header" style={headerStyle}>
-          <h2 className="modal__title flex items-center gap-2 text-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke={modalStyle.color}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg>
-            <span style={{ color: modalStyle.color }}>BookTube</span>
-          </h2>
-          <div className="flex items-center gap-2">
-            {/* Theme toggle button */}
-            <button
-              className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
-              onClick={toggleColorMode}
-              aria-label={
-                colorMode === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
-              style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
-            >
-              {colorMode === "dark" ? (
-                <Sun className="h-4 w-4" style={{ color: modalStyle.color }} />
-              ) : (
-                <Moon className="h-4 w-4" style={{ color: modalStyle.color }} />
-              )}
-            </button>
-            {/* Close button */}
-            <button
-              className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
-              onClick={onClose}
-              aria-label="Close modal"
-              style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={modalStyle.color}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div className="modal__content">
-          <article className="max-w-5xl mx-auto" style={textStyle}>
-            <div
-              className="relative rounded-xl overflow-hidden mb-6"
-              style={{
-                backgroundImage: backgroundImage
-                  ? `url(${backgroundImage})`
-                  : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                height: "300px",
-              }}
-            />
-            <div className="space-y-6 px-4">
-              <div className="flex items-center gap-3">
-                <div
-                  className="p-2 rounded-lg"
-                  style={{
-                    backgroundColor:
-                      themeColors?.secondary || extractedColors.secondary,
-                    color: themeColors
-                      ? getTextColor(themeColors.secondary)
-                      : extractedColors.textColor,
-                  }}
+    <div
+      className="modal  z-flex items-center justify-center"
+      data-blendy-to={id}
+      style={{ backgroundColor: "#ffffff" }}
+    >
+      <div className="min-h-[80vh] w-full relative">
+        {!isLoading && (
+          <div
+            className={`transition-all allmodalcontent duration-100 transform ${
+              showContent
+                ? "translate-y-0 opacity-100"
+                : "translate-y-8 opacity-0"
+            }`}
+            style={modalStyle}
+          >
+            <div className="modal__header" style={headerStyle}>
+              <h2 className="modal__title flex items-center gap-2 text-lg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={modalStyle.color}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  {icon}
-                </div>
-                <h1 className="text-5xl font-bold">{title}</h1>
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span style={{ color: modalStyle.color }}>BookTube</span>
+              </h2>
+              <div className="flex items-center gap-2">
+                {/* Theme toggle button */}
+                <button
+                  className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
+                  onClick={toggleColorMode}
+                  aria-label={
+                    colorMode === "dark"
+                      ? "Switch to light mode"
+                      : "Switch to dark mode"
+                  }
+                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                >
+                  {colorMode === "dark" ? (
+                    <Sun
+                      className="h-4 w-4"
+                      style={{ color: modalStyle.color }}
+                    />
+                  ) : (
+                    <Moon
+                      className="h-4 w-4"
+                      style={{ color: modalStyle.color }}
+                    />
+                  )}
+                </button>
+                {/* Close button */}
+                <button
+                  className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-100 flex items-center justify-center"
+                  onClick={onClose}
+                  aria-label="Close modal"
+                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={modalStyle.color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
               </div>
-              <div
-                className="prose prose-lg"
-                style={{ color: "inherit", maxWidth: "100%" }}
-              >
-                <p style={{ color: "inherit" }}>{description}</p>
-              </div>
-              <div className="flex gap-4">
-                <div
-                  className="px-4 py-2 rounded-lg text-sm"
-                  style={buttonStyle}
-                >
-                  View Details
-                </div>
-                <div
-                  className="px-4 py-2 rounded-lg text-sm border"
-                  style={{
-                    borderColor: modalStyle.color,
-                    color: modalStyle.color,
-                  }}
-                >
-                  Share
-                </div>
-              </div>
-              {themePalette && (
-                <div
-                  className="mt-6 pt-6 border-t border-opacity-20"
-                  style={{ borderColor: modalStyle.color }}
-                >
-                  <h3 className="text-lg font-semibold mb-3">
-                    Material You Theme
-                  </h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                    {Object.entries(themeColors || {}).map(([key, color]) => (
-                      <div key={key} className="flex flex-col items-center">
-                        <div
-                          className="w-10 h-10 rounded-full mb-1"
-                          style={{ backgroundColor: color }}
-                        />
-                        <span className="text-xs capitalize">{key}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
-          </article>
-        </div>
+            <div className="modal__content">
+              <article className="max-w-5xl mx-auto" style={textStyle}>
+                <div
+                  className="relative rounded-xl overflow-hidden mb-6"
+                  style={{
+                    backgroundImage: backgroundImage
+                      ? `url(${backgroundImage})`
+                      : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    height: "300px",
+                  }}
+                />
+                <div className="space-y-6 px-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="p-2 rounded-lg"
+                      style={{
+                        backgroundColor:
+                          themeColors?.secondary || extractedColors.secondary,
+                        color: themeColors
+                          ? getTextColor(themeColors.secondary)
+                          : extractedColors.textColor,
+                      }}
+                    >
+                      {icon}
+                    </div>
+                    <h1 className="text-5xl font-bold">{title}</h1>
+                  </div>
+                  <div
+                    className="prose prose-lg"
+                    style={{ color: "inherit", maxWidth: "100%" }}
+                  >
+                    <p style={{ color: "inherit" }}>{description}</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div
+                      className="px-4 py-2 rounded-lg text-sm"
+                      style={buttonStyle}
+                    >
+                      View Details
+                    </div>
+                    <div
+                      className="px-4 py-2 rounded-lg text-sm border"
+                      style={{
+                        borderColor: modalStyle.color,
+                        color: modalStyle.color,
+                      }}
+                    >
+                      Share
+                    </div>
+                  </div>
+                  {themePalette && (
+                    <div
+                      className="mt-6 pt-6 border-t border-opacity-20"
+                      style={{ borderColor: modalStyle.color }}
+                    >
+                      <h3 className="text-lg font-semibold mb-3">
+                        Material You Theme
+                      </h3>
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                        {Object.entries(themeColors || {}).map(
+                          ([key, color]) => (
+                            <div
+                              key={key}
+                              className="flex flex-col items-center"
+                            >
+                              <div
+                                className="w-10 h-10 rounded-full mb-1"
+                                style={{ backgroundColor: color }}
+                              />
+                              <span className="text-xs capitalize">{key}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </article>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
