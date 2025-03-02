@@ -11,73 +11,113 @@ import {
   ColorMode,
 } from "@/utils/materialColorUtils";
 import { createPortal } from "react-dom";
+import { fetchArticles, ArticleData } from "@/services/articleService";
 
 export function GlowingEffectDemo() {
+  const [articles, setArticles] = useState<ArticleData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Arrays to store separated data
+  const [processedArticles, setProcessedArticles] = useState<{
+    names: string[];
+    images: string[];
+    ids: string[];
+  }>({
+    names: [],
+    images: [],
+    ids: []
+  });
+
+  // Process articles into separate arrays using spread operator
+  const processArticleArrays = (articles: ArticleData[]) => {
+    // Use spread operator to create new arrays
+    const names = [...articles.map(article => article.article_name)];
+    const ids = [...articles.map(article => 
+      article.id || article.article_name.toLowerCase().replace(/\s+/g, '-')
+    )];
+    // Get image paths from article_id since that's where they're stored
+    const images = [...articles.map(article => article.image_path)];
+
+    setProcessedArticles({ names, images, ids });
+    console.log('Processed article arrays:', { names, images, ids });
+  };
+
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await fetchArticles();
+        
+        if (error) {
+          setError(error);
+        } else if (data) {
+          setArticles(data);
+          processArticleArrays(data);
+        }
+      } catch (err) {
+        setError('Failed to load articles');
+        console.error('Error loading articles:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadArticles();
+  }, []);
+
+  // Default icons to use when mapping articles to grid items
+  const icons = [
+    <Box className="h-4 w-4" key="box" style={{ color: "#000" }} />,
+    <Settings className="h-4 w-4" key="settings" style={{ color: "#FFF" }} />,
+    <Lock className="h-4 w-4" key="lock" style={{ color: "#000" }} />,
+    <Sparkles className="h-4 w-4" key="sparkles" style={{ color: "#FFF" }} />,
+    <Search className="h-4 w-4" key="search" style={{ color: "#000" }} />
+  ];
+
+  // Grid area assignments
+  const gridAreas = [
+    "md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]",
+    "md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]",
+    "md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]",
+    "md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]",
+    "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
+  ];
+
+  if (isLoading) {
+    return <div className="py-8 text-center">Loading articles...</div>;
+  }
+
+  if (error) {
+    return <div className="py-8 text-center text-red-500">Error: {error}</div>;
+  }
+
+  // Take only the first 5 articles for display
+  const displayCount = Math.min(5, processedArticles.ids.length);
+
   return (
     <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 py-2 overflow-y-auto scrollbar-hide">
-      <GridItem
-        area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
-        icon={<Box className="h-4 w-4" style={{ color: "#000" }} />}
-        title="Neural Networks Fundamentals"
-        description="Learn the core concepts of neural networks, including neurons, layers, and basic architectures."
-        cardStyle={{
-          backgroundColor: "none",
-          border: "0.2px solid zinc",
-          color: "#000",
-        }}
-        backgroundImage="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=60"
-      />
-      <GridItem
-        area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-        icon={<Settings className="h-4 w-4" style={{ color: "#FFF" }} />}
-        title="Deep Learning Architecture Design"
-        description="Master the principles of designing and optimizing deep neural network architectures for various applications."
-        cardStyle={{
-          backgroundColor: "none",
-          border: "0.2px solid zinc",
-          color: "#FFF",
-        }}
-        backgroundImage="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=60"
-      />
+      {[...Array(displayCount)].map((_, index) => {
+        const id = processedArticles.ids[index];
+        const title = processedArticles.names[index];
+        const imageUrl = processedArticles.images[index] || 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=800&auto=format&fit=crop&q=60';
 
-      <GridItem
-        area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
-        icon={<Lock className="h-4 w-4" style={{ color: "#000" }} />}
-        title="Computer Vision Applications"
-        description="Explore image processing, object detection, and visual recognition using deep learning techniques."
-        cardStyle={{
-          backgroundColor: "none",
-          border: "0.2px solid zinc",
-          color: "#FFF",
-        }}
-        backgroundImage="https://images.unsplash.com/photo-1527430253228-e93688616381?w=800&auto=format&fit=crop&q=60"
-      />
-
-      <GridItem
-        area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
-        icon={<Sparkles className="h-4 w-4" style={{ color: "#FFF" }} />}
-        title="Natural Language Processing"
-        description="Discover text analysis, language understanding, and generation using advanced NLP models."
-        cardStyle={{
-          backgroundColor: "none",
-          border: "0.2px solid zinc",
-          color: "#FFF",
-        }}
-        backgroundImage="https://images.unsplash.com/photo-1527430253228-e93688616381?w=800&auto=format&fit=crop&q=60"
-      />
-
-      <GridItem
-        area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
-        icon={<Search className="h-4 w-4" style={{ color: "#000" }} />}
-        title="Reinforcement Learning Basics"
-        description="Learn about agents, environments, and reward systems in reinforcement learning applications."
-        cardStyle={{
-          backgroundColor: "none",
-          border: "0.2px solid zinc",
-          color: "#000",
-        }}
-        backgroundImage="https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=800&auto=format&fit=crop&q=60"
-      />
+        return (
+          <GridItem
+            key={id}
+            area={gridAreas[index]}
+            icon={icons[index % icons.length]}
+            title={title}
+            description="Click to explore this topic in detail"
+            cardStyle={{
+              backgroundColor: "none",
+              border: "0.2px solid zinc",
+              color: index % 2 === 0 ? "#000" : "#FFF",
+            }}
+            backgroundImage={imageUrl}
+          />
+        );
+      })}
     </ul>
   );
 }
