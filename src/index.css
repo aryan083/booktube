@@ -12,6 +12,7 @@
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  class: "dark";
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -81,14 +82,9 @@ button:hover {
   color: hsl(var(--accent-foreground));
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
+/* Force dark mode */
+:root {
+  class: "dark";
 }
 
 @layer base {
