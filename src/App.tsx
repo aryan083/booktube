@@ -40,7 +40,7 @@ function Home() {
       <main className="flex-1 overflow-y-auto scrollbar-hide">
         <SidebarInset>
           <div
-            className={`w-full pt-2 pb-1 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide transition-all duration-300  ${
+            className={`w-full pt-2 pb-1 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide transition-all   ${
               sidebarState === "collapsed" ? "pl-10 " : "pl-0"
             }`}
           >
@@ -92,9 +92,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-      {/* <Route path="/auth" element={<Auth />} /> */}
-
-      {/* Protected routes - require authentication */}
       <Route
         path="/"
         element={

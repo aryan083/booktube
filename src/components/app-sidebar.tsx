@@ -123,7 +123,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
         className={`
           fixed top-4 left-4 bottom-4 right z-50
           ${state === "collapsed" ? "w-[5rem]" : "w-[280px]"}
-          transition-all duration-700 ease-in-out
+          transition-all duration-100 ease-in-out
         `}
         collapsible="icon"
       >
@@ -188,7 +188,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                 <HoverBorderGradient
                   className=" bg-none justify-center text-sm inline-flex items-center px-4 py-2 "
                   onClick={onCreateClick}
-                  duration={0.5}
+                  duration={0.55}
                 >
                   <PlusCircle className="h-5 w-5 mr-2" />
                   <span>Create a Course</span>
