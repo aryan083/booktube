@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/Label";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import Aurora from "@/components/Aurora";
 
 export function SignInForm({
   className,
@@ -169,10 +170,17 @@ export function SignInForm({
                   </div>
                 </div>
               </form>
+
               <div className="relative hidden md:block">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/1 to-primary/5" />
                 <div className="absolute inset-0  bg-cover bg-center opacity-30" />
-                <div className="relative h-full p-12 flex items-center justify-center">
+                <Aurora
+                  colorStops={["#3A29FF", "#FF94B4"]}
+                  blend={0.75}
+                  amplitude={3.0}
+                  speed={0.5}
+                />
+                <div className="relative mt-9 p-12 flex items-center justify-center">
                   <blockquote className="space-y-2">
                     <p className="text-lg">
                       "The beautiful thing about learning is that no one can

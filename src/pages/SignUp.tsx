@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import Aurora from "@/components/Aurora";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,9 +61,16 @@ const SignUpForm = () => {
           <Card className="overflow-hidden rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl">
             <CardContent className="grid p-0 grid-cols-1 md:grid-cols-2 gap-0">
               <div className="relative hidden md:block">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/1 to-primary/5" />
                 <div className="absolute inset-0 bg-[url('/images/auth-illustration.jpg')] bg-cover bg-center opacity-30" />
-                <div className="relative h-full px-12 py-10 flex items-center justify-center">
+                <Aurora
+                  colorStops={["#3A29F9", "#FF94B4"]}
+                  blend={0.75}
+                  amplitude={2.0}
+                  speed={0.7}
+                />
+
+                <div className="relative   px-12 mt-12 py-12 flex items-center justify-center">
                   <blockquote className="space-y-3">
                     <p className="text-xl font-light leading-relaxed">
                       "Education is not preparation for life; education is life
