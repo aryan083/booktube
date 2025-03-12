@@ -2,21 +2,14 @@
 
 import type * as React from "react";
 import {
-  AudioWaveform,
+
   BookOpen,
   Bot,
-  Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   PlusCircle,
   PanelLeftClose,
   PanelLeftOpen,
-  Settings2,
   SquareTerminal,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -38,13 +31,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import UploadModal from "@/components/upload-modal";
-import SecondModal from "@/components/second-modal";
-import ThirdModal from "@/components/third-modal";
-import { useAuth } from "../contexts/AuthContext";
 
+import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
 
 // Sample data
@@ -58,18 +47,8 @@ const data = {
     {
       name: "booktube",
       logo: Gamepad,
-      // plan: "Enterprise",
     },
-    // {
-    //   name: "Acme Corp.",
-    //   logo: AudioWaveform,
-    //   plan: "Startup",
-    // },
-    // {
-    //   name: "Evil Corp.",
-    //   logo: Command,
-    //   plan: "Free",
-    // },
+
   ],
   navMain: [
     {
@@ -101,62 +80,10 @@ const data = {
           title: "Data Link Layer",
           url: "#",
         },
-        // {
-        //   title: "Explorer",
-        //   url: "#",
-        // },
-        // {
-        //   title: "Quantum",
-        //   url: "#",
-        // },
+
       ],
     },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
+
   ],
   projects: [
     {
@@ -306,11 +233,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             </SidebarHeader>
             <NavProjects
               projects={data.projects}
-              // className={`transition-all duration-500 ${
-              //   state === "collapsed"
-              //     ? "opacity-0 transform -translate-x-4"
-              //     : "opacity-100 transform translate-x-0"
-              // }`}
+
             />
 
             <SidebarContent
