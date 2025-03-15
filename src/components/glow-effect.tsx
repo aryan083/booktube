@@ -539,7 +539,6 @@ function Modal({
 
                     const user = await supabase.auth.getUser();
                     const user_id = user?.data?.user?.id;
-                    // setIsBookmarked(!isBookmarked);
 
                     if (user_id) {
                       const result = await toggleArticleBookmark(
@@ -549,6 +548,34 @@ function Modal({
                       );
                       if (!result.error) {
                         setIsBookmarked(!isBookmarked);
+                        // Trigger a re-fetch of bookmarked articles
+                        const { data: userData } = await supabase
+                          .from("users")
+                          .select("bookmarked_articles")
+                          .eq("user_id", user_id)
+                          .maybeSingle();
+
+                        if (userData?.bookmarked_articles) {
+                          setNavMainItems((prev) => {
+                            const newItems = [...prev];
+                            const bookmarkIndex = newItems.findIndex(
+                              (item) => item.title === "Bookmarked Articles"
+                            );
+                            if (bookmarkIndex !== -1) {
+                              newItems[bookmarkIndex].items =
+                                userData.bookmarked_articles.map(
+                                  (article: {
+                                    title: string;
+                                    article_id: string;
+                                  }) => ({
+                                    title: article.title,
+                                    url: `/article/${article.article_id}`,
+                                  })
+                                );
+                            }
+                            return newItems;
+                          });
+                        }
                         console.log(
                           "Bookmark status updated successfully:",
                           result

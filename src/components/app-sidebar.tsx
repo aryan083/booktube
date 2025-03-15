@@ -2,7 +2,6 @@
 
 import type * as React from "react";
 import {
-
   BookOpen,
   Bot,
   GalleryVerticalEnd,
@@ -33,8 +32,9 @@ import {
 } from "@/components/ui/tooltip";
 
 import { useAuth } from "../contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
+import { supabase } from "@/lib/supabase";
 
 // Sample data
 const data = {
@@ -48,7 +48,6 @@ const data = {
       name: "booktube",
       logo: Gamepad,
     },
-
   ],
   navMain: [
     {
@@ -80,10 +79,8 @@ const data = {
           title: "Data Link Layer",
           url: "#",
         },
-
       ],
     },
-
   ],
   projects: [
     {
@@ -110,6 +107,66 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
   const [flowStartTime, setFlowStartTime] = useState<number>(0);
+  const [navMainItems, setNavMainItems] = useState([
+    {
+      title: "Ongoing Courses",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Introduction to AI",
+          url: "#",
+        },
+        {
+          title: "Data Link Layer",
+          url: "#",
+        },
+        {
+          title: "CMOS Inverter Basics",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Bookmarked Articles",
+      url: "#",
+      icon: Bot,
+      items: [],
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchBookmarkedArticles = async () => {
+      if (user) {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("bookmarked_articles")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (userData?.bookmarked_articles) {
+          setNavMainItems((prev) => {
+            const newItems = [...prev];
+            const bookmarkIndex = newItems.findIndex(
+              (item) => item.title === "Bookmarked Articles"
+            );
+            if (bookmarkIndex !== -1) {
+              newItems[bookmarkIndex].items = userData.bookmarked_articles.map(
+                (article: { title: string; article_id: string }) => ({
+                  title: article.title,
+                  url: `/article/${article.article_id}`,
+                })
+              );
+            }
+            return newItems;
+          });
+        }
+      }
+    };
+
+    fetchBookmarkedArticles();
+  }, [user]);
 
   const startFlow = () => {
     setFlowStartTime(Date.now());
@@ -222,7 +279,6 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                           duration={0.5}
                         >
                           <PlusCircle className="h-5 w-5 bg-none hover:bg-none " />
-                          {/* <span>Create a Course</span> */}
                         </HoverBorderGradient>
                       </TooltipTrigger>
                       <TooltipContent>Create New Project</TooltipContent>
@@ -231,14 +287,11 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                 </div>
               )}
             </SidebarHeader>
-            <NavProjects
-              projects={data.projects}
-
-            />
+            <NavProjects projects={data.projects} />
 
             <SidebarContent
               className={`
-                flex-1  py-2  overflow-y-auto
+                flex-1 py-2 overflow-y-auto no-scrollbar
                 transition-all duration-500 ease-in-out
                 ${state === "collapsed" ? "opacity-100" : "opacity-100"}
               `}
@@ -246,7 +299,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
               <div className="flex flex-col transition-all duration-300">
                 <div className="flex min-w-max items-center gap-2 overflow-hidden transition-all duration-500">
                   <NavMain
-                    items={data.navMain}
+                    items={navMainItems}
                     className={`transition-all duration-500 ${
                       state === "collapsed"
                         ? "opacity-0 transform -translate-x-4"
