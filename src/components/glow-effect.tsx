@@ -12,6 +12,7 @@ import {
 } from "@/utils/materialColorUtils";
 import { createPortal } from "react-dom";
 import { fetchArticles, ArticleData } from "@/services/articleService";
+import { toggleArticleCompletion } from "@/services/BookmarkArticle";
 
 export function GlowingEffectDemo() {
   const [articles, setArticles] = useState<ArticleData[]>([]);
@@ -26,21 +27,24 @@ export function GlowingEffectDemo() {
   }>({
     names: [],
     images: [],
-    ids: []
+    ids: [],
   });
 
   // Process articles into separate arrays using spread operator
   const processArticleArrays = (articles: ArticleData[]) => {
     // Use spread operator to create new arrays
-    const names = [...articles.map(article => article.article_name)];
-    const ids = [...articles.map(article => 
-      article.id || article.article_name.toLowerCase().replace(/\s+/g, '-')
-    )];
+    const names = [...articles.map((article) => article.article_name)];
+    const ids = [
+      ...articles.map(
+        (article) =>
+          article.id || article.article_name.toLowerCase().replace(/\s+/g, "-")
+      ),
+    ];
     // Get image paths from article_id since that's where they're stored
-    const images = [...articles.map(article => article.image_path)];
+    const images = [...articles.map((article) => article.image_path)];
 
     setProcessedArticles({ names, images, ids });
-    console.log('Processed article arrays:', { names, images, ids });
+    console.log("Processed article arrays:", { names, images, ids });
   };
 
   useEffect(() => {
@@ -48,7 +52,7 @@ export function GlowingEffectDemo() {
       try {
         setIsLoading(true);
         const { data, error } = await fetchArticles();
-        
+
         if (error) {
           setError(error);
         } else if (data) {
@@ -56,8 +60,8 @@ export function GlowingEffectDemo() {
           processArticleArrays(data);
         }
       } catch (err) {
-        setError('Failed to load articles');
-        console.error('Error loading articles:', err);
+        setError("Failed to load articles");
+        console.error("Error loading articles:", err);
       } finally {
         setIsLoading(false);
       }
@@ -72,7 +76,7 @@ export function GlowingEffectDemo() {
     <Settings className="h-4 w-4" key="settings" style={{ color: "#FFF" }} />,
     <Lock className="h-4 w-4" key="lock" style={{ color: "#000" }} />,
     <Sparkles className="h-4 w-4" key="sparkles" style={{ color: "#FFF" }} />,
-    <Search className="h-4 w-4" key="search" style={{ color: "#000" }} />
+    <Search className="h-4 w-4" key="search" style={{ color: "#000" }} />,
   ];
 
   // Grid area assignments
@@ -81,7 +85,7 @@ export function GlowingEffectDemo() {
     "md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]",
     "md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]",
     "md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]",
-    "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
+    "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]",
   ];
 
   if (isLoading) {
@@ -100,7 +104,9 @@ export function GlowingEffectDemo() {
       {[...Array(displayCount)].map((_, index) => {
         const id = processedArticles.ids[index];
         const title = processedArticles.names[index];
-        const imageUrl = processedArticles.images[index] || 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=800&auto=format&fit=crop&q=60';
+        const imageUrl =
+          processedArticles.images[index] ||
+          "https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=800&auto=format&fit=crop&q=60";
 
         return (
           <GridItem
@@ -115,6 +121,12 @@ export function GlowingEffectDemo() {
               color: index % 2 === 0 ? "#000" : "#FFF",
             }}
             backgroundImage={imageUrl}
+            article_id={id}
+            onComplete={() => {
+              const articleId = processedArticles.ids[index];
+              console.log("Article ID to mark as complete:", articleId);
+              toggleArticleCompletion(articleId);
+            }}
           />
         );
       })}
@@ -128,7 +140,8 @@ interface GridItemProps {
   title: string;
   description: React.ReactNode;
   cardStyle: React.CSSProperties;
-  backgroundImage?: string; // Optional background image URL
+  backgroundImage?: string;
+  article_id: string;
 }
 
 const GridItem = ({
@@ -138,6 +151,7 @@ const GridItem = ({
   description,
   cardStyle,
   backgroundImage,
+  article_id,
 }: GridItemProps) => {
   // Function to darken the background color
   const darkenColor = (color: string, factor: number = 0.1): string => {
@@ -204,6 +218,7 @@ const GridItem = ({
               cardStyle,
               backgroundImage,
               id,
+              article_id,
               onClose: handleModalClose,
             }}
           />,
@@ -265,15 +280,18 @@ const GridItem = ({
 // Define proper interface for Modal props
 interface ModalProps {
   id: string;
+  article_id: string;
   onClose: React.MouseEventHandler<HTMLElement>;
 }
 
 // Import ExtractedColors interface from materialColorUtils.ts
 import { ExtractedColors, getTextColor } from "@/utils/materialColorUtils";
+import { supabase } from "@/lib/supabase";
 
 // Fix Modal component definition to use proper props
 function Modal({
   id,
+  article_id,
   onClose,
   area,
   icon,
@@ -286,6 +304,7 @@ function Modal({
   const [themePalette, setThemePalette] = useState<ColorPalette | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [extractedColors, setExtractedColors] = useState<ExtractedColors>({
     primary: "#ffffff",
     secondary: "#ffffff",
@@ -298,6 +317,25 @@ function Modal({
   };
 
   useEffect(() => {
+    // Check if the article is completed
+    const checkArticleStatus = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("articles")
+          .select("is_completed")
+          .eq("article_id", article_id)
+          .single();
+
+        if (data) {
+          setIsCompleted(data.is_completed);
+        }
+      } catch (error) {
+        console.error("Error checking article status:", error);
+      }
+    };
+
+    checkArticleStatus();
+
     // First stage: Show white screen
     const initialDelay = setTimeout(() => {
       // Second stage: Extract colors
@@ -376,7 +414,7 @@ function Modal({
       <div className="min-h-[80vh] w-full relative">
         {!isLoading && (
           <div
-            className={`transition-all allmodalcontent duration-100 transform ${
+            className={`allmodalcontent ${
               showContent
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
@@ -402,7 +440,97 @@ function Modal({
                 <span style={{ color: modalStyle.color }}>BookTube</span>
               </h2>
               <div className="flex items-center gap-2">
-                {/* Theme toggle button */}
+                <button
+                  className={`px-3 py-2 rounded-full flex items-center gap-2 justify-center group border ${
+                    isCompleted ? "cursor-default" : "hover:bg-opacity-80"
+                  }`}
+                  onClick={async () => {
+                    if (!isCompleted) {
+                      setIsCompleted(true);
+                      const result = await toggleArticleCompletion(article_id);
+                      if (result.error) {
+                        setIsCompleted(false);
+                        console.error(
+                          "Failed to update completion status:",
+                          result.error
+                        );
+                      }
+                    }
+                  }}
+                  disabled={isCompleted}
+                  aria-label={
+                    isCompleted ? "Article completed" : "Mark as completed"
+                  }
+                  style={{
+                    backgroundColor: isCompleted
+                      ? themeColors?.secondary || extractedColors.secondary
+                      : "rgba(255, 255, 255, 0.2)",
+                    borderColor: isCompleted
+                      ? themeColors?.secondary || extractedColors.secondary
+                      : colorMode === "light"
+                      ? "rgba(0, 0, 0, 0.1)"
+                      : "rgba(255, 255, 255, 0.1)",
+                    color: isCompleted
+                      ? themeColors
+                        ? getTextColor(themeColors.background)
+                        : extractedColors.primary
+                      : modalStyle.color,
+                    transitionProperty: "opacity, transform",
+                    transitionDuration: "200ms",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={
+                      isCompleted
+                        ? modalStyle.backgroundColor
+                        : modalStyle.color
+                    }
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="transition-transform duration-300 group-hover:scale-110"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span
+                    style={{
+                      color: isCompleted
+                        ? modalStyle.backgroundColor
+                        : modalStyle.color,
+                      backgroundColor: isCompleted
+                        ? themeColors?.secondary || extractedColors.secondary
+                        : "transparent",
+                    }}
+                    className="text-sm  g px-1 rounded"
+                  >
+                    {isCompleted ? "Completed" : "Mark as completed"}
+                  </span>
+                </button>
+                <button
+                  className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
+                  onClick={() => {}}
+                  aria-label="Bookmark this article"
+                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={modalStyle.color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
                 <button
                   className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
                   onClick={toggleColorMode}
