@@ -12,7 +12,7 @@ import {
 } from "@/utils/materialColorUtils";
 import { createPortal } from "react-dom";
 import { fetchArticles, ArticleData } from "@/services/articleService";
-import { toggleArticleCompletion } from "@/services/BookmarkArticle";
+import { toggleArticleCompletion } from "@/services/CompleteArticle";
 
 export function GlowingEffectDemo() {
   const [articles, setArticles] = useState<ArticleData[]>([]);
@@ -287,6 +287,7 @@ interface ModalProps {
 // Import ExtractedColors interface from materialColorUtils.ts
 import { ExtractedColors, getTextColor } from "@/utils/materialColorUtils";
 import { supabase } from "@/lib/supabase";
+import { toggleArticleBookmark } from "@/services/BookmarkArticle";
 
 // Fix Modal component definition to use proper props
 function Modal({
@@ -305,6 +306,7 @@ function Modal({
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [extractedColors, setExtractedColors] = useState<ExtractedColors>({
     primary: "#ffffff",
     secondary: "#ffffff",
@@ -317,7 +319,7 @@ function Modal({
   };
 
   useEffect(() => {
-    // Check if the article is completed
+    // Check if the article is completed and bookmarked
     const checkArticleStatus = async () => {
       try {
         const { data, error } = await supabase
@@ -328,6 +330,25 @@ function Modal({
 
         if (data) {
           setIsCompleted(data.is_completed);
+        }
+
+        // Check bookmark status
+        const user = await supabase.auth.getUser();
+        const user_id = user?.data?.user?.id;
+        if (user_id) {
+          const { data: userData } = await supabase
+            .from("users")
+            .select("bookmarked_articles")
+            .eq("user_id", user_id)
+            .maybeSingle();
+
+          if (userData?.bookmarked_articles) {
+            const isArticleBookmarked = userData.bookmarked_articles.some(
+              (article: { article_id: string }) =>
+                article.article_id === article_id
+            );
+            setIsBookmarked(isArticleBookmarked);
+          }
         }
       } catch (error) {
         console.error("Error checking article status:", error);
@@ -512,8 +533,61 @@ function Modal({
                   </span>
                 </button>
                 <button
+                  className="p-2 rounded-full hover:bg-opacity-80 transition-all duration-200 flex items-center justify-center"
+                  onClick={async () => {
+                    setIsBookmarked(!isBookmarked);
+
+                    const user = await supabase.auth.getUser();
+                    const user_id = user?.data?.user?.id;
+                    // setIsBookmarked(!isBookmarked);
+
+                    if (user_id) {
+                      const result = await toggleArticleBookmark(
+                        user_id,
+                        article_id,
+                        title
+                      );
+                      if (!result.error) {
+                        setIsBookmarked(!isBookmarked);
+                        console.log(
+                          "Bookmark status updated successfully:",
+                          result
+                        );
+                      }
+                    }
+                  }}
+                  aria-label="Bookmark this article"
+                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill={isBookmarked ? modalStyle.color : "none"}
+                    stroke={modalStyle.color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
+
+                {/* <button
                   className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
-                  onClick={() => {}}
+                  onClick={async () => {
+                    const user = await supabase.auth.getUser();
+                    const user_id = user?.data?.user?.id || "anonymous";
+                    const result = await toggleArticleBookmark(
+                      user_id,
+                      article_id,
+                      title
+                    );
+                    if (result.error) {
+                      console.error("Failed to toggle bookmark:", result.error);
+                    }
+                  }}
                   aria-label="Bookmark this article"
                   style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
                 >
@@ -530,7 +604,7 @@ function Modal({
                   >
                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                   </svg>
-                </button>
+                </button> */}
                 <button
                   className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
                   onClick={toggleColorMode}
