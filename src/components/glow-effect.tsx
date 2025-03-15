@@ -360,7 +360,7 @@ function Modal({
         });
       } else {
         setIsLoading(false);
-        setTimeout(() => setShowContent(true), 100);
+        setTimeout(() => setShowContent(true), 50);
       }
     }, 500); // Initial white screen delay
 
@@ -414,7 +414,7 @@ function Modal({
       <div className="min-h-[80vh] w-full relative">
         {!isLoading && (
           <div
-            className={`allmodalcontent ${
+            className={`transition-opacity allmodalcontent duration-200 transform ${
               showContent
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
