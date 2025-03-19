@@ -20,6 +20,7 @@ import { createCourse } from "@/services/courseService";
 import { sendPdfToGemini } from "@/services/pdfService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 interface WorkflowModalProps {
   open: boolean;
@@ -126,6 +127,17 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const handleNext = async () => {
     if (currentStep === 5) {
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast({
+            title: "Error",
+            description: "You must be logged in to create a course.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         // First, save the course data to Supabase with only the required fields
         const courseData = {
           course_name: courseTitle,
@@ -136,6 +148,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           teaching_pattern: selectedMethods,
           user_prompt: textPrompt,
           progress: 0,
+          user_id: user.id
         };
 
         const { error } = await createCourse(courseData);
