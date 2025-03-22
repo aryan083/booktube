@@ -1,10 +1,12 @@
 import { supabase } from '@/lib/supabase';
 
+interface ChapterContent {
+  [key: string]: string;
+}
+
 interface CourseContent {
   Chapters: {
-    [chapterName: string]: {
-      [topicKey: string]: string;
-    };
+    [key: string]: ChapterContent;
   };
 }
 
@@ -27,61 +29,61 @@ interface CourseData {
 }
 
 /**
- * Creates topics in the topics table
+ * Creates topics in the topics table and returns their IDs organized by chapter
  * @param courseContent The course content containing topics
- * @returns Promise with created topic IDs or error
+ * @returns Promise with created topic IDs mapped to chapters
  */
 const createTopics = async (courseContent: CourseContent) => {
   try {
-    // Extract all topics from the course content
-    const topics: string[] = [];
-    Object.values(courseContent.Chapters).forEach(chapter => {
-      Object.values(chapter).forEach(topicName => {
-        topics.push(topicName);
-      });
+    // Create a map of chapter names to their topics
+    const chapterTopicsMap = new Map<string, string[]>();
+    
+    Object.entries(courseContent.Chapters).forEach(([chapterKey, topics]) => {
+      const chapterName = chapterKey.split(':')[1]?.trim();
+      if (chapterName) {
+        chapterTopicsMap.set(chapterName, Object.values(topics));
+      }
     });
 
-    console.log('Topics to create:', topics);
-    
-    // Create an array of topic objects
-    const topicsToInsert = topics.map(topicName => ({
-      topic_name: topicName,
-      tags: {},
-      content: '',
-      articles_json: {}
-    }));
+    console.log('Chapter to topics mapping:', Object.fromEntries(chapterTopicsMap));
 
-    // Insert all topics at once and get their IDs
-    const { data: insertedTopics, error } = await supabase
-      .from('topics')
-      .insert(topicsToInsert)
-      .select('topic_id, topic_name');
+    // Create all topics and track which ones belong to which chapter
+    const chapterTopicIds = new Map<string, string[]>(); // Will store chapter name -> topic IDs
 
-    if (error) {
-      console.error('Error creating topics:', error);
-      console.error('Error details:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
-      return { data: null, error };
+    for (const [chapterName, topics] of chapterTopicsMap) {
+      const topicsForChapter = topics.map((topicName: string) => ({
+        topic_name: topicName,
+        tags: {},
+        content: '',
+        articles_json: {}
+      }));
+      
+      // Insert topics for this chapter
+      const { data: insertedTopics, error } = await supabase
+        .from('topics')
+        .insert(topicsForChapter)
+        .select('topic_id, topic_name');
+
+      if (error) {
+        console.error('Error creating topics for chapter:', chapterName, error);
+        continue;
+      }
+
+      if (!insertedTopics) {
+        console.error('No topics were inserted for chapter:', chapterName);
+        continue;
+      }
+
+      // Store the topic IDs for this chapter
+      const topicIds = insertedTopics.map(topic => topic.topic_id);
+      chapterTopicIds.set(chapterName, topicIds);
+      
+      console.log(`Created topics for chapter "${chapterName}":`, topicIds);
     }
 
-    // Extract just the topic IDs
-    const topicIds = insertedTopics.map(topic => topic.topic_id);
-    console.log('Successfully created topics with IDs:', topicIds);
-    return { data: topicIds, error: null };
-
+    return { data: chapterTopicIds, error: null };
   } catch (error) {
-    console.error('Unexpected error in createTopics:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      });
-    }
+    console.error('Error in createTopics:', error);
     return { data: null, error };
   }
 };
@@ -89,18 +91,23 @@ const createTopics = async (courseContent: CourseContent) => {
 /**
  * Creates chapters in the chapters table and returns their IDs
  * @param chapterNames Array of chapter names to create
+ * @param chapterTopics Map of chapter names to their topic IDs
  * @returns Promise with created chapter IDs or error
  */
-const createChapters = async (chapterNames: string[]) => {
+const createChapters = async (chapterNames: string[], chapterTopics: Map<string, string[]>) => {
   try {
     console.log('Creating chapters:', chapterNames);
     
-    // Create an array of chapter objects
+    // Create chapters with their topic IDs
     const chaptersToInsert = chapterNames.map(chapterName => ({
       chapter_name: chapterName,
       tags: {},
-      topics_json: {}
+      topics_json: {
+        topic_ids: chapterTopics.get(chapterName) || []
+      }
     }));
+
+    console.log('Inserting chapters with topics:', chaptersToInsert);
 
     // Insert all chapters at once and get their IDs
     const { data: chapters, error } = await supabase
@@ -133,9 +140,24 @@ export const createCourse = async (courseData: CourseData) => {
     console.log('Creating course with data:', courseData);
     const { user_id, course_content, ...coursePayload } = courseData;
 
-    // First create the chapters and get their IDs
+    // First create topics and get their IDs organized by chapter
+    let chapterTopicIds = new Map<string, string[]>();
+    if (course_content) {
+      console.log('Creating topics...');
+      const { data: topicsMap, error: topicsError } = await createTopics(course_content);
+      if (topicsError) {
+        console.error('Error creating topics:', topicsError);
+        return { data: null, error: topicsError };
+      }
+      if (topicsMap) {
+        chapterTopicIds = topicsMap;
+      }
+    }
+
+    // Then create chapters with their topic IDs
     const { data: chapterIds, error: chaptersError } = await createChapters(
-      coursePayload.chapters_json.chapters
+      coursePayload.chapters_json.chapters,
+      chapterTopicIds
     );
 
     if (chaptersError || !chapterIds) {
@@ -143,22 +165,7 @@ export const createCourse = async (courseData: CourseData) => {
       return { data: null, error: chaptersError };
     }
 
-    console.log('Successfully created chapters with IDs:', chapterIds);
-
-    // Create topics if course_content is available
-    let topicIds = [];
-    if (course_content) {
-      console.log('Starting topic creation...');
-      const { data: createdTopicIds, error: topicsError } = await createTopics(course_content);
-      if (topicsError) {
-        console.error('Error creating topics:', topicsError);
-        return { data: null, error: topicsError };
-      }
-      topicIds = createdTopicIds || [];
-      console.log('Successfully created topics with IDs:', topicIds);
-    }
-
-    // Now create the course with chapter IDs instead of names
+    // Now create the course with chapter IDs
     const { data: newCourse, error: courseError } = await supabase
       .from('courses')
       .insert([{
