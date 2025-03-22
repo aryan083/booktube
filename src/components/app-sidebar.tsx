@@ -2,21 +2,13 @@
 
 import type * as React from "react";
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   PlusCircle,
   PanelLeftClose,
   PanelLeftOpen,
-  Settings2,
   SquareTerminal,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -38,14 +30,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import UploadModal from "@/components/upload-modal";
-import SecondModal from "@/components/second-modal";
-import ThirdModal from "@/components/third-modal";
-import { useAuth } from "../contexts/AuthContext";
 
-import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { useAuth } from "../contexts/AuthContext";
+import { useState, useEffect } from "react";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
+import { supabase } from "@/lib/supabase";
 
 // Sample data
 const data = {
@@ -58,18 +47,7 @@ const data = {
     {
       name: "booktube",
       logo: Gamepad,
-      // plan: "Enterprise",
     },
-    // {
-    //   name: "Acme Corp.",
-    //   logo: AudioWaveform,
-    //   plan: "Startup",
-    // },
-    // {
-    //   name: "Evil Corp.",
-    //   logo: Command,
-    //   plan: "Free",
-    // },
   ],
   navMain: [
     {
@@ -101,62 +79,8 @@ const data = {
           title: "Data Link Layer",
           url: "#",
         },
-        // {
-        //   title: "Explorer",
-        //   url: "#",
-        // },
-        // {
-        //   title: "Quantum",
-        //   url: "#",
-        // },
       ],
     },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
   ],
   projects: [
     {
@@ -183,6 +107,66 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
   const [flowStartTime, setFlowStartTime] = useState<number>(0);
+  const [navMainItems, setNavMainItems] = useState([
+    {
+      title: "Ongoing Courses",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Introduction to AI",
+          url: "#",
+        },
+        {
+          title: "Data Link Layer",
+          url: "#",
+        },
+        {
+          title: "CMOS Inverter Basics",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Bookmarked Articles",
+      url: "#",
+      icon: Bot,
+      items: [],
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchBookmarkedArticles = async () => {
+      if (user) {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("bookmarked_articles")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (userData?.bookmarked_articles) {
+          setNavMainItems((prev) => {
+            const newItems = [...prev];
+            const bookmarkIndex = newItems.findIndex(
+              (item) => item.title === "Bookmarked Articles"
+            );
+            if (bookmarkIndex !== -1) {
+              newItems[bookmarkIndex].items = userData.bookmarked_articles.map(
+                (article: { title: string; article_id: string }) => ({
+                  title: article.title,
+                  url: `/article/${article.article_id}`,
+                })
+              );
+            }
+            return newItems;
+          });
+        }
+      }
+    };
+
+    fetchBookmarkedArticles();
+  }, [user]);
 
   const startFlow = () => {
     setFlowStartTime(Date.now());
@@ -196,7 +180,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
         className={`
           fixed top-4 left-4 bottom-4 right z-50
           ${state === "collapsed" ? "w-[5rem]" : "w-[280px]"}
-          transition-all duration-700 ease-in-out
+          transition-all duration-100 ease-in-out
         `}
         collapsible="icon"
       >
@@ -261,7 +245,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                 <HoverBorderGradient
                   className=" bg-none justify-center text-sm inline-flex items-center px-4 py-2 "
                   onClick={onCreateClick}
-                  duration={0.5}
+                  duration={0.55}
                 >
                   <PlusCircle className="h-5 w-5 mr-2" />
                   <span>Create a Course</span>
@@ -295,7 +279,6 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                           duration={0.5}
                         >
                           <PlusCircle className="h-5 w-5 bg-none hover:bg-none " />
-                          {/* <span>Create a Course</span> */}
                         </HoverBorderGradient>
                       </TooltipTrigger>
                       <TooltipContent>Create New Project</TooltipContent>
@@ -304,18 +287,11 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
                 </div>
               )}
             </SidebarHeader>
-            <NavProjects
-              projects={data.projects}
-              // className={`transition-all duration-500 ${
-              //   state === "collapsed"
-              //     ? "opacity-0 transform -translate-x-4"
-              //     : "opacity-100 transform translate-x-0"
-              // }`}
-            />
+            <NavProjects projects={data.projects} />
 
             <SidebarContent
               className={`
-                flex-1  py-2  overflow-y-auto
+                flex-1 py-2 overflow-y-auto no-scrollbar
                 transition-all duration-500 ease-in-out
                 ${state === "collapsed" ? "opacity-100" : "opacity-100"}
               `}
@@ -323,7 +299,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
               <div className="flex flex-col transition-all duration-300">
                 <div className="flex min-w-max items-center gap-2 overflow-hidden transition-all duration-500">
                   <NavMain
-                    items={data.navMain}
+                    items={navMainItems}
                     className={`transition-all duration-500 ${
                       state === "collapsed"
                         ? "opacity-0 transform -translate-x-4"

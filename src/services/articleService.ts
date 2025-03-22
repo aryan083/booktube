@@ -11,6 +11,7 @@ export interface ArticleData {
   id: string;
   article_id: string;
   image_path: string;
+  is_completed: boolean;
 }
 
 /**
@@ -54,9 +55,10 @@ export const fetchArticles = async () => {
         tags: article.tags || null,
         content_text: article.content_text || null,
         created_at: article.created_at || new Date().toISOString(),
-        id: article.article_name.toLowerCase().replace(/\s+/g, '-'),
+        id: article.article_id, // Use the actual article_id from database
         article_id: article.article_id || '',
-        image_path: article.content_img   // Use the actual image_path from the database
+        image_path: article.content_img,
+        is_completed: article.is_completed || false
       };
     });
 

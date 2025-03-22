@@ -11,7 +11,7 @@ export function HoverBorderGradient({
   containerClassName,
   className,
   as: Tag = "button",
-  duration = 1,
+  duration = 4,
   clockwise = true,
   ...props
 }: React.PropsWithChildren<
@@ -77,7 +77,7 @@ export function HoverBorderGradient({
       </div>
       <motion.div
         className={cn(
-          "flex-none inset-0 overflow-hidden absolute z-0 rounded-[inherit]"
+          "flex-none inset-0 overflow-hidden absolute z-0 opacity-30 rounded-[inherit]"
         )}
         style={{
           filter: "blur(2px)",

@@ -27,6 +27,7 @@ import SignUpForm from "./pages/SignUp";
 import { SignInForm } from "./pages/SignIn";
 import Profile01 from "./components/kokonutui/profile-01";
 import { Blendy, createBlendy } from "blendy";
+import ClickSpark from "./components/ClickSpark";
 
 // Home component that shows sidebar and glowing effect
 function Home() {
@@ -39,7 +40,7 @@ function Home() {
       <main className="flex-1 overflow-y-auto scrollbar-hide">
         <SidebarInset>
           <div
-            className={`w-full pt-2 pb-1 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide transition-all duration-300  ${
+            className={`w-full pt-2 pb-1 h-full overflow-x-hidden overflow-y-scroll scrollbar-hide transition-all   ${
               sidebarState === "collapsed" ? "pl-10 " : "pl-0"
             }`}
           >
@@ -91,9 +92,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-      {/* <Route path="/auth" element={<Auth />} /> */}
-
-      {/* Protected routes - require authentication */}
       <Route
         path="/"
         element={
@@ -141,6 +139,15 @@ function App() {
   }, []);
 
   return (
+    <ClickSpark
+  sparkColor='#fff'
+  sparkSize={10}
+  sparkRadius={15}
+  sparkCount={8}
+  duration={400}
+>
+  
+
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Router>
@@ -159,6 +166,7 @@ function App() {
         </Router>
       </TooltipProvider>
     </QueryClientProvider>
+    </ClickSpark>
   );
 }
 
