@@ -42,6 +42,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   const [technicalTerms, setTechnicalTerms] = useState<
     Array<{ name: string; color: string }>
   >([]);
+  const [chapterNames, setChapterNames] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Array of distinct colors for pills
@@ -66,6 +67,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       setTextPrompt("");
       setSelectedMethods([]);
       setSkillLevel(1);
+      setChapterNames([]);
     }
   }, [open]);
 
@@ -83,8 +85,22 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       const response = await sendPdfToGemini(formData);
 
       if (response) {
+        console.log('Processing PDF response:', response);
         setWelcomeMessage(response.welcome_message || "");
         setCourseTitle(response.course_title || "");
+        
+        // Extract chapter names from course_content if available
+        if (response.course_content?.Chapters) {
+          const extractedChapters = Object.keys(response.course_content.Chapters).map(key => {
+            const name = key.split(':')[1]?.trim();
+            console.log('Processing chapter:', key, '-> Name:', name);
+            return name;
+          }).filter(Boolean);
+          
+          console.log('Final chapter names:', extractedChapters);
+          setChapterNames(extractedChapters);
+        }
+
         // Extract all terms from the keywords response
         const {
           technical_terms = [],
@@ -141,9 +157,10 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
         // First, save the course data to Supabase with only the required fields
         const courseData = {
           course_name: courseTitle,
-          tags: {},
           metadata: "",
-          chapters_json: {},
+          chapters_json: {
+            chapters: chapterNames
+          },
           skill_level: skillLevel,
           teaching_pattern: selectedMethods,
           user_prompt: textPrompt,
