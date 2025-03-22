@@ -1,5 +1,13 @@
 import { supabase } from '@/lib/supabase';
 
+interface CourseContent {
+  Chapters: {
+    [chapterName: string]: {
+      [topicKey: string]: string;
+    };
+  };
+}
+
 /**
  * Interface for course data
  * @interface CourseData
@@ -15,7 +23,68 @@ interface CourseData {
   user_prompt: string;
   progress: number;
   user_id: string;
+  course_content?: CourseContent;
 }
+
+/**
+ * Creates topics in the topics table
+ * @param courseContent The course content containing topics
+ * @returns Promise with created topic IDs or error
+ */
+const createTopics = async (courseContent: CourseContent) => {
+  try {
+    // Extract all topics from the course content
+    const topics: string[] = [];
+    Object.values(courseContent.Chapters).forEach(chapter => {
+      Object.values(chapter).forEach(topicName => {
+        topics.push(topicName);
+      });
+    });
+
+    console.log('Topics to create:', topics);
+    
+    // Create an array of topic objects
+    const topicsToInsert = topics.map(topicName => ({
+      topic_name: topicName,
+      tags: {},
+      content: '',
+      articles_json: {}
+    }));
+
+    // Insert all topics at once and get their IDs
+    const { data: insertedTopics, error } = await supabase
+      .from('topics')
+      .insert(topicsToInsert)
+      .select('topic_id, topic_name');
+
+    if (error) {
+      console.error('Error creating topics:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
+      return { data: null, error };
+    }
+
+    // Extract just the topic IDs
+    const topicIds = insertedTopics.map(topic => topic.topic_id);
+    console.log('Successfully created topics with IDs:', topicIds);
+    return { data: topicIds, error: null };
+
+  } catch (error) {
+    console.error('Unexpected error in createTopics:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+    }
+    return { data: null, error };
+  }
+};
 
 /**
  * Creates chapters in the chapters table and returns their IDs
@@ -62,16 +131,31 @@ const createChapters = async (chapterNames: string[]) => {
 export const createCourse = async (courseData: CourseData) => {
   try {
     console.log('Creating course with data:', courseData);
-    const { user_id, ...coursePayload } = courseData;
+    const { user_id, course_content, ...coursePayload } = courseData;
 
     // First create the chapters and get their IDs
     const { data: chapterIds, error: chaptersError } = await createChapters(
-      coursePayload.chapters_json.chapters // This contains chapter names
+      coursePayload.chapters_json.chapters
     );
 
     if (chaptersError || !chapterIds) {
       console.error('Error creating chapters:', chaptersError);
       return { data: null, error: chaptersError };
+    }
+
+    console.log('Successfully created chapters with IDs:', chapterIds);
+
+    // Create topics if course_content is available
+    let topicIds = [];
+    if (course_content) {
+      console.log('Starting topic creation...');
+      const { data: createdTopicIds, error: topicsError } = await createTopics(course_content);
+      if (topicsError) {
+        console.error('Error creating topics:', topicsError);
+        return { data: null, error: topicsError };
+      }
+      topicIds = createdTopicIds || [];
+      console.log('Successfully created topics with IDs:', topicIds);
     }
 
     // Now create the course with chapter IDs instead of names

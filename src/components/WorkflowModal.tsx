@@ -44,6 +44,8 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   >([]);
   const [chapterNames, setChapterNames] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pdfResponse, setPdfResponse] = useState<any>(null);
+  const { user } = useAuth();
 
   // Array of distinct colors for pills
   const pillColors = [
@@ -58,7 +60,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
     "#E67E22", // Orange
     "#2ECC71", // Emerald
   ];
-  const { user } = useAuth();
+
   // Reset all state when modal is closed
   useEffect(() => {
     if (!open) {
@@ -86,6 +88,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
       if (response) {
         console.log('Processing PDF response:', response);
+        setPdfResponse(response);
         setWelcomeMessage(response.welcome_message || "");
         setCourseTitle(response.course_title || "");
         
@@ -99,6 +102,16 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           
           console.log('Final chapter names:', extractedChapters);
           setChapterNames(extractedChapters);
+
+          // Extract and log topic names
+          const topics: string[] = [];
+          Object.values(response.course_content.Chapters).forEach(chapter => {
+            Object.values(chapter).forEach(topicName => {
+              console.log('Processing topic:', topicName);
+              topics.push(topicName);
+            });
+          });
+          console.log('Final topic names:', topics);
         }
 
         // Extract all terms from the keywords response
@@ -165,7 +178,8 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           teaching_pattern: selectedMethods,
           user_prompt: textPrompt,
           progress: 0,
-          user_id: user.id
+          user_id: user.id,
+          course_content: pdfResponse?.course_content
         };
 
         const { error } = await createCourse(courseData);
