@@ -78,7 +78,12 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
       setIsProcessing(true);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("course_pdf", file);
+      
+      // Add book PDF if it exists (index 0)
+      if (selectedFiles[0]) {
+        formData.append("book_pdf_name", selectedFiles[0].name);
+      }
 
       const response = await sendPdfToGemini(formData);
 
@@ -157,7 +162,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           console.error("Failed to save course data:", error);
           toast({
             title: "Error",
-            description: "Failed to create course. Please try again.",
+            description: "Failed to create course. Please try again.",  
             variant: "destructive",
           });
           return;

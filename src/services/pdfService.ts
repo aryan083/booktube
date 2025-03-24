@@ -21,8 +21,13 @@ interface GeminiResponse {
  * @returns Promise with the processed data including technical terms and welcome message
  */
 export const sendPdfToGemini = async (formData: FormData): Promise<GeminiResponse> => {
+  // Log the FormData contents for debugging
+  console.log('FormData contents:');
+  for (const pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
   try {
-    console.log('Sending PDF to Gemini API...');
+    console.log('Sending PDFs to Gemini API...');
     const response = await fetch('http://localhost:5000/api/send_pdf_to_gemini', {
       method: 'POST',
       body: formData,

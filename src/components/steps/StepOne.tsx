@@ -124,9 +124,20 @@ const StepOne: React.FC<StepOneProps> = ({
         return;
       }
 
+      // Ensure files are stored in the correct order and trigger processing
       const newFiles = [...selectedFiles];
       newFiles[index] = file;
       onFilesChange(newFiles);
+
+      // If this is the course PDF (index 1) and we have a book PDF (index 0), process them together
+      if (index === 1 && newFiles[0]) {
+        const formData = new FormData();
+        formData.append('course_pdf', file);
+        formData.append('book_pdf_name', newFiles[0].name);
+        extractPDFInfo(file, index, formData);
+      } else {
+        extractPDFInfo(file, index);
+      }
 
       setFileInfos((prev) => ({
         ...prev,
