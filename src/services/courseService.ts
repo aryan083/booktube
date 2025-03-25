@@ -202,7 +202,7 @@ export const createCourse = async (courseData: CourseData) => {
     console.log('Current user data:', userData);
 
     // Update courses_json array in users table
-    const coursesJson: string[] = userData?.courses_json || [];
+    const coursesJson: string[] = Array.isArray(userData?.courses_json) ? userData.courses_json : [];
     coursesJson.push(newCourse.course_id);
 
     // Update the user's courses_json
