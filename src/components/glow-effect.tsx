@@ -4,6 +4,7 @@ import { Box, Lock, Moon, Search, Settings, Sparkles, Sun } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Blendy, createBlendy } from "blendy";
 import { useEffect, useId, useRef, useState } from "react";
+import { downloadPDF } from "@/services/downloadPDF";
 import {
   extractColorsFromImage,
   ColorPalette,
@@ -461,6 +462,41 @@ function Modal({
                 <span style={{ color: modalStyle.color }}>BookTube</span>
               </h2>
               <div className="flex items-center gap-2">
+                <button
+                  className="px-3 py-2 rounded-full flex items-center gap-2 justify-center group border hover:bg-opacity-80"
+                  onClick={() => {
+                    const modalContent = document.querySelector(
+                      `[data-blendy-to="${id}"]`
+                    );
+                    if (modalContent) {
+                      downloadPDF(modalContent as HTMLElement, title);
+                    }
+                  }}
+                  aria-label="Download article as PDF"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    borderColor:
+                      colorMode === "light"
+                        ? "rgba(0, 0, 0, 0.1)"
+                        : "rgba(255, 255, 255, 0.1)",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={modalStyle.color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                </button>
                 <button
                   className={`px-3 py-2 rounded-full flex items-center gap-2 justify-center group border ${
                     isCompleted ? "cursor-default" : "hover:bg-opacity-80"
