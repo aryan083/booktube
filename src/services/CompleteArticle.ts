@@ -46,7 +46,7 @@ export const toggleArticleCompletion = async (article_id: string) => {
 
 
     if (hellodata && hellodata[0]) {
-        toast.success(`CYou successfully learnt ${hellodata[0].topic_name} through this article! Keep up the good work!`);
+        toast.success(`You successfully learnt ${hellodata[0].topic_name} through this article! Keep up the good work!`);
     } else {
         toast.success(`You successfully completed the article : ${data[0].article_name}.`);
        }
