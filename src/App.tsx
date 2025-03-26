@@ -48,6 +48,7 @@ function Home() {
             <div className="grid pl-6 pr-4">
               <GlowingEffectDemo />
               <GlowingEffectDemo />
+              <GlowingEffectDemo />
             </div>
           </div>
         </SidebarInset>
@@ -94,7 +95,14 @@ function MainContent() {
         }
       />
       {/* <Route path="/courses" element={<Courses />} /> */}
-      <Route path="/course/:courseId" element={<AuthGuard><CourseDetails /></AuthGuard>} />
+      <Route
+        path="/course/:courseId"
+        element={
+          <AuthGuard>
+            <CourseDetails />
+          </AuthGuard>
+        }
+      />
       {/* <Route path="/auth" element={<Auth />} /> */}
       <Route
         path="/"

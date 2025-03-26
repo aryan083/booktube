@@ -233,7 +233,7 @@ const GridItem = ({
         )}
 
       <div
-        className="relative h-full rounded-2xl border  sm:rounded-2xl  md:rounded-2xl "
+        className="relative h-full rounded-2xl border  "
         data-blendy-from={id}
         style={outerCardStyle}
         onClick={() => {
@@ -259,7 +259,9 @@ const GridItem = ({
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            filter: backgroundImage ? "grayscale(00%)" : "none", // Make image black and white
+            filter: backgroundImage
+              ? "grayscale(100%) hover:grayscale(0)"
+              : "none", // Make image black and white with hover effect
             padding: "17px",
             fontWeight: "500",
           }}
@@ -466,9 +468,19 @@ function Modal({
 
   return (
     <div
-      className="modal    justify-center"
+      className="modal "
       data-blendy-to={id}
-      style={modalStyle}
+      style={{
+        ...modalStyle,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        // width: "100vw",
+        // height: "100vh",
+        // display: "flex",
+        // alignItems: "center",
+        // justifyContent: "center",
+      }}
     >
       <div className="h-[100vh]">
         {!isLoading && (
@@ -478,7 +490,13 @@ function Modal({
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
             }`}
-            style={modalStyle}
+            style={{
+              ...modalStyle,
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             <div className="modal__header" style={headerStyle}>
               <h2 className="modal__title flex items-center gap-2 text-lg">
