@@ -105,10 +105,9 @@ export function GlowingEffectDemo() {
 
   // Take only the first 5 articles for display
   const displayCount = Math.min(5, processedArticles.ids.length);
-  
 
   return (
-    <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 py-2 overflow-y-auto scrollbar-hide">
+    <ul className="grid grid-cols-2 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-3 xl:max-h-[34rem] xl:grid-rows-2 pt-2 pb-1 overflow-y-auto scrollbar-hide">
       {[...Array(displayCount)].map((_, index) => {
         const id = processedArticles.ids[index];
         const title = processedArticles.names[index];
@@ -126,7 +125,7 @@ export function GlowingEffectDemo() {
             cardStyle={{
               backgroundColor: "none",
               border: "0.2px solid zinc",
-              color: index % 2 === 0 ? "#000" : "#FFF",
+              color: "white",
             }}
             backgroundImage={imageUrl}
             article_id={id}
@@ -214,7 +213,7 @@ const GridItem = ({
   };
 
   return (
-    <li className={`min-h-[14rem] list-none ${area}`}>
+    <li className={`min-h-[16rem] list-none ${area}`}>
       {showModal &&
         createPortal(
           <Modal
@@ -234,7 +233,7 @@ const GridItem = ({
         )}
 
       <div
-        className="relative h-full rounded-2.5xl border p-2 md:rounded-3xl md:p-3"
+        className="relative h-full rounded-2xl border  sm:rounded-2xl  md:rounded-2xl "
         data-blendy-from={id}
         style={outerCardStyle}
         onClick={() => {
@@ -251,24 +250,26 @@ const GridItem = ({
           children={undefined}
         />
         <div
-          className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0.75 p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D] md:p-6"
+          className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl  "
           style={{
             ...cardStyle,
             backgroundImage: backgroundImage
-              ? `url(${backgroundImage})`
+              ? `linear-gradient(to bottom, rgb(0, 0, 0,0) 0%, rgba(0, 0, 0) 90%, rgba(0, 0, 0) 100%), url(${backgroundImage})`
               : "none",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             filter: backgroundImage ? "grayscale(00%)" : "none", // Make image black and white
+            padding: "17px",
+            fontWeight: "500",
           }}
         >
           <div className="relative flex flex-1 flex-col justify-between gap-3">
-            <div className="w-fit rounded-lg border border-gray-600 p-2 ">
-              {icon}
+            <div className="w-fit rounded-lg  border-gray-600 p-2 ">
+              {/* {icon} */}
             </div>
             <div className="">
-              <h3 className="pt-0.5 text-xl/[1.375rem] font-semibold font-sans -tracking-4 md:text-2xl/[1.875rem] text-balance">
+              <h3 className="pt-0.5 text-xl -tracking-4  text-balance">
                 {title}
               </h3>
               <h2
@@ -465,14 +466,14 @@ function Modal({
 
   return (
     <div
-      className="modal  z-flex items-center justify-center"
+      className="modal    justify-center"
       data-blendy-to={id}
-      style={{ backgroundColor: "#ffffff" }}
+      style={modalStyle}
     >
-      <div className="min-h-[80vh] w-full relative">
+      <div className="h-[100vh]">
         {!isLoading && (
           <div
-            className={`transition-opacity allmodalcontent duration-200 transform ${
+            className={`transition-opacity allmodalcontent h-[100vh] duration-200 transform  ${
               showContent
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
