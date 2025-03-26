@@ -5,6 +5,7 @@ import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Blendy, createBlendy } from "blendy";
 import { useEffect, useId, useRef, useState } from "react";
 import { downloadPDF } from "@/services/downloadPDF";
+import { fetchUserCourses } from "@/services/courseService";
 import {
   extractColorsFromImage,
   ColorPalette,
@@ -53,7 +54,11 @@ export function GlowingEffectDemo() {
       try {
         setIsLoading(true);
         const { data, error } = await fetchArticles();
-
+        const { data: courses, error: coursesError } = await fetchUserCourses();
+        if (coursesError) {
+          setError(coursesError);
+          return;
+        }
         if (error) {
           setError(error);
         } else if (data) {
@@ -99,6 +104,7 @@ export function GlowingEffectDemo() {
 
   // Take only the first 5 articles for display
   const displayCount = Math.min(5, processedArticles.ids.length);
+  
 
   return (
     <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 py-2 overflow-y-auto scrollbar-hide">

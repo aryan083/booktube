@@ -88,6 +88,77 @@ const createTopics = async (courseContent: CourseContent) => {
   }
 };
 
+export const fetchUserCourses = async () => {
+  try {
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      console.error('Error getting current user:', userError);
+      return { data: null, error: userError };
+    }
+
+    console.log('Current user ID:', user.id);
+
+    // Get user's course IDs from users table
+    const { data: userData, error: userDataError } = await supabase
+      .from('users')
+      .select('*')  // Select all columns to see full data
+      .eq('user_id', user.id)
+      .single();
+
+    if (userDataError || !userData) {
+      console.error('Error fetching user data:', userDataError);
+      return { data: null, error: userDataError };
+    }
+
+    console.log('Full user data:', userData);
+    console.log('Raw courses_json:', userData.courses_json);
+
+    // Check if courses_json is null or undefined
+    if (!userData.courses_json) {
+      console.log('courses_json is null or undefined');
+      return { data: [], error: null };
+    }
+
+    // Try parsing if it's a string
+    let coursesJson = userData.courses_json;
+    if (typeof coursesJson === 'string') {
+      try {
+        // coursesJson = [...coursesJson];
+        console.log('Parsed courses_json:', coursesJson);
+      } catch (e) {
+        console.error('Error parsing courses_json:', e);
+      }
+    }
+
+    const courseIds = coursesJson|| [];
+    console.log('Extracted course IDs:', courseIds);
+
+    if (courseIds.length === 0) {
+      console.log('User has no courses');
+      return { data: [], error: null };
+    }
+
+    // Fetch course names for these IDs
+    const { data: courses, error: coursesError } = await supabase
+      .from('courses')
+      .select('course_name')
+      .in('course_id', courseIds);
+
+    if (coursesError) {
+      console.error('Error fetching courses:', coursesError);
+      return { data: null, error: coursesError };
+    }
+
+    console.log('User courses:', courses);
+    return { data: courses, error: null };
+
+  } catch (error) {
+    console.error('Unexpected error in fetchUserCourses:', error);
+    return { data: null, error };
+  }
+};
 /**
  * Creates chapters in the chapters table and returns their IDs
  * @param chapterNames Array of chapter names to create
