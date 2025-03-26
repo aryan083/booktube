@@ -111,7 +111,7 @@ export const fetchUserCourses = async () => {
       console.error('Error fetching user data:', userDataError);
       return { data: null, error: userDataError };
     }
-
+    console.log('dtype:', typeof userData.courses_json);
     console.log('Full user data:', userData);
     console.log('Raw courses_json:', userData.courses_json);
 

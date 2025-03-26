@@ -21,6 +21,7 @@ import WorkflowModal from "./components/WorkflowModal";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
+import CourseDetails from "./pages/CourseDetails";
 import Auth from "./pages/Auth";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import SignUpForm from "./pages/SignUp";
@@ -92,6 +93,9 @@ function MainContent() {
           </AuthGuard>
         }
       />
+      {/* <Route path="/courses" element={<Courses />} /> */}
+      <Route path="/course/:courseId" element={<AuthGuard><CourseDetails /></AuthGuard>} />
+      {/* <Route path="/auth" element={<Auth />} /> */}
       <Route
         path="/"
         element={
@@ -130,9 +134,7 @@ function MainContent() {
 
 function App() {
   const queryClient = new QueryClient();
-
   const blendy = useRef<Blendy | null>(null);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     blendy.current = createBlendy({ animation: "dynamic" });
