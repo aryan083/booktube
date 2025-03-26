@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 /**
  * Toggles the completion status of an article to true
@@ -24,9 +25,45 @@ export const toggleArticleCompletion = async (article_id: string) => {
       console.warn('No article found with the provided ID');
       return { data: null, error: 'Article not found' };
     }
+    
+    const { data: topicData, error: topicError } = await supabase
+      .from('articles')
+      .select('topic_id')
+      .eq('article_id', article_id)
+      .single()
+    
+    console.log('Topic data:', topicData?.topic_id);
+
+    const topic_id = topicData?.topic_id;
+
+    const { data: hellodata, error: helloerror } = await supabase
+    .from('topics')
+    .update({ isCompleted: true })
+    .eq('topic_id', topic_id)
+    .select();
+    
+    console.log('Hello data:', hellodata);
+
+
+    if (hellodata && hellodata[0]) {
+        toast.success(`CYou successfully learnt ${hellodata[0].topic_name} through this article! Keep up the good work!`);
+    } else {
+        toast.success(`You successfully completed the article : ${data[0].article_name}.`);
+       }
+
+
+
+
+
+
+
+
+    // console.log('Topic error:', topicError);
 
     console.log('Successfully updated article completion status:', data[0]);
     return { data: data[0], error: null };
+
+    // Show success toast notification
 
   } catch (error) {
     console.error('Unexpected error while updating article:', error);
