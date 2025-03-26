@@ -15,6 +15,7 @@ import {
 import { createPortal } from "react-dom";
 import { fetchArticles, ArticleData } from "@/services/articleService";
 import { toggleArticleCompletion } from "@/services/CompleteArticle";
+import DOMPurify from "dompurify";
 
 export function GlowingEffectDemo() {
   const [articles, setArticles] = useState<ArticleData[]>([]);
@@ -294,7 +295,7 @@ interface ModalProps {
 // Import ExtractedColors interface from materialColorUtils.ts
 import { ExtractedColors, getTextColor } from "@/utils/materialColorUtils";
 import { supabase } from "@/lib/supabase";
-import { toggleArticleBookmark } from "@/services/BookmarkArticle";
+// import { toggleArticleBookmark } from "@/services/BookmarkArticle";
 
 // Fix Modal component definition to use proper props
 function Modal({
@@ -324,6 +325,35 @@ function Modal({
   const toggleColorMode = () => {
     setColorMode(colorMode === "light" ? "dark" : "light");
   };
+
+  const [content, setContent] = useState<string>("");
+  const [contentLoading, setContentLoading] = useState(false);
+  const [contentError, setContentError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchArticleContent = async () => {
+      try {
+        setContentLoading(true);
+        const { data, error } = await supabase
+          .from("articles")
+          .select("content_text")
+          .eq("article_id", article_id)
+          .single();
+
+        if (error) throw error;
+        setContent(data?.content_text || "");
+      } catch (err) {
+        setContentError("Failed to load article content");
+        console.error("Content fetch error:", err);
+      } finally {
+        setContentLoading(false);
+      }
+    };
+
+    if (article_id) {
+      fetchArticleContent();
+    }
+  }, [article_id]);
 
   useEffect(() => {
     // Check if the article is completed and bookmarked
@@ -735,7 +765,7 @@ function Modal({
                 />
                 <div className="space-y-6 px-4">
                   <div className="flex items-center gap-3">
-                    <div
+                    {/* <div
                       className="p-2 rounded-lg"
                       style={{
                         backgroundColor:
@@ -746,7 +776,7 @@ function Modal({
                       }}
                     >
                       {icon}
-                    </div>
+                    </div> */}
                     <h1 className="text-5xl font-bold">{title}</h1>
                   </div>
                   <div
@@ -771,6 +801,22 @@ function Modal({
                     >
                       Share
                     </div>
+                  </div>
+                  <div className="prose dark:prose-invert">
+                    {contentLoading && (
+                      <div className="text-center py-4">Loading content...</div>
+                    )}
+                    {contentError && (
+                      <div className="text-red-500 py-4">{contentError}</div>
+                    )}
+                    {content && (
+                      <div
+                        className=""
+                        dangerouslySetInnerHTML={{
+                          __html: DOMPurify.sanitize(content),
+                        }}
+                      />
+                    )}
                   </div>
                   {themePalette && (
                     <div

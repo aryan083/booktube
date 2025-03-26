@@ -140,32 +140,30 @@ function App() {
 
   return (
     <ClickSpark
-  sparkColor='#fff'
-  sparkSize={10}
-  sparkRadius={15}
-  sparkCount={8}
-  duration={400}
->
-  
-
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Router>
-          <AuthProvider>
-            <SidebarProvider>
-              <div className="relative flex min-h-screen ">
-                <div className="flex-1">
-                  <MainContent />
+      sparkColor="#fff"
+      sparkSize={10}
+      sparkRadius={15}
+      sparkCount={8}
+      duration={400}
+    >
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Router>
+            <AuthProvider>
+              <SidebarProvider>
+                <div className="relative flex min-h-screen ">
+                  <div className="flex-1">
+                    <MainContent />
+                  </div>
                 </div>
-              </div>
-              <CommandPalette />
-              <Toaster />
-              <Sonner />
-            </SidebarProvider>
-          </AuthProvider>
-        </Router>
-      </TooltipProvider>
-    </QueryClientProvider>
+                <CommandPalette />
+                <Toaster />
+                <Sonner />
+              </SidebarProvider>
+            </AuthProvider>
+          </Router>
+        </TooltipProvider>
+      </QueryClientProvider>
     </ClickSpark>
   );
 }
