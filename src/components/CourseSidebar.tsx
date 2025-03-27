@@ -42,7 +42,9 @@ const calculateProgress = () => {
 
   chapters.forEach((chapter) => {
     totalTopics += chapter.subtopics.length;
-    completedTopics += chapter.subtopics.filter((topic) => topic.completed).length;
+    completedTopics += chapter.subtopics.filter(
+      (topic) => topic.completed
+    ).length;
   });
 
   return Math.round((completedTopics / totalTopics) * 100);
@@ -55,10 +57,12 @@ export const CourseSidebar = () => {
     <div className="h-full bg-[#070707] border-r border-[#2D2D2D]">
       <div className="p-6 space-y-6">
         <div>
-          <h2 className="text-lg font-medium text-white mb-1">Computer Networks</h2>
+          <h2 className="text-lg font-medium text-white mb-1">
+            Computer Networks
+          </h2>
           <p className="text-sm text-gray-400">Essential Concepts</p>
         </div>
-        
+
         {/* Progress bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -82,18 +86,23 @@ export const CourseSidebar = () => {
             <button
               key={index}
               className={`w-full text-left p-3 rounded flex items-center gap-3 transition-colors
-                ${chapter.current ? 'bg-[#2D2D2D]' : 'hover:bg-[#2D2D2D]'}`}
+                ${chapter.current ? "bg-[#2D2D2D]" : "hover:bg-[#2D2D2D]"}`}
             >
               {chapter.completed ? (
                 <div className="w-5 h-5 rounded-full bg-[#4B6CC1] flex items-center justify-center flex-shrink-0">
                   <Check className="h-3 w-3 text-white" />
                 </div>
               ) : (
-                <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0
-                  ${chapter.current ? 'border-[#4B6CC1]' : 'border-gray-500'}`} 
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex-shrink-0
+                  ${chapter.current ? "border-[#4B6CC1]" : "border-gray-500"}`}
                 />
               )}
-              <span className={`text-sm ${chapter.current ? 'text-white font-medium' : 'text-gray-400'}`}>
+              <span
+                className={`text-sm ${
+                  chapter.current ? "text-white font-medium" : "text-gray-400"
+                }`}
+              >
                 {chapter.title}
               </span>
             </button>

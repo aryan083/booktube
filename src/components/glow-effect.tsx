@@ -1,4 +1,5 @@
 "use client";
+import VariableProximity from "./VariableProximity";
 
 import { Box, Lock, Moon, Search, Settings, Sparkles, Sun } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
@@ -182,6 +183,8 @@ const GridItem = ({
     return "#" + toHex(r) + toHex(g) + toHex(b);
   };
 
+  const containerRef = useRef(null);
+
   const outerCardStyle = {
     ...cardStyle,
     backgroundColor: darkenColor(cardStyle.backgroundColor as string, 0.9999),
@@ -271,8 +274,22 @@ const GridItem = ({
               {/* {icon} */}
             </div>
             <div className="">
-              <h3 className="pt-0.5 text-xl -tracking-4  text-balance">
-                {title}
+              <h3 className=" text-xl -tracking-4  text-balance">
+                <div
+                  ref={containerRef}
+                  className=" hover:cursor-pointer"
+                  // style={{ position: "relative", zIndex: "10" }}
+                >
+                  <VariableProximity
+                    label={title}
+                    className={"variable-proximity-demo"}
+                    fromFontVariationSettings="'wght' 400, 'opsz' 9"
+                    toFontVariationSettings="'wght' 750, 'opsz' 40"
+                    containerRef={containerRef}
+                    radius={75}
+                    falloff="gaussian"
+                  />
+                </div>
               </h3>
               <h2
                 className="[&_b]:md:font-semibold [&_strong]:md:font-semibold font-sans text-sm/[1.125rem] 
@@ -493,7 +510,7 @@ function Modal({
             style={{
               ...modalStyle,
               margin: 0,
-              display: "flex",
+              // display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -692,37 +709,6 @@ function Modal({
                   </svg>
                 </button>
 
-                {/* <button
-                  className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
-                  onClick={async () => {
-                    const user = await supabase.auth.getUser();
-                    const user_id = user?.data?.user?.id || "anonymous";
-                    const result = await toggleArticleBookmark(
-                      user_id,
-                      article_id,
-                      title
-                    );
-                    if (result.error) {
-                      console.error("Failed to toggle bookmark:", result.error);
-                    }
-                  }}
-                  aria-label="Bookmark this article"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke={modalStyle.color}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                </button> */}
                 <button
                   className="p-2 rounded-full hover:bg-opacity-80 transition-colors duration-200 flex items-center justify-center"
                   onClick={toggleColorMode}
