@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import Aurora from "../components/Aurora";
+import VariableProximity from "../components/VariableProximity";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchUserCourses } from "../services/fetchCourses";
 import { CourseData } from "../services/fetchCourses";
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/lib/supabase";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { ArrowLeft } from "lucide-react";
 
 const Courses = () => {
   const [courses, setCourses] = useState<CourseData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check for authenticated user
     const getCurrentUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
         // Load courses immediately after getting user
@@ -58,75 +65,95 @@ const Courses = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black px-6 sm:px-8 py-8 w-full">
-      <h1 className="text-3xl font-bold text-[#D4D4D4] mb-6 px-2">
-        My Learning
-      </h1>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 px-2">
-        {courses.length === 0 ? (
-          <div className="text-[#D4D4D4]">No courses found.</div>
-        ) : (
-          courses.map((course) => (
-            <Link
-              key={course.course_id}
-              to={`/course/${course.course_id}`}
-              className="block group"
+    <div className="min-h-screen relative w-full overflow-hidden bg-gradient-to-br from-[#000000] to-[#0A0A0A] text-foreground container">
+      {/* <Aurora /> */}
+      <div className="px-3 md:px-4 pt-8">
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </button>
+          <h1 className="text-4xl font-bold tracking-tight text-primary">
+            My Learning
+          </h1>
+        </div>
+        <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
+          {courses.length === 0 ? (
+            <VariableProximity
+              className="text-lg text-muted-foreground"
+              baseDistance={0.15}
+              fluctuation={0.05}
             >
-              <div className="bg-[#1E1E1E] rounded-xl p-4 transition-all duration-300 hover:bg-[#282828] hover:shadow-lg hover:shadow-blue-500/5 border border-transparent hover:border-blue-500/10 h-[180px] w-full relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="flex flex-col h-full">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="relative flex-shrink-0">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 flex items-center justify-center p-2 backdrop-blur-sm border border-white/5">
+              No courses found - start your learning journey!
+            </VariableProximity>
+          ) : (
+            courses.map((course) => (
+              <Link
+                key={course.course_id}
+                to={`/course/${course.course_id}`}
+                className="group transition-all hover:shadow-lg  duration-300"
+              >
+                <div className="relative bg-gradient-to-b from-card to-card/90 text-card-foreground rounded-xl p-7 shadow-lg border border-border/40 backdrop-blur-sm hover:border-border/60 transition-all duration-300">
+                  <GlowingEffect
+                    spread={40}
+                    glow={true}
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                    children={undefined}
+                  />
+                  <div className="flex flex-col h-full gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="relative flex-shrink-0 bg-muted/60 p-2 rounded-lg border">
                         <img
-                          src="https://img.icons8.com/ios-filled/50/4B6CC1/book.png"
+                          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25' /%3E%3C/svg%3E"
                           alt={`${course.course_name} logo`}
-                          className="w-full h-full object-contain"
+                          className="w-4 h-4"
                         />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500/10 rounded-full border border-blue-500/20" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-lg font-semibold text-white tracking-tight truncate">
+                      <h2 className="text-2xl font-semibold truncate">
                         {course.course_name}
                       </h2>
                     </div>
-                  </div>
 
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <div className="space-y-1.5">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-[#B4B4B4]">Course Progress</span>
-                          <span className="text-white font-medium">
-                            {course.progress}% complete
+                          <span className="text-muted-foreground">
+                            Course Progress
+                          </span>
+                          <span className="font-medium">
+                            {course.progress}%
                           </span>
                         </div>
-                        <div className="h-1.5 bg-[#282828] rounded-full overflow-hidden">
+                        <div className="h-2 bg-muted/60 rounded-full overflow-hidden shadow-inner">
                           <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
+                            className="h-full bg-gradient-to-r from-primary/90 to-primary/70 transition-all duration-300 ease-out shadow-lg relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:animate-shimmer"
                             style={{ width: `${course.progress}%` }}
                           />
                         </div>
                       </div>
-
-                      <div className="flex flex-wrap gap-1.5">
+                      {/* 
+                      <div className="flex flex-wrap gap-2">
                         {course.teaching_pattern?.map((pattern, idx) => (
                           <span
                             key={idx}
-                            className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20 truncate max-w-[100vw]"
+                            className="text-xs font-medium px-2.5 py-1 border bg-white/10 rounded-full bg-secondary "
                           >
                             {pattern}
                           </span>
                         ))}
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))
-        )}
+              </Link>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
