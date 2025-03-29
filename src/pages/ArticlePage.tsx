@@ -16,7 +16,7 @@ import {
   hsvToHex,
 } from "@/utils/materialColorUtils";
 import { toggleArticleCompletion } from "@/services/CompleteArticle";
-import { toggleArticleBookmark } from "@/services/BookMarkArticle";
+import { toggleArticleBookmark } from "@/services/BookmarkArticle";
 import { downloadPDF } from "@/services/downloadPDF";
 
 export default function ArticlePage() {
