@@ -19,10 +19,17 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Blendy, createBlendy } from "blendy";
 import ClickSpark from "./components/ClickSpark";
-<<<<<<< Updated upstream
-import MainContent from "./routes/MainContent";
-=======
-import ArticlePage from "@/pages/ArticlePage";
+
+import WorkflowModal from "./components/WorkflowModal";
+import { GlowingEffectDemo } from "./components/glow-effect";
+import { AppSidebar } from "./components/app-sidebar";
+import SignUpForm from "./pages/SignUp";
+import Profile01 from "./components/kokonutui/profile-01";
+import { SignInForm } from "./pages/SignIn";
+import CourseDetails from "./pages/CourseDetails";
+import Courses from "./pages/Courses";
+import ArticlePage from "./pages/ArticlePage";
+import NotFound from "./pages/NotFound";
 
 // Home component that shows sidebar and glowing effect
 function Home() {
@@ -170,7 +177,7 @@ function MainContent() {
     </Routes>
   );
 }
->>>>>>> Stashed changes
+// >>>>>>> Stashed changes
 
 function App() {
   const queryClient = new QueryClient();

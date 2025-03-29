@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 # typescript
 .qodo
+notebooks/Google-Image-Scraper/
