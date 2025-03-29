@@ -19,6 +19,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Blendy, createBlendy } from "blendy";
 import ClickSpark from "./components/ClickSpark";
+import ArticlePage from "@/pages/ArticlePage";
 
 import WorkflowModal from "./components/WorkflowModal";
 import { GlowingEffectDemo } from "./components/glow-effect";
