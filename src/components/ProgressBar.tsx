@@ -5,7 +5,8 @@ export const ProgressBar = () => {
 
   useEffect(() => {
     const updateProgress = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
       const scrolled = window.scrollY;
       const progress = (scrolled / scrollHeight) * 100;
       setProgress(progress);

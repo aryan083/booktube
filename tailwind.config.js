@@ -118,7 +118,10 @@ module.exports = {
 				"slide-in-left": "slide-in-left 0.3s ease-out",
 				"fade-in": "fade-in 0.3s ease-out",
 			  },
-  		}
+  		},
+  		maxWidth: {
+  			'screen': '100vw',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

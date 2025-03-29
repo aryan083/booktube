@@ -65,9 +65,8 @@ const Courses = () => {
   }
 
   return (
-    <div className="min-h-screen relative w-full overflow-hidden bg-gradient-to-br from-[#000000] to-[#0A0A0A] text-foreground container">
-      {/* <Aurora /> */}
-      <div className="px-3 md:px-4 pt-8">
+    <div className="min-h-screen relative w-full overflow-hidden bg-gradient-to-br from-[#000000] to-[#0A0A0A] text-foreground">
+      <div className="px-3 md:px-4 pt-8 max-w-[1400px] mx-auto w-full">
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => navigate(-1)}
@@ -80,7 +79,7 @@ const Courses = () => {
             My Learning
           </h1>
         </div>
-        <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
+        <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-2 w-full">
           {courses.length === 0 ? (
             <VariableProximity
               className="text-lg text-muted-foreground"

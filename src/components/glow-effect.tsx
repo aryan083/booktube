@@ -17,6 +17,7 @@ import { createPortal } from "react-dom";
 import { fetchArticles, ArticleData } from "@/services/articleService";
 import { toggleArticleCompletion } from "@/services/CompleteArticle";
 import DOMPurify from "dompurify";
+import { useNavigate } from "react-router-dom";
 
 export function GlowingEffectDemo() {
   const [articles, setArticles] = useState<ArticleData[]>([]);
@@ -95,6 +96,8 @@ export function GlowingEffectDemo() {
     "md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]",
     "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]",
   ];
+
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -248,6 +251,8 @@ const GridItem = ({
     });
   };
 
+  const navigate = useNavigate();
+
   return (
     <li className={`min-h-[16rem] list-none ${area}`}>
       {showModal &&
@@ -272,10 +277,7 @@ const GridItem = ({
         className="relative h-full rounded-2xl border  "
         data-blendy-from={id}
         style={outerCardStyle}
-        onClick={() => {
-          setShowModal(true);
-          blendy.current?.toggle(id);
-        }}
+        onClick={() => navigate(`/article/${article_id}`)}
       >
         <GlowingEffect
           spread={40}
