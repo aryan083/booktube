@@ -144,10 +144,10 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
     // Fetch all topics at once
     const { data: topicsData, error: topicsError } = await supabase
       .from('topics')
-      .select('topic_name, topic_id')
+      .select('topic_name, topic_id, isCompleted')
       .in('topic_id', allTopicIds);
 
-    console.log('Topics Data:', topicsData);
+    console.log('Topics Data with completion status:', topicsData);
 
     if (topicsError) {
       console.error('Error fetching topics:', topicsError);
@@ -167,9 +167,12 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
       };
     }
 
-    // Create a map of topic IDs to topic objects
+    // Create a map of topic IDs to topic objects including isCompleted status
     const topicsMap = new Map(
-      topicsData.map(topic => [topic.topic_id, topic])
+      topicsData.map(topic => [topic.topic_id, {
+        ...topic,
+        isCompleted: topic.isCompleted || false // Default to false if null
+      }])
     );
 
     // Construct the final course details object
@@ -183,7 +186,6 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
             : chapter.topics_json;
 
           if (parsedData && typeof parsedData === 'object') {
-            // Check for both "topics" and "topic_ids" fields
             topicIds = parsedData.topics || parsedData.topic_ids || [];
           } else {
             console.error(`Chapter ${chapter.chapter_id} topics_json does not have expected structure`);
@@ -196,6 +198,13 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
       const chapterTopics = topicIds
         .map(topicId => topicsMap.get(topicId))
         .filter(Boolean) as Topic[];
+
+      console.log(`Topics completion status for chapter ${chapter.chapter_name}:`, 
+        chapterTopics.map(topic => ({
+          topic_name: topic.topic_name,
+          isCompleted: topic.isCompleted
+        }))
+      );
 
       return {
         chapter_id: chapter.chapter_id,
