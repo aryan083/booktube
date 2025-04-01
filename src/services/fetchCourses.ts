@@ -7,9 +7,60 @@ import { supabase } from '@/lib/supabase';
 export interface CourseData {
   course_id: string;
   course_name: string;
-  progress?: number;
+  progress: number;
   teaching_pattern?: string[];
 }
+
+// Add new function to calculate course progress
+const calculateCourseProgress = async (courseId: string): Promise<number> => {
+  try {
+    // First get all topics for the course
+    const { data: courseData } = await supabase
+      .from('courses')
+      .select('chapters_json')
+      .eq('course_id', courseId)
+      .single();
+
+    if (!courseData?.chapters_json) return 0;
+
+    const chapterIds = courseData.chapters_json.chapters || [];
+    
+    // Get all topics from chapters
+    const { data: chaptersData } = await supabase
+      .from('chapters')
+      .select('topics_json')
+      .in('chapter_id', chapterIds);
+
+    if (!chaptersData) return 0;
+
+    // Collect all topic IDs
+    const topicIds = chaptersData.reduce((acc: string[], chapter) => {
+      if (!chapter.topics_json) return acc;
+      const topics = typeof chapter.topics_json === 'string' 
+        ? JSON.parse(chapter.topics_json) 
+        : chapter.topics_json;
+      return [...acc, ...(topics.topics || topics.topic_ids || [])];
+    }, []);
+
+    if (topicIds.length === 0) return 0;
+
+    // Get completion status of all topics
+    const { data: topicsData } = await supabase
+      .from('topics')
+      .select('isCompleted')
+      .in('topic_id', topicIds);
+
+    if (!topicsData) return 0;
+
+    const completedTopics = topicsData.filter(topic => topic.isCompleted).length;
+    const totalTopics = topicsData.length;
+
+    return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+  } catch (error) {
+    console.error('Error calculating course progress:', error);
+    return 0;
+  }
+};
 
 /**
  * Fetches courses for the logged-in user from Supabase
@@ -59,14 +110,20 @@ export const fetchUserCourses = async () => {
       return { data: null, error: coursesError };
     }
 
-    // Add default progress and teaching pattern
-    const coursesWithDefaults = courses.map(course => ({
-      ...course,
-      progress: 0,
-      teaching_pattern: course.teaching_pattern ||  ['Online Learning']
-    }));
+    // Calculate progress for each course
+    const coursesWithProgress = await Promise.all(
+      courses.map(async (course) => {
+        const progress = await calculateCourseProgress(course.course_id);
+        return {
+          ...course,
+          progress,
+          teaching_pattern: course.teaching_pattern || ['Online Learning']
+        };
+      })
+    );
 
-    return { data: coursesWithDefaults as CourseData[], error: null };
+    console.log('Courses with calculated progress:', coursesWithProgress);
+    return { data: coursesWithProgress as CourseData[], error: null };
   } catch (error) {
     console.error('Error in fetchUserCourses:', error);
     return { data: null, error };
