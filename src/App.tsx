@@ -19,6 +19,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Blendy, createBlendy } from "blendy";
 import ClickSpark from "./components/ClickSpark";
+
+import History from "./pages/History"
 // import ArticlePage from "@/pages/ArticlePage";
 
 import WorkflowModal from "./components/WorkflowModal";
@@ -148,6 +150,14 @@ function MainContent() {
         element={
           <AuthGuard>
             <Courses />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <AuthGuard>
+            <History/>
           </AuthGuard>
         }
       />

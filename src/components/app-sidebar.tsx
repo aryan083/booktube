@@ -9,6 +9,9 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   SquareTerminal,
+  Beaker,
+  Bookmark,
+  Clock,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -45,7 +48,7 @@ const data = {
   },
   teams: [
     {
-      name: "BookTube",
+      name: "booktube",
       logo: Gamepad,
     },
   ],
@@ -91,7 +94,22 @@ const data = {
     {
       name: "History",
       url: "/history",
+      icon: Clock,
+    },
+    {
+      name: "Playlists",
+      url: "/playlist",
+      icon: PlusCircle,
+    },
+    {
+      name: "Read Later",
+      url: "/read_later",
       icon: GalleryVerticalEnd,
+    },
+    {
+      name: "Bookmarked Articles",
+      url: "/bookmarked_articles",
+      icon: Bookmark,
     },
   ],
 };
@@ -111,7 +129,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
     {
       title: "Ongoing Courses",
       url: "#",
-      icon: SquareTerminal,
+      icon: Beaker,
       isActive: true,
       items: [
         {
@@ -131,7 +149,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
     {
       title: "Bookmarked Articles",
       url: "#",
-      icon: Bot,
+      icon: Bookmark,
       items: [],
     },
   ]);
@@ -168,10 +186,10 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
     fetchBookmarkedArticles();
   }, [user]);
 
-  const startFlow = () => {
-    setFlowStartTime(Date.now());
-    setIsModalOpen(true);
-  };
+  // const startFlow = () => {
+  //   setFlowStartTime(Date.now());
+  //   setIsModalOpen(true);
+  // };
 
   return (
     <>

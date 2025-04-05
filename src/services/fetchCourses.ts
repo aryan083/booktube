@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
  * @interface CourseData
  */
 export interface CourseData {
+  course_img: string | undefined;
   course_id: string;
   course_name: string;
   progress: number;

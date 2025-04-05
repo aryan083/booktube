@@ -40,6 +40,11 @@ const Courses = () => {
     getCurrentUser();
   }, []);
 
+
+  
+
+
+
   if (!user) {
     return (
       <div className="min-h-screen bg-black p-11 text-[#D4D4D4]">
@@ -47,6 +52,8 @@ const Courses = () => {
       </div>
     );
   }
+
+  
 
   if (loading) {
     return (
@@ -59,7 +66,9 @@ const Courses = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-black p-11 text-[#D4D4D4]">
-        Error loading courses: {error.message}
+        Error loading courses: 
+        <br/>
+        {error.message}
       </div>
     );
   }
@@ -67,19 +76,19 @@ const Courses = () => {
   return (
     <div className="min-h-screen relative w-full overflow-hidden bg-gradient-to-br from-[#000000] to-[#0A0A0A] text-foreground">
       <div className="px-3 md:px-4 pt-8 max-w-[1400px] mx-auto w-full">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors"
+            className="flex items-center  text-muted-foreground hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            Back
+            
           </button>
           <h1 className="text-4xl font-bold tracking-tight text-primary">
             My Learning
           </h1>
         </div>
-        <div className="grid gap-6 md:gap-8 lg:grid-cols-2 xl:grid-cols-2 w-full">
+        <div className="grid gap-4 md:gap-4 lg:grid-cols-2 xl:grid-cols-2 w-full">
           {courses.length === 0 ? (
             <VariableProximity
               className="text-lg text-muted-foreground"
@@ -95,7 +104,7 @@ const Courses = () => {
                 to={`/course/${course.course_id}`}
                 className="group transition-all hover:shadow-lg  duration-300"
               >
-                <div className="relative bg-gradient-to-b from-card to-card/90 text-card-foreground rounded-xl p-7 shadow-lg border border-border/40 backdrop-blur-sm hover:border-border/60 transition-all duration-300">
+                <div className="relative bg-gradient-to-b from-card to-card/90 text-card-foreground rounded-xl p-5 shadow-lg border border-border/40 backdrop-blur-sm hover:border-border/60 transition-all duration-300">
                   <GlowingEffect
                     spread={40}
                     glow={true}
@@ -105,8 +114,17 @@ const Courses = () => {
                     children={undefined}
                   />
                   <div className="flex flex-col h-full gap-4">
+                  <div className="relative w-full h-20 rounded-lg overflow-hidden">
+  <img
+    src={course.course_img}
+    alt={course.course_name }
+    className="w-full h-full object-cover"
+  />
+</div>
+                    
                     <div className="flex items-start gap-3">
                       <div className="relative flex-shrink-0 bg-muted/60 p-2 rounded-lg border">
+
                         <img
                           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25' /%3E%3C/svg%3E"
                           alt={`${course.course_name} logo`}
