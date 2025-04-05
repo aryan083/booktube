@@ -199,17 +199,8 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           return;
         }
 
-        // Prepare course data for backend
-        const courseCallbackData = {
-          course_id: newCourse.course_id,
-          teaching_pattern: selectedMethods,
-          user_prompt: textPrompt,
-          skill_level: skillLevel,
-          topic_info: {
-            chapterTopicIds: {},
-            topicNames: {}
-          }
-        };
+        // Create a Map to store chapter names and their topic IDs
+        const chapterTopicIdsMap = new Map<string, string[]>();
 
         // Extract topic information from course content if available
         if (pdfResponse?.course_content?.Chapters) {
@@ -218,31 +209,60 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             topicNames: {}
           };
 
-          Object.entries(pdfResponse.course_content.Chapters).forEach(([chapterKey, topics]) => {
-            const chapterName = chapterKey.split(':')[1]?.trim();
-            if (chapterName) {
-              topicInfo.topicNames[chapterName] = Object.values(topics as Record<string, string>);
+          // Get the chapter IDs and their associated topic IDs from the newCourse response
+          if (newCourse.chapters_json?.chapters) {
+            for (const chapterId of newCourse.chapters_json.chapters) {
+              // Fetch the chapter details to get its name and topic IDs
+              const { data: chapterData, error: chapterError } = await supabase
+                .from('chapters')
+                .select('chapter_name, topics_json')
+                .eq('chapter_id', chapterId)
+                .single();
+
+              if (chapterError) {
+                console.error('Error fetching chapter data:', chapterError);
+                continue;
+              }
+
+              if (chapterData) {
+                const chapterName = chapterData.chapter_name;
+                const topicIds = chapterData.topics_json?.topic_ids || [];
+                
+                // Store the topic IDs in the map
+                chapterTopicIdsMap.set(chapterName, topicIds);
+                topicInfo.topicNames[chapterName] = Object.values(
+                  pdfResponse.course_content.Chapters[`Chapter: ${chapterName}`] || {}
+                );
+              }
             }
-          });
+          }
 
-          courseCallbackData.topic_info = topicInfo;
+          // Prepare course data for backend
+          const courseCallbackData = {
+            course_id: newCourse.course_id,
+            teaching_pattern: selectedMethods,
+            user_prompt: textPrompt,
+            skill_level: skillLevel,
+            topic_info: topicInfo
+          };
+
+          // Prepare the data for backend processing with topic IDs
+          const preparedData = prepareCourseData(courseCallbackData, chapterTopicIdsMap);
+          console.log("Course data prepared for backend:", preparedData);
+
+          // Then proceed with file processing
+          if (selectedFiles.length > 0) {
+            const formData = new FormData();
+            selectedFiles.forEach((file) => {
+              formData.append("files", file);
+            });
+            formData.append("prompt", textPrompt);
+            formData.append("skill_level", skillLevel.toString());
+            formData.append("teaching_pattern", JSON.stringify(selectedMethods));
+            formData.append("course_data", JSON.stringify(preparedData));
+          }
         }
 
-        // Prepare the data for backend processing
-        const preparedData = prepareCourseData(courseCallbackData);
-        console.log("Course data prepared for backend:", preparedData);
-
-        // Then proceed with file processing
-        if (selectedFiles.length > 0) {
-          const formData = new FormData();
-          selectedFiles.forEach((file) => {
-            formData.append("files", file);
-          });
-          formData.append("prompt", textPrompt);
-          formData.append("skill_level", skillLevel.toString());
-          formData.append("teaching_pattern", JSON.stringify(selectedMethods));
-          formData.append("course_data", JSON.stringify(preparedData));
-        }
         toast({
           title: "Success",
           description: `Course "${courseTitle}" created successfully!`,

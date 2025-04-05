@@ -320,13 +320,28 @@ export const createCourse = async (courseData: CourseData) => {
 /**
  * Prepares course data for backend processing
  * @param courseData The course data to prepare
+ * @param chapterTopicIds Map of chapter names to their topic IDs
  * @returns The prepared course data
  */
 export const prepareCourseData = (
-  courseData: CourseCallbackPayload
+  courseData: CourseCallbackPayload,
+  chapterTopicIds: Map<string, string[]>
 ): CourseCallbackPayload => {
   console.log('Preparing course data for backend:', courseData);
-  return courseData;
+
+  // Convert Map to object for JSON serialization
+  const topicIdsObject: { [key: string]: string[] } = {};
+  chapterTopicIds.forEach((ids, chapterName) => {
+    topicIdsObject[chapterName] = ids;
+  });
+
+  return {
+    ...courseData,
+    topic_info: {
+      ...courseData.topic_info,
+      chapterTopicIds: topicIdsObject
+    }
+  };
 };
 
 /**
