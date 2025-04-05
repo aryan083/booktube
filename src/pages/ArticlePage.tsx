@@ -374,7 +374,7 @@ export default function ArticlePage() {
           </div>
         </div>
 
-        <article className="max-w-[93%] mx-auto article-content pb-8 relative">
+        <article className="max-w-[89%] mx-auto article-content pb-8 relative">
           <div
             className="relative rounded-xl overflow-hidden mt-4 mb-6 h-[300px] w-full"
             style={{
