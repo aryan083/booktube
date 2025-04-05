@@ -28,6 +28,26 @@ interface CourseData {
   course_content?: CourseContent;
 }
 
+interface TopicInfo {
+  chapterTopicIds: { [key: string]: string[] };
+  topicNames: { [key: string]: string[] };
+}
+
+interface CourseCallbackPayload {
+  course_id: string;
+  teaching_pattern: string[];
+  user_prompt: string;
+  skill_level: number;
+  topic_info: TopicInfo;
+}
+
+interface CallbackResponse {
+  status: 'success' | 'error';
+  message: string;
+  data?: Record<string, unknown>;
+  error?: string;
+}
+
 /**
  * Creates topics in the topics table and returns their IDs organized by chapter
  * @param courseContent The course content containing topics
@@ -37,7 +57,7 @@ const createTopics = async (courseContent: CourseContent) => {
   try {
     // Create a map of chapter names to their topics
     const chapterTopicsMap = new Map<string, string[]>();
-    
+
     Object.entries(courseContent.Chapters).forEach(([chapterKey, topics]) => {
       const chapterName = chapterKey.split(':')[1]?.trim();
       if (chapterName) {
@@ -57,7 +77,7 @@ const createTopics = async (courseContent: CourseContent) => {
         content: '',
         articles_json: {}
       }));
-      
+
       // Insert topics for this chapter
       const { data: insertedTopics, error } = await supabase
         .from('topics')
@@ -77,7 +97,7 @@ const createTopics = async (courseContent: CourseContent) => {
       // Store the topic IDs for this chapter
       const topicIds = insertedTopics.map(topic => topic.topic_id);
       chapterTopicIds.set(chapterName, topicIds);
-      
+
       console.log(`Created topics for chapter "${chapterName}":`, topicIds);
     }
 
@@ -92,7 +112,7 @@ export const fetchUserCourses = async () => {
   try {
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       console.error('Error getting current user:', userError);
       return { data: null, error: userError };
@@ -132,7 +152,7 @@ export const fetchUserCourses = async () => {
       }
     }
 
-    const courseIds = coursesJson|| [];
+    const courseIds = coursesJson || [];
     console.log('Extracted course IDs:', courseIds);
 
     if (courseIds.length === 0) {
@@ -168,7 +188,7 @@ export const fetchUserCourses = async () => {
 const createChapters = async (chapterNames: string[], chapterTopics: Map<string, string[]>) => {
   try {
     console.log('Creating chapters:', chapterNames);
-    
+
     // Create chapters with their topic IDs
     const chaptersToInsert = chapterNames.map(chapterName => ({
       chapter_name: chapterName,
@@ -294,5 +314,56 @@ export const createCourse = async (courseData: CourseData) => {
   } catch (error) {
     console.error('Unexpected error in createCourse:', error);
     return { data: null, error };
+  }
+};
+
+/**
+ * Prepares course data for backend processing
+ * @param courseData The course data to prepare
+ * @returns The prepared course data
+ */
+export const prepareCourseData = (
+  courseData: CourseCallbackPayload
+): CourseCallbackPayload => {
+  console.log('Preparing course data for backend:', courseData);
+  return courseData;
+};
+
+/**
+ * Sends course data to the backend callback URL
+ * @param courseData The course data to send
+ * @param callbackUrl The URL to send the callback to
+ * @returns Promise with the response from the callback URL
+ */
+export const sendCourseDataToBackend = async (
+  courseData: CourseCallbackPayload,
+  callbackUrl: string = 'http://localhost:5000/api/callback'
+): Promise<{ data: CallbackResponse | null; error: string | null }> => {
+  try {
+    console.log('Preparing to send course data to backend:', courseData);
+
+    const response = await fetch(callbackUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: courseData
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Callback request failed:', errorData);
+      return { data: null, error: errorData.message || 'Callback request failed' };
+    }
+
+    const responseData = await response.json();
+    console.log('Callback response received:', responseData);
+    return { data: responseData, error: null };
+
+  } catch (error) {
+    console.error('Error sending course data to backend:', error);
+    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
   }
 };

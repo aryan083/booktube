@@ -16,7 +16,7 @@ import StepThree from "./steps/StepThree";
 import StepFour from "./steps/StepFour";
 import StepFive from "./steps/StepFive";
 // import { appendArticle } from "@/services/AppendArticle";
-import { createCourse } from "@/services/courseService";
+import { createCourse, sendCourseDataToBackend, prepareCourseData } from "@/services/courseService";
 import { sendPdfToGemini } from "@/services/pdfService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -187,7 +187,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           course_content: pdfResponse?.course_content
         };
 
-        const { error } = await createCourse(courseData);
+        const { data: newCourse, error } = await createCourse(courseData);
 
         if (error) {
           console.error("Failed to save course data:", error);
@@ -199,6 +199,39 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           return;
         }
 
+        // Prepare course data for backend
+        const courseCallbackData = {
+          course_id: newCourse.course_id,
+          teaching_pattern: selectedMethods,
+          user_prompt: textPrompt,
+          skill_level: skillLevel,
+          topic_info: {
+            chapterTopicIds: {},
+            topicNames: {}
+          }
+        };
+
+        // Extract topic information from course content if available
+        if (pdfResponse?.course_content?.Chapters) {
+          const topicInfo = {
+            chapterTopicIds: {},
+            topicNames: {}
+          };
+
+          Object.entries(pdfResponse.course_content.Chapters).forEach(([chapterKey, topics]) => {
+            const chapterName = chapterKey.split(':')[1]?.trim();
+            if (chapterName) {
+              topicInfo.topicNames[chapterName] = Object.values(topics as Record<string, string>);
+            }
+          });
+
+          courseCallbackData.topic_info = topicInfo;
+        }
+
+        // Prepare the data for backend processing
+        const preparedData = prepareCourseData(courseCallbackData);
+        console.log("Course data prepared for backend:", preparedData);
+
         // Then proceed with file processing
         if (selectedFiles.length > 0) {
           const formData = new FormData();
@@ -208,6 +241,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           formData.append("prompt", textPrompt);
           formData.append("skill_level", skillLevel.toString());
           formData.append("teaching_pattern", JSON.stringify(selectedMethods));
+          formData.append("course_data", JSON.stringify(preparedData));
         }
         toast({
           title: "Success",
