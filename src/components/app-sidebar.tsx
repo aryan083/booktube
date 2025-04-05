@@ -45,7 +45,7 @@ const data = {
   },
   teams: [
     {
-      name: "booktube",
+      name: "BookTube",
       logo: Gamepad,
     },
   ],

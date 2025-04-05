@@ -1,10 +1,17 @@
-"use client"
+"use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import Profile01 from "./kokonutui/profile-01"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  LogOut,
+  Sparkles,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import Profile01 from "./kokonutui/profile-01";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,41 +20,66 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+} from "@/components/ui/dropdown-menu";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 export function NavUser() {
-  const { state } = useSidebar()
+  const { state } = useSidebar();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  
+
   // Get user's metadata
-  const displayName = user?.user_metadata?.display_name || 'User';
-  const email = user?.email || '';
-  const avatarInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+  const displayName = user?.user_metadata?.display_name || "User";
+  const email = user?.email || "";
+  const avatarInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem className={state === 'collapsed' ? 'w-full flex justify-center' : ''}>
+      <SidebarMenuItem
+        className={state === "collapsed" ? "w-full flex justify-center" : ""}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
               className={`
-                ${state === 'collapsed' ? 'w-full max-w-[2.5rem] justify-center' : ''}
+                ${
+                  state === "collapsed"
+                    ? "w-full max-w-[2.5rem] justify-center"
+                    : ""
+                }
                 data-[state=open]:bg-sidebar-accent 
                 data-[state=open]:text-sidebar-accent-foreground
               `}
             >
-              <Avatar className={`h-8 w-8 rounded-lg ${state === 'collapsed' ? 'mx-auto' : ''}`}>
+              <Avatar
+                className={`h-8 w-8 rounded-lg ${
+                  state === "collapsed" ? "mx-auto" : ""
+                }`}
+              >
                 <AvatarImage src="" alt={displayName} />
-                <AvatarFallback className="rounded-lg">{avatarInitials}</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {avatarInitials}
+                </AvatarFallback>
               </Avatar>
-              {state === 'expanded' && (
+              {state === "expanded" && (
                 <>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{displayName}</span>
-                    <span className="truncate text-xs text-muted-foreground">{email}</span>
+                    <span className="truncate font-semibold">
+                      {displayName}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {email}
+                    </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </>
@@ -56,7 +88,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={state === 'mobile' ? "bottom" : "right"}
+            side={state === "mobile" ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
@@ -64,35 +96,42 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src="" alt={displayName} />
-                  <AvatarFallback className="rounded-lg">{avatarInitials}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {avatarInitials}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{displayName}</span>
-                  <span className="truncate text-xs text-muted-foreground">{email}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {email}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate('/profile1')} className="flex items-center gap-2">
+              <DropdownMenuItem
+                onClick={() => navigate("/profile1")}
+                className="flex items-center gap-2"
+              >
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut}>
@@ -103,5 +142,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
