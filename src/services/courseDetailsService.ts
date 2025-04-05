@@ -167,11 +167,26 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
       };
     }
 
+    // After fetching topics data, let's count completed topics
+    let totalCompletedTopics = 0;
+    let totalTopics = 0;
+
+    if (topicsData) {
+      totalTopics = topicsData.length;
+      totalCompletedTopics = topicsData.filter(topic => topic.isCompleted).length;
+
+      console.log('Topic Completion Statistics:', {
+        totalTopics,
+        completedTopics: totalCompletedTopics,
+        completionPercentage: `${((totalCompletedTopics / totalTopics) * 100).toFixed(2)}%`
+      });
+    }
+
     // Create a map of topic IDs to topic objects including isCompleted status
     const topicsMap = new Map(
       topicsData.map(topic => [topic.topic_id, {
         ...topic,
-        isCompleted: topic.isCompleted || false // Default to false if null
+        isCompleted: topic.isCompleted || false
       }])
     );
 
@@ -187,8 +202,6 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
 
           if (parsedData && typeof parsedData === 'object') {
             topicIds = parsedData.topics || parsedData.topic_ids || [];
-          } else {
-            console.error(`Chapter ${chapter.chapter_id} topics_json does not have expected structure`);
           }
         } catch (e) {
           console.error(`Failed to parse topics_json for chapter ${chapter.chapter_id}:`, e);
@@ -199,12 +212,16 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
         .map(topicId => topicsMap.get(topicId))
         .filter(Boolean) as Topic[];
 
-      console.log(`Topics completion status for chapter ${chapter.chapter_name}:`, 
-        chapterTopics.map(topic => ({
-          topic_name: topic.topic_name,
-          isCompleted: topic.isCompleted
-        }))
-      );
+      // Count completed topics for this chapter
+      const chapterCompletedTopics = chapterTopics.filter(topic => topic.isCompleted).length;
+
+      console.log(`Chapter "${chapter.chapter_name}" completion:`, {
+        totalTopics: chapterTopics.length,
+        completedTopics: chapterCompletedTopics,
+        completionPercentage: chapterTopics.length > 0 
+          ? `${((chapterCompletedTopics / chapterTopics.length) * 100).toFixed(2)}%`
+          : '0%'
+      });
 
       return {
         chapter_id: chapter.chapter_id,
@@ -219,7 +236,14 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
       chapters
     };
 
-    console.log('Final Result:', JSON.stringify(result, null, 2));
+    // Final course completion summary
+    console.log('Course Completion Summary:', {
+      courseName: courseData.course_name,
+      totalTopics,
+      completedTopics: totalCompletedTopics,
+      overallProgress: `${((totalCompletedTopics / totalTopics) * 100).toFixed(2)}%`
+    });
+
     return result;
 
   } catch (error) {
