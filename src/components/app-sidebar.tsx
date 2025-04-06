@@ -38,6 +38,28 @@ import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
 import { supabase } from "@/lib/supabase";
+import { fetchUserCourses } from "@/services/courseService";
+import { useNavigate } from "react-router-dom";
+
+interface Course {
+  course_id: string;
+  course_name: string;
+  created_at: string;
+}
+
+interface NavItem {
+  title: string;
+  url: string;
+  onClick?: () => void;
+}
+
+interface NavMainItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType;
+  isActive: boolean;
+  items: NavItem[];
+}
 
 // Sample data
 const data = {
@@ -121,61 +143,64 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
   const { state, toggleSidebar } = useSidebar();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [isThirdModalOpen, setIsThirdModalOpen] = useState(false);
   const [flowStartTime, setFlowStartTime] = useState<number>(0);
-  const [navMainItems, setNavMainItems] = useState([
+  const [navMainItems, setNavMainItems] = useState<NavMainItem[]>([
     {
       title: "Ongoing Courses",
       url: "#",
       icon: Beaker,
       isActive: true,
-      items: [
-        {
-          title: "Introduction to AI",
-          url: "#",
-        },
-        {
-          title: "Data Link Layer",
-          url: "#",
-        },
-        {
-          title: "CMOS Inverter Basics",
-          url: "#",
-        },
-      ],
+      items: [],
     },
     {
       title: "Bookmarked Articles",
       url: "#",
       icon: Bookmark,
+      isActive: false,
       items: [],
     },
   ]);
 
+  // Fetch user's courses
   useEffect(() => {
-    const fetchBookmarkedArticles = async () => {
+    const fetchCourses = async () => {
       if (user) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("bookmarked_articles")
-          .eq("user_id", user.id)
-          .maybeSingle();
+        const { data: courses, error } = await fetchUserCourses();
+        if (error) {
+          console.error('Error fetching courses:', error);
+          return;
+        }
+        if (courses) {
+          console.log('Courses received in sidebar:', courses);
+          const sortedCourses = [...courses].sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+          
+          // Take only the 5 most recent courses
+          const recentCourses = sortedCourses.slice(0, 5);
+          console.log('Recent courses:', recentCourses);
 
-        if (userData?.bookmarked_articles) {
           setNavMainItems((prev) => {
             const newItems = [...prev];
-            const bookmarkIndex = newItems.findIndex(
-              (item) => item.title === "Bookmarked Articles"
+            const coursesIndex = newItems.findIndex(
+              (item) => item.title === "Ongoing Courses"
             );
-            if (bookmarkIndex !== -1) {
-              newItems[bookmarkIndex].items = userData.bookmarked_articles.map(
-                (article: { title: string; article_id: string }) => ({
-                  title: article.title,
-                  url: `/article/${article.article_id}`,
-                })
-              );
+            if (coursesIndex !== -1) {
+              newItems[coursesIndex].items = recentCourses.map((course) => {
+                console.log('Creating nav item for course:', course);
+                return {
+                  title: course.course_name,
+                  url: `/course/${course.course_id}`,
+                  onClick: () => {
+                    console.log('Navigating to course:', course.course_id);
+                    navigate(`/course/${course.course_id}`);
+                  }
+                };
+              });
             }
             return newItems;
           });
@@ -183,8 +208,8 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
       }
     };
 
-    fetchBookmarkedArticles();
-  }, [user]);
+    fetchCourses();
+  }, [user, navigate]);
 
   // const startFlow = () => {
   //   setFlowStartTime(Date.now());
