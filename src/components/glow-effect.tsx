@@ -477,6 +477,9 @@ const GridItem = ({
   const navigate = useNavigate();
 
   const [isInWatchLater, setIsInWatchLater] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState("");
 
   useEffect(() => {
     // Check if the article is in watch later when component mounts
@@ -505,7 +508,6 @@ const GridItem = ({
     
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      // Handle not logged in state
       console.error('User must be logged in to use read later feature');
       return;
     }
@@ -516,7 +518,16 @@ const GridItem = ({
         console.error('Error toggling read later status:', error);
         return;
       }
-      setIsInWatchLater(newStatus);
+
+      setIsAnimating(true);
+      setShowConfirmation(true);
+      setConfirmationMessage(newStatus ? "Added to read later" : "Removed from read later");
+      setTimeout(() => {
+        setShowConfirmation(false);
+        setIsAnimating(false);
+      }, 2000);
+      
+      setIsInWatchLater(newStatus ?? false);
     } catch (error) {
       console.error('Error in read later operation:', error);
     }
@@ -531,44 +542,81 @@ const GridItem = ({
         onClick={() => navigate(`/article/${article_id}`)}
       >
         <TooltipProvider>
-          <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-50">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className={`p-1.5 rounded-full backdrop-blur-sm transition-colors ${
-                    backgroundImage 
-                      ? "bg-white/20 hover:bg-white/30 text-white" 
-                      : "bg-black/10 hover:bg-black/20 text-black"
-                  } ${isInWatchLater ? "ring-2 ring-primary" : ""}`}
-                  onClick={handleReadLater}
-                >
-                  <Clock className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="left">
-                <p>{isInWatchLater ? "Remove from Read Later" : "Read Later"}</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className={`p-1.5 rounded-full backdrop-blur-sm transition-colors ${
-                    backgroundImage 
-                      ? "bg-white/20 hover:bg-white/30 text-white" 
-                      : "bg-black/10 hover:bg-black/20 text-black"
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Add your plus button functionality here
-                  }}
-                >
-                  <Plus className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="left">
-                <p>Add to Playlist</p>
-              </TooltipContent>
-            </Tooltip>
+          <div className="absolute right-3 top-3 flex flex-col gap-2 z-50">
+            {/* Read Later Button Container */}
+            <div 
+              className={`${
+                isInWatchLater ? 'opacity-100' : 'opacity-0 group-hover/card:opacity-100'
+              } transition-opacity duration-200 relative h-[32px]`}
+            >
+              <div 
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  width: isAnimating ? (confirmationMessage.includes("Removed") ? '200px' : '180px') : '32px',
+                  transition: 'width 300ms ease-in-out'
+                }}
+              >
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      className={`
+                        w-full relative overflow-hidden
+                        transition-all duration-300 ease-in-out
+                        backdrop-blur-sm flex items-center justify-center
+                        ${backgroundImage 
+                          ? "bg-white/20 hover:bg-white/30 text-white" 
+                          : "bg-black/10 hover:bg-black/20 text-black"
+                        }
+                        ${isInWatchLater ? "ring-2 ring-primary" : ""}
+                        rounded-full
+                        ${showConfirmation ? "px-3 py-1.5" : "p-1.5"}
+                      `}
+                      onClick={handleReadLater}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Clock className="w-5 h-5 flex-shrink-0" />
+                        {showConfirmation && (
+                          <span className="text-sm whitespace-nowrap">
+                            {confirmationMessage}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    <p>{isInWatchLater ? "Remove from Read Later" : "Read Later"}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
+
+            {/* Add to Playlist Button Container */}
+            <div className="opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 h-[32px]">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button 
+                    className={`
+                      p-1.5 rounded-full backdrop-blur-sm transition-colors
+                      flex items-center justify-center
+                      ${backgroundImage 
+                        ? "bg-white/20 hover:bg-white/30 text-white" 
+                        : "bg-black/10 hover:bg-black/20 text-black"
+                      }
+                    `}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add your plus button functionality here
+                    }}
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Add to Playlist</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </TooltipProvider>
         <GlowingEffect
