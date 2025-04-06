@@ -163,7 +163,7 @@ export const fetchUserCourses = async () => {
     // Fetch course names for these IDs
     const { data: courses, error: coursesError } = await supabase
       .from('courses')
-      .select('course_name')
+      .select('course_id, course_name, created_at')
       .in('course_id', courseIds);
 
     if (coursesError) {
@@ -171,7 +171,10 @@ export const fetchUserCourses = async () => {
       return { data: null, error: coursesError };
     }
 
-    console.log('User courses:', courses);
+    console.log('Raw courses data from Supabase:', courses);
+    console.log('Course IDs:', courses?.map(c => c.course_id));
+    console.log('Course names:', courses?.map(c => c.course_name));
+
     return { data: courses, error: null };
 
   } catch (error) {
