@@ -7,6 +7,14 @@ import { fetchUserCourses } from "@/services/courseService";
 import { fetchArticles, ArticleData } from "@/services/articleService";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { Clock, Plus } from "lucide-react";
+import { toggleReadLater } from "@/services/ReadLaterArticle";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function GlowingEffectDemo() {
   const [processedArticles, setProcessedArticles] = useState<{
@@ -468,14 +476,101 @@ const GridItem = ({
 
   const navigate = useNavigate();
 
+  const [isInWatchLater, setIsInWatchLater] = useState(false);
+
+  useEffect(() => {
+    // Check if the article is in watch later when component mounts
+    const checkWatchLaterStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.id) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('watch_later')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (userData?.watch_later) {
+          const isInList = userData.watch_later.some(
+            (article: { article_id: string }) => article.article_id === article_id
+          );
+          setIsInWatchLater(isInList);
+        }
+      }
+    };
+    checkWatchLaterStatus();
+  }, [article_id]);
+
+  const handleReadLater = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      // Handle not logged in state
+      console.error('User must be logged in to use read later feature');
+      return;
+    }
+
+    try {
+      const { error, isInWatchLater: newStatus } = await toggleReadLater(user.id, article_id, title);
+      if (error) {
+        console.error('Error toggling read later status:', error);
+        return;
+      }
+      setIsInWatchLater(newStatus);
+    } catch (error) {
+      console.error('Error in read later operation:', error);
+    }
+  };
+
   return (
-    <div className="h-full w-full  ">
+    <div className="h-full w-full">
       <div
-        className="relative h-full rounded-2xl border shadow-lg"
+        className="relative h-full rounded-2xl border shadow-lg group/card"
         data-blendy-from={id}
         style={outerCardStyle}
         onClick={() => navigate(`/article/${article_id}`)}
       >
+        <TooltipProvider>
+          <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-50">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className={`p-1.5 rounded-full backdrop-blur-sm transition-colors ${
+                    backgroundImage 
+                      ? "bg-white/20 hover:bg-white/30 text-white" 
+                      : "bg-black/10 hover:bg-black/20 text-black"
+                  } ${isInWatchLater ? "ring-2 ring-primary" : ""}`}
+                  onClick={handleReadLater}
+                >
+                  <Clock className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>{isInWatchLater ? "Remove from Read Later" : "Read Later"}</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button 
+                  className={`p-1.5 rounded-full backdrop-blur-sm transition-colors ${
+                    backgroundImage 
+                      ? "bg-white/20 hover:bg-white/30 text-white" 
+                      : "bg-black/10 hover:bg-black/20 text-black"
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Add your plus button functionality here
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Add to Playlist</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
         <GlowingEffect
           spread={40}
           glow={true}

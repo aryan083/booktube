@@ -6,7 +6,7 @@ import { fetchUserCourses } from "../services/fetchCourses";
 import { CourseData } from "../services/fetchCourses";
 import { supabase } from "@/lib/supabase";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock, Plus } from "lucide-react";
 
 const Courses = () => {
   const [courses, setCourses] = useState<CourseData[]>([]);
@@ -104,7 +104,15 @@ const Courses = () => {
                 to={`/course/${course.course_id}`}
                 className="group transition-all hover:shadow-lg  duration-300"
               >
-                <div className="relative bg-gradient-to-b from-card to-card/90 text-card-foreground rounded-xl p-5 shadow-lg border border-border/40 backdrop-blur-sm hover:border-border/60 transition-all duration-300">
+                <div className="group/card relative bg-gradient-to-b from-card to-card/90 text-card-foreground rounded-xl p-5 shadow-lg border border-border/40 backdrop-blur-sm hover:border-border/60 transition-all duration-300">
+                  <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 z-10">
+                    <button className="p-1.5 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm">
+                      <Clock className="w-4 h-4" />
+                    </button>
+                    <button className="p-1.5 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
                   <GlowingEffect
                     spread={40}
                     glow={true}
