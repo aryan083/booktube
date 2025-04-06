@@ -159,6 +159,53 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   }, [selectedFiles]);
 
   const handleNext = async () => {
+
+
+    if (currentStep === 1) {
+      // Make API call for each selected file in the background
+      selectedFiles.forEach(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("document_type", "book");
+        formData.append("document_name", file.name.replace(".pdf", ""));
+        formData.append("extract_images", "true");
+        formData.append("extract_text", "true");
+        formData.append("save_json", "true");
+
+        try {
+          const response = await fetch(
+            "http://localhost:5000/api/upload_and_process",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Upload failed");
+          }
+
+          const data = await response.json();
+          console.log("Upload successful:", data);
+        } catch (error) {
+          console.error("Upload error:", error);
+          // Continue to next step even if upload fails
+        }
+      });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (currentStep === 5) {
       try {
         const { data: { user } } = await supabase.auth.getUser();
