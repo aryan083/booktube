@@ -507,7 +507,7 @@ const Playlists = () => {
         <div className="flex items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/home")}
               className="flex items-center text-muted-foreground hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />

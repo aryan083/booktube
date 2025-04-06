@@ -126,7 +126,7 @@ export function CommandPalette() {
                   
                   <CommandGroup heading="Navigation" className="text-[#666] text-xs">
                     <CommandItem
-                      onSelect={() => runCommand(() => navigate("/"))}
+                      onSelect={() => runCommand(() => navigate("/home"))}
                       className="flex items-center px-2 py-3 rounded-md hover:bg-[#303030] text-white"
                     >
                       <ArrowRight className="mr-2 h-4 w-4" />
