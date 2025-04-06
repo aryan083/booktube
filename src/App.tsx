@@ -34,6 +34,7 @@ import CourseDetails from "./pages/CourseDetails";
 import Courses from "./pages/Courses";
 import ArticlePage from "./pages/ArticlePage";
 import NotFound from "./pages/NotFound";
+import ReadLaterArticle from "./pages/ReadLater";
 
 // Home component that shows sidebar and glowing effect
 function Home() {
@@ -149,6 +150,14 @@ function MainContent() {
         element={
           <AuthGuard>
             <Courses />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/read_later"
+        element={
+          <AuthGuard>
+            <ReadLaterArticle />
           </AuthGuard>
         }
       />
