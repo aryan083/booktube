@@ -28,6 +28,12 @@ def get_article_content(supabase,article_id):
         .eq("article_id", article_id)
         .execute())   
         article_content = response.data[0]['content_text']
+
+
+
+
+
+
         return article_content
 
 

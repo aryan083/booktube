@@ -51,8 +51,8 @@ function Home() {
           >
             <div className="grid pl-6 pr-4">
               <GlowingEffectDemo />
-              <GlowingEffectDemo />
-              <GlowingEffectDemo />
+              {/* <GlowingEffectDemo />
+              <GlowingEffectDemo /> */}
             </div>
           </div>
         </SidebarInset>

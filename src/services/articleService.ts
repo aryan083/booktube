@@ -18,15 +18,22 @@ export interface ArticleData {
  * Fetches all articles from Supabase
  * @returns Promise with articles data and any error
  */
-export const fetchArticles = async () => {
+export const fetchArticles = async (userId?: string) => {
   try {
     console.log('Fetching articles from Supabase...');
     
-    // Enhanced query with error handling and logging
-    const { data, error } = await supabase
+    // Create a query that can be filtered by user_id if provided
+    let query = supabase
       .from('articles')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
+      
+    // Apply user_id filter if provided
+    if (userId) {
+      query = query.eq('user_id', userId);
+    }
+    
+    // Execute the query with ordering
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     // Log raw response for debugging
     console.log('Raw Supabase Response:', { 
