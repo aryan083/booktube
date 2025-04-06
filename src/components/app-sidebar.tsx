@@ -164,7 +164,42 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
       items: [],
     },
   ]);
+  useEffect(() => {
+    const fetchBookmarkedArticles = async () => {
+      if (user) {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("bookmarked_articles")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
+        if (userData?.bookmarked_articles) {
+          setNavMainItems((prev) => {
+            const newItems = [...prev];
+            const bookmarkIndex = newItems.findIndex(
+              (item) => item.title === "Bookmarked Articles"
+            );
+            if (bookmarkIndex !== -1) {
+              newItems[bookmarkIndex].items = userData.bookmarked_articles.map(
+                (article: { title: string; article_id: string }) => {
+                  const truncatedTitle = article.title.length > 25 
+                    ? article.title.substring(0, 25) + '...' 
+                    : article.title;
+                  return {
+                    title: truncatedTitle,
+                    url: `/article/${article.article_id}`,
+                  };
+                }
+              );
+            }
+            return newItems;
+          });
+        }
+      }
+    };
+
+    fetchBookmarkedArticles();
+  }, [user]);
   // Fetch user's courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -192,8 +227,11 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             if (coursesIndex !== -1) {
               newItems[coursesIndex].items = recentCourses.map((course) => {
                 console.log('Creating nav item for course:', course);
+                const truncatedTitle = course.course_name.length > 30 
+                  ? course.course_name.substring(0, 25) + '...' 
+                  : course.course_name;
                 return {
-                  title: course.course_name,
+                  title: truncatedTitle,
                   url: `/course/${course.course_id}`,
                   onClick: () => {
                     console.log('Navigating to course:', course.course_id);
