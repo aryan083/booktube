@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../config/api';
+
 interface GeminiResponse {
   welcome_message: string;
   course_title: string;
@@ -28,8 +30,7 @@ export const sendPdfToGemini = async (formData: FormData): Promise<GeminiRespons
   }
   try {
     console.log('Sending PDFs to Gemini API...');
-    const response = await fetch('http://localhost:5000/api/send_pdf_to_gemini', {
-      method: 'POST',
+    const response = await fetch(`${API_BASE_URL}/api/send_pdf_to_gemini`, {      method: 'POST',
       body: formData,
     });
 

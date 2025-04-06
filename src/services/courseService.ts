@@ -42,12 +42,12 @@ interface CourseCallbackPayload {
   topic_info: TopicInfo;
 }
 
-interface CallbackResponse {
-  status: 'success' | 'error';
-  message: string;
-  data?: Record<string, unknown>;
-  error?: string;
-}
+// interface CallbackResponse {
+//   status: 'success' | 'error';
+//   message: string;
+//   data?: Record<string, unknown>;
+//   error?: string;
+// }
 
 /**
  * Creates topics in the topics table and returns their IDs organized by chapter
@@ -349,41 +349,41 @@ export const prepareCourseData = (
   };
 };
 
-/**
- * Sends course data to the backend callback URL
- * @param courseData The course data to send
- * @param callbackUrl The URL to send the callback to
- * @returns Promise with the response from the callback URL
- */
-export const sendCourseDataToBackend = async (
-  courseData: CourseCallbackPayload,
-  callbackUrl: string = 'http://localhost:5000/api/callback'
-): Promise<{ data: CallbackResponse | null; error: string | null }> => {
-  try {
-    console.log('Preparing to send course data to backend:', courseData);
+// /**
+//  * Sends course data to the backend callback URL
+//  * @param courseData The course data to send
+//  * @param callbackUrl The URL to send the callback to
+//  * @returns Promise with the response from the callback URL
+//  */
+// export const sendCourseDataToBackend = async (
+//   courseData: CourseCallbackPayload,
+//   callbackUrl: string = 'http://localhost:5000/api/callback'
+// ): Promise<{ data: CallbackResponse | null; error: string | null }> => {
+//   try {
+//     console.log('Preparing to send course data to backend:', courseData);
 
-    const response = await fetch(callbackUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: courseData
-      }),
-    });
+//     const response = await fetch(callbackUrl, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         data: courseData
+//       }),
+//     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Callback request failed:', errorData);
-      return { data: null, error: errorData.message || 'Callback request failed' };
-    }
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       console.error('Callback request failed:', errorData);
+//       return { data: null, error: errorData.message || 'Callback request failed' };
+//     }
 
-    const responseData = await response.json();
-    console.log('Callback response received:', responseData);
-    return { data: responseData, error: null };
+//     const responseData = await response.json();
+//     console.log('Callback response received:', responseData);
+//     return { data: responseData, error: null };
 
-  } catch (error) {
-    console.error('Error sending course data to backend:', error);
-    return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
-  }
-};
+//   } catch (error) {
+//     console.error('Error sending course data to backend:', error);
+//     return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
+//   }
+// };

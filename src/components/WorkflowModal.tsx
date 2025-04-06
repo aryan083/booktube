@@ -25,6 +25,7 @@ import { sendPdfToGemini } from "@/services/pdfService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import { API_BASE_URL } from "@/config/api";
 
 interface WorkflowModalProps {
   open: boolean;
@@ -201,7 +202,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
         try {
           const response = await fetch(
-            "http://localhost:5000/api/upload_and_process",
+            `${API_BASE_URL}/api/upload_and_process`,
             {
               method: "POST",
               body: formData,
