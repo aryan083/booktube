@@ -21,7 +21,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/components/ui/Card";
 import { useState, useEffect } from "react";
 
 interface MenuItem {
