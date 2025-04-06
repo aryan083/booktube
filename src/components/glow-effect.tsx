@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { PlaylistCombobox } from "./playlist-combobox"
 
 export function GlowingEffectDemo() {
   const [processedArticles, setProcessedArticles] = useState<{
@@ -458,6 +459,7 @@ const GridItem = ({
   };
   const blendy = useRef<Blendy | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showPlaylistCombobox, setShowPlaylistCombobox] = useState(false)
 
   const rawId = useId();
   const id = rawId.replace(/:/g, "_");
@@ -568,7 +570,7 @@ const GridItem = ({
                           ? "bg-white/20 hover:bg-white/30 text-white" 
                           : "bg-black/10 hover:bg-black/20 text-black"
                         }
-                        ${isInWatchLater ? "ring-2 ring-primary" : ""}
+                        ${isInWatchLater}
                         rounded-full
                         ${showConfirmation ? "px-3 py-1.5" : "p-1.5"}
                       `}
@@ -606,7 +608,11 @@ const GridItem = ({
                     `}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Add your plus button functionality here
+                      if (showPlaylistCombobox) {
+                        setShowPlaylistCombobox(false);
+                      } else {
+                        setShowPlaylistCombobox(true);
+                      }
                     }}
                   >
                     <Plus className="w-5 h-5" />
@@ -616,6 +622,14 @@ const GridItem = ({
                   <p>Add to Playlist</p>
                 </TooltipContent>
               </Tooltip>
+              {showPlaylistCombobox && (
+                <div className="absolute right-0 top-8 z-50">
+                  <PlaylistCombobox 
+                    onClose={() => setShowPlaylistCombobox(false)} 
+                    articleId={article_id}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </TooltipProvider>
