@@ -35,6 +35,8 @@ import Courses from "./pages/Courses";
 import ArticlePage from "./pages/ArticlePage";
 import NotFound from "./pages/NotFound";
 import ReadLaterArticle from "./pages/ReadLater";
+import PlaylistPage from "./pages/PlaylistPage";
+import Playlists from "./pages/Playlists";
 
 // Home component that shows sidebar and glowing effect
 function Home() {
@@ -169,6 +171,24 @@ function MainContent() {
           </AuthGuard>
         }
       />
+      <Route
+        path="/playlists"
+        element={
+          <AuthGuard>
+            <Playlists />
+          </AuthGuard>
+        }
+      />
+
+      <Route
+        path="/playlists/:playlistId"
+        element={
+          <AuthGuard>
+            <PlaylistPage />
+          </AuthGuard>
+        }
+      />
+
       <Route
         path="/history"
         element={

@@ -120,7 +120,7 @@ const data = {
     },
     {
       name: "Playlists",
-      url: "/playlist",
+      url: "/playlists",
       icon: PlusCircle,
     },
     {
@@ -182,9 +182,10 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             if (bookmarkIndex !== -1) {
               newItems[bookmarkIndex].items = userData.bookmarked_articles.map(
                 (article: { title: string; article_id: string }) => {
-                  const truncatedTitle = article.title.length > 25 
-                    ? article.title.substring(0, 25) + '...' 
-                    : article.title;
+                  const truncatedTitle =
+                    article.title.length > 25
+                      ? article.title.substring(0, 25) + "..."
+                      : article.title;
                   return {
                     title: truncatedTitle,
                     url: `/article/${article.article_id}`,
@@ -206,18 +207,20 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
       if (user) {
         const { data: courses, error } = await fetchUserCourses();
         if (error) {
-          console.error('Error fetching courses:', error);
+          console.error("Error fetching courses:", error);
           return;
         }
         if (courses) {
-          console.log('Courses received in sidebar:', courses);
-          const sortedCourses = [...courses].sort((a, b) => 
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          console.log("Courses received in sidebar:", courses);
+          const sortedCourses = [...courses].sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
           );
-          
+
           // Take only the 5 most recent courses
           const recentCourses = sortedCourses.slice(0, 5);
-          console.log('Recent courses:', recentCourses);
+          console.log("Recent courses:", recentCourses);
 
           setNavMainItems((prev) => {
             const newItems = [...prev];
@@ -226,17 +229,18 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             );
             if (coursesIndex !== -1) {
               newItems[coursesIndex].items = recentCourses.map((course) => {
-                console.log('Creating nav item for course:', course);
-                const truncatedTitle = course.course_name.length > 30 
-                  ? course.course_name.substring(0, 25) + '...' 
-                  : course.course_name;
+                console.log("Creating nav item for course:", course);
+                const truncatedTitle =
+                  course.course_name.length > 30
+                    ? course.course_name.substring(0, 25) + "..."
+                    : course.course_name;
                 return {
                   title: truncatedTitle,
                   url: `/course/${course.course_id}`,
                   onClick: () => {
-                    console.log('Navigating to course:', course.course_id);
+                    console.log("Navigating to course:", course.course_id);
                     navigate(`/course/${course.course_id}`);
-                  }
+                  },
                 };
               });
             }
