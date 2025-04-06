@@ -32,7 +32,7 @@ export function SignInForm({
       setLoading(true);
       await signIn(data.email, data.password);
       toast.success("Welcome back!");
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Invalid credentials";

@@ -41,6 +41,11 @@ export default function LandingPage() {
               Get Started
             </Button>
           </Link>
+          <Link to="/signin">
+            <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 rounded-full px-6 shadow-lg shadow-purple-500/25">
+              Login
+            </Button>
+          </Link>
         </div>
       </motion.nav>
 
