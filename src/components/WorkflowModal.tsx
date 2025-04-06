@@ -16,7 +16,11 @@ import StepThree from "./steps/StepThree";
 import StepFour from "./steps/StepFour";
 import StepFive from "./steps/StepFive";
 // import { appendArticle } from "@/services/AppendArticle";
-import { createCourse, sendCourseDataToBackend, prepareCourseData } from "@/services/courseService";
+import {
+  createCourse,
+  sendCourseDataToBackend,
+  prepareCourseData,
+} from "@/services/courseService";
 import { sendPdfToGemini } from "@/services/pdfService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -44,6 +48,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   >([]);
   const [chapterNames, setChapterNames] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [course_uuid, setCourseUUID] = useState("");
   const [pdfResponse, setPdfResponse] = useState<any>(null);
   const { user } = useAuth();
 
@@ -83,7 +88,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       setIsProcessing(true);
       const formData = new FormData();
       formData.append("course_pdf", file);
-      
+
       // Add book PDF if it exists (index 0)
       if (selectedFiles[0]) {
         formData.append("book_pdf_name", selectedFiles[0].name);
@@ -92,31 +97,35 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       const response = await sendPdfToGemini(formData);
 
       if (response) {
-        console.log('Processing PDF response:', response);
+        console.log("Processing PDF response:", response);
         setPdfResponse(response);
         setWelcomeMessage(response.welcome_message || "");
         setCourseTitle(response.course_title || "");
-        
+
         // Extract chapter names from course_content if available
         if (response.course_content?.Chapters) {
-          const extractedChapters = Object.keys(response.course_content.Chapters).map(key => {
-            const name = key.split(':')[1]?.trim();
-            console.log('Processing chapter:', key, '-> Name:', name);
-            return name;
-          }).filter(Boolean);
-          
-          console.log('Final chapter names:', extractedChapters);
+          const extractedChapters = Object.keys(
+            response.course_content.Chapters
+          )
+            .map((key) => {
+              const name = key.split(":")[1]?.trim();
+              console.log("Processing chapter:", key, "-> Name:", name);
+              return name;
+            })
+            .filter(Boolean);
+
+          console.log("Final chapter names:", extractedChapters);
           setChapterNames(extractedChapters);
 
           // Extract and log topic names
           const topics: string[] = [];
-          Object.values(response.course_content.Chapters).forEach(chapter => {
-            Object.values(chapter).forEach(topicName => {
-              console.log('Processing topic:', topicName);
+          Object.values(response.course_content.Chapters).forEach((chapter) => {
+            Object.values(chapter).forEach((topicName) => {
+              console.log("Processing topic:", topicName);
               topics.push(topicName);
             });
           });
-          console.log('Final topic names:', topics);
+          console.log("Final topic names:", topics);
         }
 
         // Extract all terms from the keywords response
@@ -159,9 +168,23 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   }, [selectedFiles]);
 
   const handleNext = async () => {
-
-
     if (currentStep === 1) {
+      const generateUUID = () => {
+        const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          }
+        );
+        return uuid;
+      };
+
+      const uuid = generateUUID();
+      console.log("helllllllllll0ooooooooooooo", uuid, user.id);
+      setCourseUUID(uuid);
+
       // Make API call for each selected file in the background
       selectedFiles.forEach(async (file) => {
         const formData = new FormData();
@@ -171,6 +194,10 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
         formData.append("extract_images", "true");
         formData.append("extract_text", "true");
         formData.append("save_json", "true");
+        formData.append("course_id", course_uuid);
+        if (user) {
+          formData.append("user_id", user.id);
+        }
 
         try {
           const response = await fetch(
@@ -194,22 +221,12 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       });
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     if (currentStep === 5) {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
         if (!user) {
           toast({
             title: "Error",
@@ -221,17 +238,18 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
         // First, save the course data to Supabase with only the required fields
         const courseData = {
+          course_id: course_uuid,
           course_name: courseTitle,
           metadata: "",
           chapters_json: {
-            chapters: chapterNames
+            chapters: chapterNames,
           },
           skill_level: skillLevel,
           teaching_pattern: selectedMethods,
           user_prompt: textPrompt,
           progress: 0,
           user_id: user.id,
-          course_content: pdfResponse?.course_content
+          course_content: pdfResponse?.course_content,
         };
 
         const { data: newCourse, error } = await createCourse(courseData);
@@ -240,7 +258,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           console.error("Failed to save course data:", error);
           toast({
             title: "Error",
-            description: "Failed to create course. Please try again.",  
+            description: "Failed to create course. Please try again.",
             variant: "destructive",
           });
           return;
@@ -253,7 +271,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
         if (pdfResponse?.course_content?.Chapters) {
           const topicInfo = {
             chapterTopicIds: {},
-            topicNames: {}
+            topicNames: {},
           };
 
           // Get the chapter IDs and their associated topic IDs from the newCourse response
@@ -261,24 +279,26 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             for (const chapterId of newCourse.chapters_json.chapters) {
               // Fetch the chapter details to get its name and topic IDs
               const { data: chapterData, error: chapterError } = await supabase
-                .from('chapters')
-                .select('chapter_name, topics_json')
-                .eq('chapter_id', chapterId)
+                .from("chapters")
+                .select("chapter_name, topics_json")
+                .eq("chapter_id", chapterId)
                 .single();
 
               if (chapterError) {
-                console.error('Error fetching chapter data:', chapterError);
+                console.error("Error fetching chapter data:", chapterError);
                 continue;
               }
 
               if (chapterData) {
                 const chapterName = chapterData.chapter_name;
                 const topicIds = chapterData.topics_json?.topic_ids || [];
-                
+
                 // Store the topic IDs in the map
                 chapterTopicIdsMap.set(chapterName, topicIds);
                 topicInfo.topicNames[chapterName] = Object.values(
-                  pdfResponse.course_content.Chapters[`Chapter: ${chapterName}`] || {}
+                  pdfResponse.course_content.Chapters[
+                    `Chapter: ${chapterName}`
+                  ] || {}
                 );
               }
             }
@@ -290,11 +310,14 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             teaching_pattern: selectedMethods,
             user_prompt: textPrompt,
             skill_level: skillLevel,
-            topic_info: topicInfo
+            topic_info: topicInfo,
           };
 
           // Prepare the data for backend processing with topic IDs
-          const preparedData = prepareCourseData(courseCallbackData, chapterTopicIdsMap);
+          const preparedData = prepareCourseData(
+            courseCallbackData,
+            chapterTopicIdsMap
+          );
           console.log("Course data prepared for backend:", preparedData);
 
           // Then proceed with file processing
@@ -305,7 +328,10 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             });
             formData.append("prompt", textPrompt);
             formData.append("skill_level", skillLevel.toString());
-            formData.append("teaching_pattern", JSON.stringify(selectedMethods));
+            formData.append(
+              "teaching_pattern",
+              JSON.stringify(selectedMethods)
+            );
             formData.append("course_data", JSON.stringify(preparedData));
           }
         }

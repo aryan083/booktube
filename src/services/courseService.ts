@@ -15,6 +15,7 @@ interface CourseContent {
  * @interface CourseData
  */
 interface CourseData {
+  course_id:string;
   course_name: string;
   metadata: string;
   chapters_json: {
@@ -269,7 +270,8 @@ export const createCourse = async (courseData: CourseData) => {
         skill_level: coursePayload.skill_level,
         teaching_pattern: coursePayload.teaching_pattern,
         user_prompt: coursePayload.user_prompt,
-        progress: coursePayload.progress || 0
+        progress: coursePayload.progress || 0,
+        course_id : coursePayload.course_id
       }])
       .select()
       .single();
