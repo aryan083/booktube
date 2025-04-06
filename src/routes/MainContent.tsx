@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import {SignInForm} from '@/pages/SignIn';
-import SignUpForm from '@/pages/SignUp';
-import Profile01 from '@/components/kokonutui/profile-01';
-import CourseDetails from '@/pages/CourseDetails';
-import Courses from '@/pages/Courses';
-import NotFound from '@/pages/NotFound';
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { SignInForm } from "@/pages/SignIn";
+import SignUpForm from "@/pages/SignUp";
+import Profile01 from "@/components/kokonutui/profile-01";
+import CourseDetails from "@/pages/CourseDetails";
+import Courses from "@/pages/Courses";
+import NotFound from "@/pages/NotFound";
 import { AppSidebar } from "@/components/app-sidebar";
 import { GlowingEffectDemo } from "@/components/glow-effect";
 import WorkflowModal from "@/components/WorkflowModal";
@@ -30,8 +30,6 @@ function Home() {
             }`}
           >
             <div className="grid pl-6 pr-4">
-              <GlowingEffectDemo />
-              <GlowingEffectDemo />
               <GlowingEffectDemo />
             </div>
           </div>

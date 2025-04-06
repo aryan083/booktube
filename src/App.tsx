@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import BookmarkedArticles from "./pages/BookmarkedArticles";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -20,7 +21,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Blendy, createBlendy } from "blendy";
 import ClickSpark from "./components/ClickSpark";
 
-import History from "./pages/History"
+import History from "./pages/History";
 // import ArticlePage from "@/pages/ArticlePage";
 
 import WorkflowModal from "./components/WorkflowModal";
@@ -49,10 +50,8 @@ function Home() {
               sidebarState === "collapsed" ? "pl-10 " : "pl-0"
             }`}
           >
-            <div className="grid pl-6 pr-4">
+            <div className="grid pl-2 ">
               <GlowingEffectDemo />
-              {/* <GlowingEffectDemo />
-              <GlowingEffectDemo /> */}
             </div>
           </div>
         </SidebarInset>
@@ -154,10 +153,18 @@ function MainContent() {
         }
       />
       <Route
+        path="/bookmarked_articles"
+        element={
+          <AuthGuard>
+            <BookmarkedArticles />
+          </AuthGuard>
+        }
+      />
+      <Route
         path="/history"
         element={
           <AuthGuard>
-            <History/>
+            <History />
           </AuthGuard>
         }
       />
