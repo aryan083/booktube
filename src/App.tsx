@@ -22,7 +22,7 @@ import { Blendy, createBlendy } from "blendy";
 import ClickSpark from "./components/ClickSpark";
 
 import History from "./pages/History";
-// import ArticlePage from "@/pages/ArticlePage";
+import LandingPage from "./pages/landing";
 
 import WorkflowModal from "./components/WorkflowModal";
 import { GlowingEffectDemo } from "./components/glow-effect";
@@ -119,6 +119,7 @@ function MainContent() {
   return (
     <Routes>
       {/* Public routes - accessible to everyone */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/signin" element={<SignInForm />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route
@@ -129,7 +130,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-      {/* <Route path="/courses" element={<Courses />} /> */}
       <Route
         path="/course/:courseId"
         element={
@@ -138,9 +138,8 @@ function MainContent() {
           </AuthGuard>
         }
       />
-      {/* <Route path="/auth" element={<Auth />} /> */}
       <Route
-        path="/"
+        path="/home"
         element={
           <AuthGuard>
             <Home />
@@ -179,7 +178,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-
       <Route
         path="/playlists/:playlistId"
         element={
@@ -188,7 +186,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-
       <Route
         path="/history"
         element={
@@ -206,7 +203,7 @@ function MainContent() {
         }
       />
 
-      {/* Redirect to signin if user is not authenticated and tries to access other pages */}
+      {/* Redirect to landing page if user is not authenticated and tries to access other pages */}
       <Route
         path="*"
         element={
@@ -217,14 +214,13 @@ function MainContent() {
           ) : user ? (
             <NotFound />
           ) : (
-            <Navigate to="/signin" replace />
+            <Navigate to="/" replace />
           )
         }
       />
     </Routes>
   );
 }
-// >>>>>>> Stashed changes
 
 function App() {
   const queryClient = new QueryClient();
