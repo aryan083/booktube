@@ -90,7 +90,12 @@ export default function LandingPage() {
               Chapterwise. Personalized. Interactive.
             </p>
             <p className="text-2xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-medium">
-              Learn the Way You Love.
+              Learn the Way You Love. <br/>
+              For demo purposes, use the following credentials:
+              <br />
+              Email: aryanmahida1268@gmail.com
+              <br />
+              Password: 1234567890
             </p>
           </motion.div>
 

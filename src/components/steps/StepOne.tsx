@@ -133,7 +133,7 @@ const StepOne: React.FC<StepOneProps> = ({
       if (index === 1 && newFiles[0]) {
         const formData = new FormData();
         formData.append('course_pdf', file);
-        formData.append('book_pdf_name', newFiles[0].name);
+        formData.append('book_pdf_name', newFiles[0].name.replace(".pdf", "").replace(" ", "_"));
         extractPDFInfo(file, index, formData);
       } else {
         extractPDFInfo(file, index);

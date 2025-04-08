@@ -87,6 +87,12 @@ export function SignInForm({
                     <h1 className="text-2xl font-bold">Welcome back </h1>
                     <p className="text-muted-foreground">
                       Sign in to your BookTube account
+                      <br/>
+                      For demo purposes, use the following credentials:
+                      <br/>
+                      Email: aryanmahida1268@gmail.com
+                      <br/>
+                      Password: 1234567890
                     </p>
                   </div>
                   <div className="space-y-4">
@@ -96,6 +102,7 @@ export function SignInForm({
                         id="email"
                         type="email"
                         placeholder="m@example.com"
+                        defaultValue="aryanmahida1268@gmail.com"
                         {...register("email", {
                           required: "Email is required",
                         })}
@@ -112,6 +119,7 @@ export function SignInForm({
                       <div className="relative">
                         <Input
                           id="password"
+                          defaultValue="1234567890"
                           type={showPassword ? "text" : "password"}
                           {...register("password", {
                             required: "Password is required",
