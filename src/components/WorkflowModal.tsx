@@ -169,7 +169,11 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   }, [selectedFiles]);
 
   const handleNext = async () => {
-    if (currentStep === 1) {
+    // if (currentStep === 1) {
+  
+    // }  
+
+    if (currentStep === 5) {
       const generateUUID = () => {
         const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
@@ -202,7 +206,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
         try {
           const response = await fetch(
-            `${API_BASE_URL}/api/upload_and_process`,
+            `${API_BASE_URL}/api/upload_and_process2`,
             {
               method: "POST",
               body: formData,
@@ -220,9 +224,6 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           // Continue to next step even if upload fails
         }
       });
-    }
-
-    if (currentStep === 5) {
       try {
         const {
           data: { user },

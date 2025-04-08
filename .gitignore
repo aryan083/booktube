@@ -25,3 +25,6 @@ dist-ssr
 # typescript
 .qodo
 notebooks/Google-Image-Scraper/
+.env
+.env
+.env
