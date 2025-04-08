@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Sun, Moon, ArrowLeft } from "lucide-react";
 import DOMPurify from "dompurify";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { css } from "@emotion/react";
 import {
   extractColorsFromImage,
   ColorPalette,
@@ -102,54 +103,48 @@ export default function ArticlePage() {
             }
           }
         }
-// Add article to history with timestamp
-const {
-  data: { user },
-} = await supabase.auth.getUser();
+        // Add article to history with timestamp
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-if (user?.id) {
-  // Get current time as ISO string
-  const currentTime = new Date().toISOString();
-  const newHistoryEntry = {
-    [currentTime]: article_id
-  };
+        if (user?.id) {
+          // Get current time as ISO string
+          const currentTime = new Date().toISOString();
+          const newHistoryEntry = {
+            [currentTime]: article_id,
+          };
 
-  const { data: userData } = await supabase
-    .from("users")
-    .select("history")
-    .eq("user_id", user.id)
-    .single();
+          const { data: userData } = await supabase
+            .from("users")
+            .select("history")
+            .eq("user_id", user.id)
+            .single();
 
-  if (userData?.history) {
-    // Update existing history by spreading the old history and adding new entry
-    const { data: updatedData } = await supabase
-      .from("users")
-      .update({
-        history: {
-          history: { ...userData.history.history, ...newHistoryEntry }
+          if (userData?.history) {
+            // Update existing history by spreading the old history and adding new entry
+            const { data: updatedData } = await supabase
+              .from("users")
+              .update({
+                history: {
+                  history: { ...userData.history.history, ...newHistoryEntry },
+                },
+              })
+              .eq("user_id", user.id);
+            console.log("Updated history:", updatedData);
+          } else {
+            // Create new history entry
+            const { data: updatedData } = await supabase
+              .from("users")
+              .update({
+                history: {
+                  history: newHistoryEntry,
+                },
+              })
+              .eq("user_id", user.id);
+            console.log("Created new history:", updatedData);
+          }
         }
-      })
-      .eq("user_id", user.id);
-    console.log("Updated history:", updatedData);
-  } else {
-    // Create new history entry
-    const { data: updatedData } = await supabase
-      .from("users")
-      .update({
-        history: {
-          history: newHistoryEntry
-        }
-      })
-      .eq("user_id", user.id);
-    console.log("Created new history:", updatedData);
-  }
-}
-
-
-
-
-
-        
       } catch (err) {
         console.error("Error fetching article:", err);
       } finally {
@@ -454,9 +449,9 @@ if (user?.id) {
             </h1>
 
             <div
-              className="prose dark:prose-invert max-w-none overflow-x-hidden"
+              className="prose inner-html dark:prose-invert max-w-none overflow-x-hidden"
               style={{
-                color: "inherit",
+                // color: "inherit",
                 width: "100%",
               }}
               dangerouslySetInnerHTML={{

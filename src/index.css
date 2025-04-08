@@ -198,6 +198,123 @@ button:hover {
   }
 }
 
+.inner-html{
+  section{
+    margin-top: 50px;
+  }
+  h1{
+    display: none;
+  }
+  p{
+    margin: 15px;
+    font-size: 18px;
+  }
+  h2{
+    font-weight: 600;
+    font-size: 40px;
+  }
+  h3{
+    font-size: 32px;
+    margin-top: 20px;
+    /* margin-left: 4px; */
+    font-weight: 600;
+    
+  }
+  h4{
+    font-size: 25px;
+    margin-top: 10px;
+    margin-left: 10px;
+    font-weight: 600;
+    
+  }
+  pre{
+    border: currentColor 1.5px solid;
+    padding: 15px ;
+    /* margin: 20px; */
+    margin-top: 30px;
+    background-color: rgba(255, 255, 255, 0.024);
+    border-radius: 10px;
+  }
+  code
+  {
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  table{
+    border: currentColor 1px solid;
+    /* border-color: currentColor; */
+    /* opacity: 0.5; */
+    
+    margin-top: 20px;
+    border-radius: px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+  }
+
+  th{
+    border: currentColor 0.5px solid;
+    /* border-color: currentColor; */
+    /* opacity: 0.5; */
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 18px;
+    /* background-color: cure */
+    font-weight: bold;
+    line-height: 50px;
+    white-space: nowrap;
+    
+  }
+
+  td{
+    padding: 12px 20px;
+    text-align: left;
+    border: currentColor 0.5px solid;
+    /* border-color: currentColor; */
+    /* opacity: 0.5; */
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  tr:hover td {
+    /* background-color: rgba(var(--foreground), 0.5); */
+  }
+  ul{
+    margin: 20px;
+    font-size: 17px;
+  }
+  ol{
+    margin: 20px;
+    font-size: 17px;
+  }
+  li{
+    font-size: 18;
+    margin: 10px;
+    list-style-type: disc;
+    list-style-position: outside;
+    padding-left: 7px;
+  }
+  b{
+    /* font-weight: 600;   */
+  }
+  div{
+    border: none !important;
+  }
+  b{
+    /* margin-top: 10px; */
+  }
+  a{
+    color: inherit;
+    text-decoration: underline;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  a:hover {
+    opacity: 0.5;
+    /* transform: scale(2) !important; */
+  }
+}
+
 
 .modal {
   position: fixed;
