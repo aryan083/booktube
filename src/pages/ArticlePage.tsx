@@ -429,14 +429,14 @@ export default function ArticlePage() {
               backgroundRepeat: "no-repeat",
             }}
           >
-            <GlowingEffect
+            {/* <GlowingEffect
               spread={40}
               glow={true}
               disabled={false}
               proximity={64}
               inactiveZone={0.01}
               children={undefined}
-            />
+            /> */}
           </div>
 
           <div className="space-y-6">

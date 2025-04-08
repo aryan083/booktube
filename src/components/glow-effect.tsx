@@ -15,7 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PlaylistCombobox } from "./playlist-combobox"
+import { PlaylistCombobox } from "./playlist-combobox";
 
 export function GlowingEffectDemo() {
   const [processedArticles, setProcessedArticles] = useState<{
@@ -459,7 +459,7 @@ const GridItem = ({
   };
   const blendy = useRef<Blendy | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [showPlaylistCombobox, setShowPlaylistCombobox] = useState(false)
+  const [showPlaylistCombobox, setShowPlaylistCombobox] = useState(false);
 
   const rawId = useId();
   const id = rawId.replace(/:/g, "_");
@@ -486,17 +486,20 @@ const GridItem = ({
   useEffect(() => {
     // Check if the article is in watch later when component mounts
     const checkWatchLaterStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user?.id) {
         const { data: userData } = await supabase
-          .from('users')
-          .select('watch_later')
-          .eq('user_id', user.id)
+          .from("users")
+          .select("watch_later")
+          .eq("user_id", user.id)
           .single();
-        
+
         if (userData?.watch_later) {
           const isInList = userData.watch_later.some(
-            (article: { article_id: string }) => article.article_id === article_id
+            (article: { article_id: string }) =>
+              article.article_id === article_id
           );
           setIsInWatchLater(isInList);
         }
@@ -507,31 +510,39 @@ const GridItem = ({
 
   const handleReadLater = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    const { data: { user } } = await supabase.auth.getUser();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      console.error('User must be logged in to use read later feature');
+      console.error("User must be logged in to use read later feature");
       return;
     }
 
     try {
-      const { error, isInWatchLater: newStatus } = await toggleReadLater(user.id, article_id, title);
+      const { error, isInWatchLater: newStatus } = await toggleReadLater(
+        user.id,
+        article_id,
+        title
+      );
       if (error) {
-        console.error('Error toggling read later status:', error);
+        console.error("Error toggling read later status:", error);
         return;
       }
 
       setIsAnimating(true);
       setShowConfirmation(true);
-      setConfirmationMessage(newStatus ? "Added to read later" : "Removed from read later");
+      setConfirmationMessage(
+        newStatus ? "Added to read later" : "Removed from read later"
+      );
       setTimeout(() => {
         setShowConfirmation(false);
         setIsAnimating(false);
       }, 2000);
-      
+
       setIsInWatchLater(newStatus ?? false);
     } catch (error) {
-      console.error('Error in read later operation:', error);
+      console.error("Error in read later operation:", error);
     }
   };
 
@@ -546,29 +557,36 @@ const GridItem = ({
         <TooltipProvider>
           <div className="absolute right-3 top-3 flex flex-col gap-2 z-50">
             {/* Read Later Button Container */}
-            <div 
+            <div
               className={`${
-                isInWatchLater ? 'opacity-100' : 'opacity-0 group-hover/card:opacity-100'
+                isInWatchLater
+                  ? "opacity-100"
+                  : "opacity-0 group-hover/card:opacity-100"
               } transition-opacity duration-200 relative h-[32px]`}
             >
-              <div 
+              <div
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   right: 0,
-                  width: isAnimating ? (confirmationMessage.includes("Removed") ? '200px' : '180px') : '32px',
-                  transition: 'width 300ms ease-in-out'
+                  width: isAnimating
+                    ? confirmationMessage.includes("Removed")
+                      ? "200px"
+                      : "180px"
+                    : "32px",
+                  transition: "width 300ms ease-in-out",
                 }}
               >
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <button
                       className={`
                         w-full relative overflow-hidden
                         transition-all duration-300 ease-in-out
                         backdrop-blur-sm flex items-center justify-center
-                        ${backgroundImage 
-                          ? "bg-white/20 hover:bg-white/30 text-white" 
-                          : "bg-black/10 hover:bg-black/20 text-black"
+                        ${
+                          backgroundImage
+                            ? "bg-white/20 hover:bg-white/30 text-white"
+                            : "bg-black/10 hover:bg-black/20 text-black"
                         }
                         ${isInWatchLater}
                         rounded-full
@@ -587,7 +605,9 @@ const GridItem = ({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="left">
-                    <p>{isInWatchLater ? "Remove from Read Later" : "Read Later"}</p>
+                    <p>
+                      {isInWatchLater ? "Remove from Read Later" : "Read Later"}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -597,13 +617,14 @@ const GridItem = ({
             <div className="opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 h-[32px]">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button 
+                  <button
                     className={`
                       p-1.5 rounded-full backdrop-blur-sm transition-colors
                       flex items-center justify-center
-                      ${backgroundImage 
-                        ? "bg-white/20 hover:bg-white/30 text-white" 
-                        : "bg-black/10 hover:bg-black/20 text-black"
+                      ${
+                        backgroundImage
+                          ? "bg-white/20 hover:bg-white/30 text-white"
+                          : "bg-black/10 hover:bg-black/20 text-black"
                       }
                     `}
                     onClick={(e) => {
@@ -624,8 +645,8 @@ const GridItem = ({
               </Tooltip>
               {showPlaylistCombobox && (
                 <div className="absolute right-0 top-8 z-50">
-                  <PlaylistCombobox 
-                    onClose={() => setShowPlaylistCombobox(false)} 
+                  <PlaylistCombobox
+                    onClose={() => setShowPlaylistCombobox(false)}
                     articleId={article_id}
                   />
                 </div>
@@ -633,16 +654,16 @@ const GridItem = ({
             </div>
           </div>
         </TooltipProvider>
-        <GlowingEffect
+        {/* <GlowingEffect
           spread={40}
           glow={true}
           disabled={false}
           proximity={64}
           inactiveZone={0.01}
           children={undefined}
-        />
+        /> */}
         <div
-          className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl"
+          className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl hover:cursor-pointer"
           style={{
             ...cardStyle,
             backgroundImage: backgroundImage
@@ -661,17 +682,18 @@ const GridItem = ({
         >
           <div className="relative flex flex-1 flex-col justify-end gap-3">
             <div className="mt-auto z-10">
-              <h3 className="text-xl font-semibold text-balance">
-                <div ref={containerRef} className="hover:cursor-pointer">
-                  <VariableProximity
-                    label={title}
+              <h3 className="text-xl  text-balance">
+                <div ref={containerRef} className="">
+                  {/* <VariableProximity
+                    label={}
                     className={"variable-proximity-demo"}
                     fromFontVariationSettings="'wght' 400, 'opsz' 9"
                     toFontVariationSettings="'wght' 750, 'opsz' 40"
                     containerRef={containerRef}
                     radius={75}
                     falloff="gaussian"
-                  />
+                  /> */}
+                  {title}
                 </div>
               </h3>
             </div>
