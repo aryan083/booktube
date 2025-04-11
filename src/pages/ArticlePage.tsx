@@ -236,7 +236,7 @@ export default function ArticlePage() {
               <div className="flex items-center gap-4">
                 {/* For the back button - very subtle background */}
                 <button
-                  onClick={() => navigate(-1)}
+                  onClick={() => navigate("/home")}
                   className="p-2 rounded-full hover:bg-opacity-80 transition-all duration-200 flex items-center justify-center"
                   style={getButtonBgStyle(themeColors?.primary, 0.08)} // Just 8% opacity
                   aria-label="Go back"

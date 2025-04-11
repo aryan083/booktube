@@ -18,22 +18,27 @@ export interface ArticleData {
  * Fetches all articles from Supabase
  * @returns Promise with articles data and any error
  */
+/**
+ * Fetches articles from the Supabase database, optionally filtering by user ID.
+ * 
+ * If a user ID is provided, the query will filter articles that belong to that user.
+ * The articles are ordered by their creation date in descending order.
+ * 
+ * @param {string} [userId] - The optional ID of the user to filter articles by.
+ * @returns {Promise<{ data: ArticleData[] | null, error: string | null }>} 
+ *          A promise that resolves to an object containing the articles data and any error message.
+ */
 export const fetchArticles = async (userId?: string) => {
   try {
     console.log('Fetching articles from Supabase...');
     
     // Create a query that can be filtered by user_id if provided
-    let query = supabase
+    const { data, error } = await supabase
       .from('articles')
-      .select('*');
-      
-    // Apply user_id filter if provided
-    if (userId) {
-      query = query.eq('user_id', userId);
-    }
-    
-    // Execute the query with ordering
-    const { data, error } = await query.order('created_at', { ascending: false });
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20);
 
     // Log raw response for debugging
     console.log('Raw Supabase Response:', { 
@@ -79,26 +84,4 @@ export const fetchArticles = async (userId?: string) => {
   }
 };
 
-/**
- * Creates a new article in Supabase
- * @param articleData Article data to be stored
- * @returns Promise with the created article data and any error
- */
-// export const createArticle = async (articleData: Omit<ArticleData, 'id' | 'created_at'>) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from('articles')
-//       .insert([articleData])
-//       .select();
 
-//     if (error) {
-//       console.error('Error creating article:', error);
-//       throw error;
-//     }
-
-//     return { data: data[0] as ArticleData, error: null };
-//   } catch (error) {
-//     console.error('Error in createArticle:', error);
-//     return { data: null, error };
-//   }
-// };

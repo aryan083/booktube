@@ -92,7 +92,10 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
       // Add book PDF if it exists (index 0)
       if (selectedFiles[0]) {
-        formData.append("book_pdf_name", selectedFiles[0].name.replace(".pdf", "").replace(" ", "_"));
+        formData.append(
+          "book_pdf_name",
+          selectedFiles[0].name.replace(".pdf", "").replace(" ", "_")
+        );
       }
 
       const response = await sendPdfToGemini(formData);
@@ -170,8 +173,8 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
 
   const handleNext = async () => {
     // if (currentStep === 1) {
-  
-    // }  
+
+    // }
 
     if (currentStep === 5) {
       const generateUUID = () => {
