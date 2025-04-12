@@ -46,9 +46,21 @@
               "icon": "excalidraw-icon",
               "title": "Drawing 2025-03-21 20.51.36.excalidraw"
             }
+          },
+          {
+            "id": "056e611c3deac934",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/Drawing 2025-04-11 21.38.48.excalidraw.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Drawing 2025-04-11 21.38.48.excalidraw"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -105,7 +117,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "cbd752dd9e9dad91",
@@ -196,8 +209,9 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "a08acda983e2917d",
+  "active": "056e611c3deac934",
   "lastOpenFiles": [
+    "Excalidraw/Drawing 2025-04-11 21.38.48.excalidraw.md",
     "Excalidraw/Drawing 2025-03-21 20.51.36.excalidraw.md",
     "2025-03-21.md",
     "2025-03-13 (Meet Notes).md",

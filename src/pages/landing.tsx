@@ -3,15 +3,13 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, BookOpen, Brain, Sparkles, MessageSquare, GraduationCap, BookCopy, LayoutGrid } from "lucide-react"
 import { useState, useEffect } from "react"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-hidden">
       {/* Gradient Orbs */}
-      <div className="fixed inset-0 overflow-hidden -z-10">
-        <div className="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] bg-purple-500/30 rounded-full blur-[128px]" />
-        <div className="absolute bottom-[-10%] right-[-20%] w-[500px] h-[500px] bg-blue-500/30 rounded-full blur-[128px]" />
-      </div>
+
 
       {/* Navigation Bar */}
       <motion.nav 
@@ -21,13 +19,12 @@ export default function LandingPage() {
         className="container mx-auto px-4 py-6 flex items-center justify-between backdrop-blur-sm bg-black/10 mt-4 rounded-2xl"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full" />
-          <span className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-xl font-semibold  bg-clip-text ">
             BookTube
           </span>
         </div>
         <div className="flex items-center gap-8">
-          <Link to="/about" className="text-white/80 hover:text-white transition-colors">
+          {/* <Link to="/about" className="text-white/80 hover:text-white transition-colors">
             About
           </Link>
           <Link to="/learn" className="text-white/80 hover:text-white transition-colors">
@@ -35,14 +32,18 @@ export default function LandingPage() {
           </Link>
           <Link to="/contact" className="text-white/80 hover:text-white transition-colors">
             Contact
-          </Link>
+          </Link> */}
           <Link to="/signup">
-            <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 rounded-full px-6 shadow-lg shadow-purple-500/25">
+            <Button className=" text-semibold  text-white hover:opacity-90 rounded-full p-4  ">
+            
+
+            
+
               Get Started
             </Button>
           </Link>
           <Link to="/signin">
-            <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 rounded-full px-6 shadow-lg shadow-purple-500/25">
+            <Button className=" text-white hover:opacity-90 rounded-full  ">
               Login
             </Button>
           </Link>
