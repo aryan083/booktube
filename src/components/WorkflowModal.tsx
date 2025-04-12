@@ -194,17 +194,20 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       setCourseUUID(uuid);
 
       // Make API call for each selected file in the background
-      selectedFiles.forEach(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("document_type", "book");
-        formData.append("document_name", file.name.replace(".pdf", ""));
-        formData.append("extract_images", "true");
-        formData.append("extract_text", "true");
-        formData.append("save_json", "true");
-        formData.append("course_id", course_uuid);
+
+
+      const file =  selectedFiles[1]
+
+        const BookformData = new FormData();
+        BookformData.append("file", file);
+        BookformData.append("document_type", "book");
+        BookformData.append("document_name", file.name.replace(".pdf", ""));
+        BookformData.append("extract_images", "true");
+        BookformData.append("extract_text", "true");
+        BookformData.append("save_json", "true");
+        BookformData.append("course_id", course_uuid);
         if (user) {
-          formData.append("user_id", user.id);
+          BookformData.append("user_id", user.id);
         }
 
         try {
@@ -212,7 +215,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             `${API_BASE_URL}/api/upload_and_process2`,
             {
               method: "POST",
-              body: formData,
+              body: BookformData,
             }
           );
 
@@ -224,22 +227,23 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           console.log("Upload successful:", data);
         } catch (error) {
           console.error("Upload error:", error);
+          console.error("hello there you are a total dumbass",selectedFiles)
           // Continue to next step even if upload fails
         }
-      });
+      
       try {
         const {
           data: { user },
         } = await supabase.auth.getUser();
 
-        if (!user) {
-          toast({
-            title: "Error",
-            description: "You must be logged in to create a course.",
-            variant: "destructive",
-          });
-          return;
-        }
+        // if (!user) {
+        //   toast({
+        //     title: "Error",
+        //     description: "You must be logged in to create a course.",
+        //     variant: "destructive",
+        //   });
+        //   return;
+        // }
 
         // First, save the course data to Supabase with only the required fields
         const courseData = {
