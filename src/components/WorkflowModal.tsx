@@ -203,66 +203,23 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
         return;
       }
 
-      console.log("Selected file for upload:", file?.name, "Size:", file?.size);
-
-      const BookformData = new FormData();
-      BookformData.append("file", file);
-      BookformData.append("document_type", "book");
-      BookformData.append("document_name", file.name.replace(".pdf", ""));
-      BookformData.append("extract_images", "true");
-      BookformData.append("extract_text", "true");
-      BookformData.append("save_json", "true");
-      BookformData.append("course_id", uuid); // Use the generated UUID directly
-      if (user) {
-        BookformData.append("user_id", user.id);
-      }
-
-      console.log("FormData contents:");
-      for (const pair of BookformData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-
-      try {
-        console.log("Sending request to:", `${API_BASE_URL}/api/upload_and_process2`);
-        const response = await fetch(
-          `${API_BASE_URL}/api/upload_and_process2`,
-          {
-            method: "POST",
-            body: BookformData,
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Upload failed with status:", response.status, "Error:", errorData);
-          throw new Error(`Upload failed: ${errorData.message || response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Upload successful:", data);
-      } catch (error) {
-        console.error("Upload error:", error);
-        console.error("hello there you are a total dumbass",selectedFiles)
-        // Continue to next step even if upload fails
-      }
-      
       try {
         const {
           data: { user },
         } = await supabase.auth.getUser();
 
-        // if (!user) {
-        //   toast({
-        //     title: "Error",
-        //     description: "You must be logged in to create a course.",
-        //     variant: "destructive",
-        //   });
-        //   return;
-        // }
+        if (!user) {
+          toast({
+            title: "Error",
+            description: "You must be logged in to create a course.",
+            variant: "destructive",
+          });
+          return;
+        }
 
         // First, save the course data to Supabase with only the required fields
         const courseData = {
-          course_id: course_uuid,
+          course_id: uuid, // Use the generated UUID directly
           course_name: courseTitle,
           metadata: "",
           chapters_json: {
@@ -287,6 +244,44 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
           });
           return;
         }
+
+        // After successful course creation, proceed with file upload
+        console.log("Course created successfully, proceeding with file upload...");
+        
+        const BookformData = new FormData();
+        BookformData.append("file", file);
+        BookformData.append("document_type", "book");
+        // Ensure consistent naming by replacing spaces with underscores
+        const documentName = file.name.replace(".pdf", "").replace(/\s+/g, "_");
+        BookformData.append("document_name", documentName);
+        BookformData.append("extract_images", "true");
+        BookformData.append("extract_text", "true");
+        BookformData.append("save_json", "true");
+        BookformData.append("course_id", uuid);
+        BookformData.append("user_id", user.id);
+
+        console.log("FormData contents:");
+        for (const pair of BookformData.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+
+        console.log("Sending request to:", `${API_BASE_URL}/api/upload_and_process2`);
+        const response = await fetch(
+          `${API_BASE_URL}/api/upload_and_process2`,
+          {
+            method: "POST",
+            body: BookformData,
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Upload failed with status:", response.status, "Error:", errorData);
+          throw new Error(`Upload failed: ${errorData.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Upload successful:", data);
 
         // Create a Map to store chapter names and their topic IDs
         const chapterTopicIdsMap = new Map<string, string[]>();
@@ -343,21 +338,6 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
             chapterTopicIdsMap
           );
           console.log("Course data prepared for backend:", preparedData);
-
-          // Then proceed with file processing
-          if (selectedFiles.length > 0) {
-            const formData = new FormData();
-            selectedFiles.forEach((file) => {
-              formData.append("files", file);
-            });
-            formData.append("prompt", textPrompt);
-            formData.append("skill_level", skillLevel.toString());
-            formData.append(
-              "teaching_pattern",
-              JSON.stringify(selectedMethods)
-            );
-            formData.append("course_data", JSON.stringify(preparedData));
-          }
         }
 
         toast({
