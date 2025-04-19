@@ -48,7 +48,7 @@ export function SignInForm({
 
   return (
     <div className="min-h-screen flex items-center justify-center p-20  overflow-hidden">
-      <div className="relative w-full rounded-3xl h-full">
+      <div className="relative w-full max-w-6xl rounded-3xl h-full">
         <GlowingEffect
           spread={40}
           glow={true}
@@ -87,12 +87,7 @@ export function SignInForm({
                     <h1 className="text-2xl font-bold">Welcome back </h1>
                     <p className="text-muted-foreground">
                       Sign in to your BookTube account
-                      <br/>
-                      For demo purposes, use the following credentials:
-                      <br/>
-                      Email: aryanmahida1268@gmail.com
-                      <br/>
-                      Password: 1234567890
+
                     </p>
                   </div>
                   <div className="space-y-4">

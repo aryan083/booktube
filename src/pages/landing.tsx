@@ -111,15 +111,19 @@ export default function LandingPage() {
 
           {/* Auth buttons right */}
           <div className="flex justify-end items-center space-x-4">
-            <Button className="bg-transparent text-white shadow-none border-none px-4 py-2 transition-colors hover:text-cyan-300" style={{ background: 'transparent' }}>Login</Button>
-            <motion.button
-              className="px-4 py-2 rounded-lg text-white font-semibold shadow-md border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-300 transition-colors"
-              style={{ background: rotatingColors[activeTextIndex], color: '#000' }}
-              animate={{ backgroundColor: rotatingColors[activeTextIndex] }}
-              transition={{ duration: 0.4 }}
-            >
-              Create Account
-            </motion.button>
+            <Link to="/SignIn">
+  <Button className="bg-transparent text-white shadow-none border-none px-4 py-2 transition-colors hover:text-cyan-300" style={{ background: 'transparent' }}>Login</Button>
+</Link>
+            <Link to="/SignUp">
+  <motion.button
+    className="px-4  rounded-3xl text-white font-semibold shadow-md border-none focus:outline-none focus:ring-offset-2 focus:ring-cyan-300 transition-colors"
+    style={{ background: rotatingColors[activeTextIndex], color: '#000' }}
+    animate={{ backgroundColor: rotatingColors[activeTextIndex] }}
+    transition={{ duration: 0.4 }}
+  >
+    Create Account
+  </motion.button>
+</Link>
           </div>
         </div>
       </nav>
