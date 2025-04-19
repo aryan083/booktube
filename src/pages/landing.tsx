@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import RotatingText from "@/components/RotatingText/RotatingText";
+import FeaturesTabs from "@/components/FeaturesTabs";
 
 export default function LandingPage() {
   // Create a ref for the container holding the RotatingText
@@ -68,7 +69,7 @@ export default function LandingPage() {
     tempDiv.style.visibility = 'hidden';
     tempDiv.style.fontSize = '8rem'; // Match your text-8xl
     tempDiv.style.fontWeight = 'bold';
-    tempDiv.className = 'px-2 sm:px-2 md:px-3 bg-cyan-300 overflow-hidden text-black py-0.5 sm:py-1 md:py-2 rounded-lg';
+    tempDiv.className = 'px-2 sm:px-2 md:px-3  overflow-hidden text-black py-0.5 sm:py-1 md:py-2 rounded-lg';
     tempDiv.textContent = rotatingTexts[activeTextIndex];
     document.body.appendChild(tempDiv);
     
@@ -88,7 +89,7 @@ export default function LandingPage() {
         className="min-h-screen w-full"
         style={{ position: 'absolute', inset: 0, zIndex: 0 }}
       />
-      <nav className="fixed top-0 left-0 w-full bg-transparent bg-opacity-0 backdrop-blur-none p-4 z-10" style={{ zIndex: 10 }}>
+      <nav className="fixed top-0 left-0 w-full bg-transparent bg-opacity-0 backdrop-blur-3xl p-4 z-10" style={{ zIndex: 10 }}>
         <div className="container mx-auto grid grid-cols-3 items-center w-full">
           {/* Logo left */}
           <div className="flex items-center">
@@ -102,10 +103,10 @@ export default function LandingPage() {
           {/* Nav links center */}
           <div className="flex justify-center">
             <div className="flex space-x-8">
-              <Link to="#features" className="text-white hover:text-cyan-300 transition-colors">Features</Link>
-              <Link to="#testimonials" className="text-white hover:text-cyan-300 transition-colors">Testimonials</Link>
-              <Link to="#pricing" className="text-white hover:text-cyan-300 transition-colors">Pricing</Link>
-              <Link to="#team" className="text-white hover:text-cyan-300 transition-colors">Team</Link>
+              <a href="#features" className="text-white hover:text-cyan-300 transition-colors">Features</a>
+              <a href="#testimonials" className="text-white hover:text-cyan-300 transition-colors">Testimonials</a>
+              <a href="#pricing" className="text-white hover:text-cyan-300 transition-colors">Pricing</a>
+              <a href="#team" className="text-white hover:text-cyan-300 transition-colors">Team</a>
             </div>
           </div>
 
@@ -169,6 +170,16 @@ export default function LandingPage() {
               </motion.div>
             </span>
           </div>
+        </div>
+      </section>
+      <section
+        id="features"
+        className="flex items-center justify-center"
+        style={{ minHeight: 'calc(100vh)' }}
+      >
+        <div className="container mx-auto flex flex-col items-center justify-center">
+          {/* FeaturesTabs tabbed flowchart */}
+          <FeaturesTabs />
         </div>
       </section>
     </>
