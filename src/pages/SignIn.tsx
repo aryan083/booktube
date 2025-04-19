@@ -50,12 +50,14 @@ export function SignInForm({
   const handleOAuthSignIn = async (provider: "google" | "github") => {
     try {
       setLoading(true);
-      await signInWithOAuth(provider);
+      // Use the redirectTo parameter to specify where to redirect after successful OAuth
+      await signInWithOAuth(provider, `${window.location.origin}/auth/callback`);
+      // Note: The page will redirect to the OAuth provider, so we don't need to handle success here
     } catch (error) {
+      console.error(`[Auth] ${provider} OAuth sign-in error:`, error);
       const errorMessage =
         error instanceof Error ? error.message : "OAuth sign-in failed";
       toast.error(errorMessage);
-    } finally {
       setLoading(false);
     }
   };

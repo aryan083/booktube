@@ -30,6 +30,7 @@ import { AppSidebar } from "./components/app-sidebar";
 import SignUpForm from "./pages/SignUp";
 import Profile01 from "./components/kokonutui/profile-01";
 import { SignInForm } from "./pages/SignIn";
+import AuthCallback from "./pages/AuthCallback";
 import CourseDetails from "./pages/CourseDetails";
 import Courses from "./pages/Courses";
 import ArticlePage from "./pages/ArticlePage";
@@ -122,6 +123,7 @@ function MainContent() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/signin" element={<SignInForm />} />
       <Route path="/signup" element={<SignUpForm />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route
         path="/profile1"
         element={
