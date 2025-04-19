@@ -19,7 +19,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Blendy, createBlendy } from "blendy";
-import ClickSpark from "./components/ClickSpark";
+// import ClickSpark from "./components/ClickSpark";
 
 import History from "./pages/History";
 import LandingPage from "./pages/landing";
@@ -231,13 +231,7 @@ function App() {
   }, []);
 
   return (
-    <ClickSpark
-      sparkColor="#fff"
-      sparkSize={10}
-      sparkRadius={15}
-      sparkCount={8}
-      duration={400}
-    >
+
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Router>
@@ -256,7 +250,6 @@ function App() {
           </Router>
         </TooltipProvider>
       </QueryClientProvider>
-    </ClickSpark>
   );
 }
 

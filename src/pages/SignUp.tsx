@@ -25,6 +25,15 @@ const SignUpForm = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data: SignUpFormData) => {
+    // Check for errors before proceeding
+    const missingFields: string[] = [];
+    if (!data.username) missingFields.push("Username");
+    if (!data.email) missingFields.push("Email");
+    if (!data.password) missingFields.push("Password");
+    if (missingFields.length > 0) {
+      toast.error(`Please provide: ${missingFields.join(", ")}`);
+      return;
+    }
     try {
       setLoading(true);
       await signUp(data.email, data.password, { display_name: data.username });
@@ -93,7 +102,7 @@ const SignUpForm = () => {
                     </div>
                     <h1 className="text-2xl font-bold">Create your account</h1>
                     <p className="text-muted-foreground">
-                      Join our community to get started
+                      Join our platform to get started
                     </p>
                   </div>
                   <div className="space-y-4">
@@ -104,13 +113,14 @@ const SignUpForm = () => {
                           required: "Username is required",
                         })}
                         placeholder="Username"
-                        className="pl-10 bg-black/50 border-white/10 focus:border-primary transition-colors"
+                        className={
+                          cn(
+                            "pl-10 bg-black/50 border-white/10 focus:border-primary transition-colors",
+                            errors.username && "border-red-500 focus:border-red-500"
+                          )
+                        }
                       />
-                      {errors.username && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.username.message}
-                        </p>
-                      )}
+                      
                     </div>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -124,13 +134,14 @@ const SignUpForm = () => {
                         })}
                         type="email"
                         placeholder="Email"
-                        className="pl-10 bg-black/50 border-white/10 focus:border-primary transition-colors"
+                        className={
+                          cn(
+                            "pl-10 bg-black/50 border-white/10 focus:border-primary transition-colors",
+                            errors.email && "border-red-500 focus:border-red-500"
+                          )
+                        }
                       />
-                      {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.email.message}
-                        </p>
-                      )}
+                      
                     </div>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -144,7 +155,12 @@ const SignUpForm = () => {
                         })}
                         type={showPassword ? "text" : "password"}
                         placeholder="Password"
-                        className="pl-10 pr-10 bg-black/50 border-white/10 focus:border-primary transition-colors"
+                        className={
+                          cn(
+                            "pl-10 pr-10 bg-black/50 border-white/10 focus:border-primary transition-colors",
+                            errors.password && "border-red-500 focus:border-red-500"
+                          )
+                        }
                       />
                       <button
                         type="button"
@@ -161,19 +177,9 @@ const SignUpForm = () => {
                           <Eye className="h-4 w-4" aria-hidden="true" />
                         )}
                       </button>
-                      {errors.password && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.password.message}
-                        </p>
-                      )}
                     </div>
                   </div>
 
-                  {errors.agreeToTerms && (
-                    <p className="text-red-500 text-sm -mt-4">
-                      {errors.agreeToTerms.message}
-                    </p>
-                  )}
                   <Button
                     type="submit"
                     className="w-full transition-all duration-200 hover:opacity-90 hover:scale-[0.99] active:scale-[0.97]"
