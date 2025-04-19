@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import Aurora from "@/components/Aurora";
+import { signInWithOAuth } from "@/lib/oauth";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -50,9 +51,23 @@ const SignUpForm = () => {
     }
   };
 
-  const handleSocialLogin = (provider: "google" | "github") => {
-    toast.info(`${provider} login coming soon!`);
+  /**
+   * Handles OAuth sign-in with the given provider.
+   * @param {"google" | "github"} provider - The OAuth provider to use.
+   */
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    try {
+      setLoading(true);
+      await signInWithOAuth(provider);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "OAuth sign-in failed";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 overflow-hidden">
