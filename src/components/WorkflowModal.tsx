@@ -172,10 +172,6 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
   }, [selectedFiles]);
 
   const handleNext = async () => {
-    // if (currentStep === 1) {
-
-    // }
-
     if (currentStep === 5) {
       const generateUUID = () => {
         const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
@@ -190,46 +186,65 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
       };
 
       const uuid = generateUUID();
-      console.log("helllllllllll0ooooooooooooo", uuid, user.id);
+      console.log("Generated UUID:", uuid);
+      console.log("Selected files:", selectedFiles);
+      console.log("File sizes:", selectedFiles.map(f => ({name: f.name, size: f.size})));
       setCourseUUID(uuid);
 
-      // Make API call for each selected file in the background
+      // Use the book PDF (index 0) instead of course PDF (index 1)
+      const file = selectedFiles[0];
+      if (!file) {
+        console.error("No book PDF selected");
+        toast({
+          title: "Error",
+          description: "Please select a book PDF file",
+          variant: "destructive",
+        });
+        return;
+      }
 
+      console.log("Selected file for upload:", file?.name, "Size:", file?.size);
 
-      const file =  selectedFiles[1]
+      const BookformData = new FormData();
+      BookformData.append("file", file);
+      BookformData.append("document_type", "book");
+      BookformData.append("document_name", file.name.replace(".pdf", ""));
+      BookformData.append("extract_images", "true");
+      BookformData.append("extract_text", "true");
+      BookformData.append("save_json", "true");
+      BookformData.append("course_id", uuid); // Use the generated UUID directly
+      if (user) {
+        BookformData.append("user_id", user.id);
+      }
 
-        const BookformData = new FormData();
-        BookformData.append("file", file);
-        BookformData.append("document_type", "book");
-        BookformData.append("document_name", file.name.replace(".pdf", ""));
-        BookformData.append("extract_images", "true");
-        BookformData.append("extract_text", "true");
-        BookformData.append("save_json", "true");
-        BookformData.append("course_id", course_uuid);
-        if (user) {
-          BookformData.append("user_id", user.id);
-        }
+      console.log("FormData contents:");
+      for (const pair of BookformData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
 
-        try {
-          const response = await fetch(
-            `${API_BASE_URL}/api/upload_and_process2`,
-            {
-              method: "POST",
-              body: BookformData,
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Upload failed");
+      try {
+        console.log("Sending request to:", `${API_BASE_URL}/api/upload_and_process2`);
+        const response = await fetch(
+          `${API_BASE_URL}/api/upload_and_process2`,
+          {
+            method: "POST",
+            body: BookformData,
           }
+        );
 
-          const data = await response.json();
-          console.log("Upload successful:", data);
-        } catch (error) {
-          console.error("Upload error:", error);
-          console.error("hello there you are a total dumbass",selectedFiles)
-          // Continue to next step even if upload fails
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Upload failed with status:", response.status, "Error:", errorData);
+          throw new Error(`Upload failed: ${errorData.message || response.statusText}`);
         }
+
+        const data = await response.json();
+        console.log("Upload successful:", data);
+      } catch (error) {
+        console.error("Upload error:", error);
+        console.error("hello there you are a total dumbass",selectedFiles)
+        // Continue to next step even if upload fails
+      }
       
       try {
         const {
