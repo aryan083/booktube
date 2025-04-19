@@ -88,7 +88,7 @@ export default function AuthCallback() {
             <p className="text-gray-400">
               Please wait while we set up your session.
             </p>
-            {!processing && navigate("/home")}
+            {!processing && setTimeout(() => navigate("/home"), 5000)}
           </>
         )}
       </div>
