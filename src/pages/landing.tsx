@@ -172,16 +172,16 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <section
+      {/* <section
         id="features"
         className="flex items-center justify-center"
         style={{ minHeight: 'calc(100vh)' }}
       >
         <div className="container mx-auto flex flex-col items-center justify-center">
-          {/* FeaturesTabs tabbed flowchart */}
+          FeaturesTabs tabbed flowchart
           <FeaturesTabs />
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

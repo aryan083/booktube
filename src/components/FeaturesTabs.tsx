@@ -21,7 +21,7 @@ export default function FeaturesTabs() {
     <div className="min-h-[100vh] w-full flex flex-col items-center justify-center relative ">
       <div className=" w-full max-w-full  ">
         <div
-          className="backdrop-blur-lg bg-white/10 min-h-[65vh] w-full   rounded-3xl p-4 relative"
+          className="backdrop-blur-lg bg-white/10  w-full   rounded-3xl p-4 relative"
           // style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.22)', border: '1px solid rgba(255,255,255,0.18)' }}
         >
           {TABS[activeTab].component}
