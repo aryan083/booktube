@@ -266,6 +266,18 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
         }
 
         console.log("Sending request to:", `${API_BASE_URL}/api/upload_and_process2`);
+
+        toast({
+          title: "Success",
+          description: `Course Generation of "${courseTitle}" is now in progress !`,
+          variant: "default",
+          className:
+            "text-green-500 [&>div>div:first-child]:text-green-500 [&>div>div:last-child]:text-white",
+        });
+
+        onOpenChange(false);
+
+        
         const response = await fetch(
           `${API_BASE_URL}/api/upload_and_process2`,
           {
@@ -368,15 +380,7 @@ const WorkflowModal: React.FC<WorkflowModalProps> = ({
     }
   };
 
-  const handleComplete = () => {
-    console.log({
-      selectedFiles,
-      textPrompt,
-      selectedMethods,
-      skillLevel,
-    });
-    onOpenChange(false);
-  };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
