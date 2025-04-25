@@ -70,8 +70,10 @@ export function GlowingEffectDemo() {
         if (error) {
           setError(error);
         } else if (data) {
-          console.log("Hello there these are the effin articles mate !!!!!!!!!!!!!!!!")
-          console.log(data)
+          console.log(
+            "Hello there these are the effin articles mate !!!!!!!!!!!!!!!!"
+          );
+          console.log(data);
           processArticleArrays(data);
         }
       } catch (err) {
@@ -86,9 +88,7 @@ export function GlowingEffectDemo() {
   }, []);
 
   if (isLoading) {
-    return (
-      <Booktubing />
-    );
+    return <Booktubing />;
   }
 
   if (error) {
@@ -639,7 +639,7 @@ const GridItem = ({
           style={{
             ...cardStyle,
             backgroundImage: backgroundImage
-              ? `linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.85) 100%), url(${backgroundImage})`
+              ? `linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 90%, rgba(0,0,0,0.85) 100%), url(${backgroundImage})`
               : "none",
             backgroundSize: "cover",
             backgroundPosition: "center",
