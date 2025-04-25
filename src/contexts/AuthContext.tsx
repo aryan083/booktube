@@ -76,8 +76,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('[Auth] User signed in:', session.user.email);
         setUser(session.user);
         
-        // If we're not on the callback page, redirect to home
-        if (!window.location.pathname.includes('/auth/callback')) {
+        // Only redirect to home if we're on the signin, signup, or root pages
+        // This prevents unwanted redirects when navigating between authenticated routes
+        const publicRoutes = ['/', '/signin', '/signup'];
+        if (publicRoutes.includes(window.location.pathname)) {
           navigate('/home');
         }
       } else if (event === 'SIGNED_OUT') {
