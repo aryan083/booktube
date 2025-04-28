@@ -28,7 +28,7 @@ export interface ArticleData {
  * @returns {Promise<{ data: ArticleData[] | null, error: string | null }>} 
  *          A promise that resolves to an object containing the articles data and any error message.
  */
-export const fetchArticles = async (userId?: string) => {
+export const fetchArticles = async (userId: string) => {
   try {
     console.log('Fetching articles from Supabase...');
     

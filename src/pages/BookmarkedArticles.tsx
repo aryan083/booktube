@@ -54,7 +54,7 @@ const BookmarkedArticles = () => {
 
         // Fetch full article data for the bookmarked articles
         const { data: articlesData, error: articlesError } =
-          await fetchArticles();
+          await fetchArticles(user.id);
 
         if (articlesError) throw new Error(articlesError);
 

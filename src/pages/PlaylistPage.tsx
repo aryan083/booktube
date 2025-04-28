@@ -102,7 +102,7 @@ const PlaylistPage = () => {
         ) {
           // Fetch all articles
           const { data: allArticles, error: articlesError } =
-            await fetchArticles();
+            await fetchArticles(user.id);
 
           if (articlesError) {
             console.error("Error fetching articles:", articlesError);

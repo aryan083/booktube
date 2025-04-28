@@ -13,9 +13,7 @@ interface ReadLaterArticle {
 
 const ReadLaterArticle = () => {
   const { user } = useAuth();
-  const [readLaterArticles, setReadLaterArticles] = useState<ArticleData[]>(
-    []
-  );
+  const [readLaterArticles, setReadLaterArticles] = useState<ArticleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
@@ -38,10 +36,7 @@ const ReadLaterArticle = () => {
         if (userError) throw userError;
 
         // Check if user has read later articles
-        if (
-          !userData?.watch_later ||
-          userData.watch_later.length === 0
-        ) {
+        if (!userData?.watch_later || userData.watch_later.length === 0) {
           setReadLaterArticles([]);
           setLoading(false);
           return;
@@ -54,7 +49,7 @@ const ReadLaterArticle = () => {
 
         // Fetch full article data for the read later articles
         const { data: articlesData, error: articlesError } =
-          await fetchArticles();
+          await fetchArticles(user.id);
 
         if (articlesError) throw new Error(articlesError);
 

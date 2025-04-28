@@ -37,57 +37,66 @@ const History = () => {
 
         // Fetch user history
         const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('history')
-          .eq('user_id', user.id)
+          .from("users")
+          .select("history")
+          .eq("user_id", user.id)
           .single();
 
         if (userError) throw userError;
 
         // Fetch all articles to match with history
-        const { data: articlesData, error: articlesError } = await fetchArticles();
-        
+        const { data: articlesData, error: articlesError } =
+          await fetchArticles(user.id);
+
         if (articlesError) throw new Error(articlesError);
-        
+
         // Process and enrich history data with article details
         const historyData = userData?.history?.history || {};
-        const processedHistory: HistoryEntry[] = Object.entries(historyData).map(([timestamp, articleId]) => {
-          const matchedArticle = articlesData?.find(article => article.article_id === articleId);
+        const processedHistory: HistoryEntry[] = Object.entries(
+          historyData
+        ).map(([timestamp, articleId]) => {
+          const matchedArticle = articlesData?.find(
+            (article) => article.article_id === articleId
+          );
           const date = new Date(timestamp);
-          
+
           return {
             timestamp,
             articleId: articleId as string,
             articleName: matchedArticle?.article_name || "Unknown Article",
             imagePath: matchedArticle?.image_path || "",
             // Format date as YYYY-MM-DD for grouping
-            date: date.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            date: date.toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             }),
             // Format time for display
-            time: date.toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit'
+            time: date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
             }),
           };
         });
-        
+
         // Group by date
         const grouped: GroupedHistory = {};
-        processedHistory.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-          .forEach(entry => {
+        processedHistory
+          .sort(
+            (a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          )
+          .forEach((entry) => {
             if (!grouped[entry.date]) {
               grouped[entry.date] = [];
             }
             grouped[entry.date].push(entry);
           });
-        
+
         setGroupedHistory(grouped);
       } catch (err) {
-        console.error('Error fetching data:', err);
+        console.error("Error fetching data:", err);
         setError(err as Error);
       } finally {
         setLoading(false);
@@ -124,20 +133,23 @@ const History = () => {
   }
 
   // Get today's date string for comparison
-  const today = new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   // Function to check if time gap between entries is significant
-  const hasSignificantTimeGap = (current: HistoryEntry, next: HistoryEntry): boolean => {
+  const hasSignificantTimeGap = (
+    current: HistoryEntry,
+    next: HistoryEntry
+  ): boolean => {
     if (!next) return false;
     const currentTime = new Date(current.timestamp).getTime();
     const nextTime = new Date(next.timestamp).getTime();
     // Consider 30+ minutes a significant gap
-    return (currentTime - nextTime) > 30 * 60 * 1000;
+    return currentTime - nextTime > 30 * 60 * 1000;
   };
 
   // Get all dates sorted from newest to oldest
@@ -173,7 +185,7 @@ const History = () => {
                 <h2 className="text-xl font-medium px-2 py-1 bg-opacity-20  rounded-md inline-block">
                   {date === today ? "Today" : date}
                 </h2>
-                
+
                 <div className="space-y-1">
                   {groupedHistory[date].map((entry, index) => (
                     <React.Fragment key={entry.timestamp}>
@@ -194,15 +206,18 @@ const History = () => {
                             <div className="flex-shrink-0 bg-muted/60 p-2 rounded-lg border">
                               <Clock className="w-4 h-4" />
                             </div>
-                            
+
                             <div className="w-20 text-sm text-muted-foreground">
                               {entry.time}
                             </div>
-                            
+
                             <div className="flex-grow flex items-center gap-3">
                               <div className="relative h-10 w-[100px] rounded overflow-hidden flex-shrink-0">
                                 <img
-                                  src={entry.imagePath || "/placeholder-article.jpg"}
+                                  src={
+                                    entry.imagePath ||
+                                    "/placeholder-article.jpg"
+                                  }
                                   alt=""
                                   className="h-full w-full object-cover"
                                 />
@@ -214,12 +229,17 @@ const History = () => {
                           </div>
                         </div>
                       </Link>
-                      
+
                       {/* Show divider if there's a significant time gap between entries */}
-                      {hasSignificantTimeGap(entry, groupedHistory[date][index + 1]) && (
+                      {hasSignificantTimeGap(
+                        entry,
+                        groupedHistory[date][index + 1]
+                      ) && (
                         <div className="flex items-center py-2">
                           <div className="flex-grow border-t border-border/30"></div>
-                          <div className="mx-4 text-xs text-muted-foreground">Time gap</div>
+                          <div className="mx-4 text-xs text-muted-foreground">
+                            Time gap
+                          </div>
                           <div className="flex-grow border-t border-border/30"></div>
                         </div>
                       )}
