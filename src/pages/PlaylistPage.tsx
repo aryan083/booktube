@@ -67,23 +67,37 @@ const PlaylistPage = () => {
           throw userError;
         }
 
+        console.log("User data:", userData);
+
         if (!userData || !userData.playlists) {
+          console.log("No playlists found in user data");
           throw new Error("No playlists found");
         }
 
         const playlistsData = userData.playlists;
+        console.log("Available playlists:", Object.keys(playlistsData));
+        console.log("Looking for playlist with ID:", playlistId);
 
-        // Get the specific playlist
-        if (!playlistsData[playlistId]) {
+        // Trim the playlist ID to handle any whitespace issues
+        const trimmedPlaylistId = playlistId.trim();
+        console.log("Trimmed playlist ID:", trimmedPlaylistId);
+
+        // Find the playlist by comparing trimmed keys
+        const playlistKey = Object.keys(playlistsData).find(
+          (key) => key.trim() === trimmedPlaylistId
+        );
+
+        if (!playlistKey) {
+          console.log("Playlist not found in playlists data");
           throw new Error("Playlist not found");
         }
 
-        const playlistDetails = playlistsData[playlistId];
+        const playlistDetails = playlistsData[playlistKey];
 
         // Format the playlist data
         const formattedPlaylist: PlaylistData = {
-          id: playlistId,
-          name: playlistId,
+          id: playlistKey,
+          name: playlistKey,
           description: playlistDetails.description || "",
           cover_image: playlistDetails.cover_image || "",
           article_count: playlistDetails.article_ids?.length || 0,
