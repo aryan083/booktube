@@ -19,10 +19,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Blendy, createBlendy } from "blendy";
-import ClickSpark from "./components/ClickSpark";
+// import ClickSpark from "./components/ClickSpark";
 
 import History from "./pages/History";
-// import ArticlePage from "@/pages/ArticlePage";
+import LandingPage from "./pages/landing";
 
 import WorkflowModal from "./components/WorkflowModal";
 import { GlowingEffectDemo } from "./components/glow-effect";
@@ -30,6 +30,7 @@ import { AppSidebar } from "./components/app-sidebar";
 import SignUpForm from "./pages/SignUp";
 import Profile01 from "./components/kokonutui/profile-01";
 import { SignInForm } from "./pages/SignIn";
+import AuthCallback from "./pages/AuthCallback";
 import CourseDetails from "./pages/CourseDetails";
 import Courses from "./pages/Courses";
 import ArticlePage from "./pages/ArticlePage";
@@ -119,8 +120,10 @@ function MainContent() {
   return (
     <Routes>
       {/* Public routes - accessible to everyone */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/signin" element={<SignInForm />} />
       <Route path="/signup" element={<SignUpForm />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route
         path="/profile1"
         element={
@@ -129,7 +132,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-      {/* <Route path="/courses" element={<Courses />} /> */}
       <Route
         path="/course/:courseId"
         element={
@@ -138,9 +140,8 @@ function MainContent() {
           </AuthGuard>
         }
       />
-      {/* <Route path="/auth" element={<Auth />} /> */}
       <Route
-        path="/"
+        path="/home"
         element={
           <AuthGuard>
             <Home />
@@ -179,7 +180,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-
       <Route
         path="/playlists/:playlistId"
         element={
@@ -188,7 +188,6 @@ function MainContent() {
           </AuthGuard>
         }
       />
-
       <Route
         path="/history"
         element={
@@ -206,7 +205,7 @@ function MainContent() {
         }
       />
 
-      {/* Redirect to signin if user is not authenticated and tries to access other pages */}
+      {/* Redirect to landing page if user is not authenticated and tries to access other pages */}
       <Route
         path="*"
         element={
@@ -217,14 +216,13 @@ function MainContent() {
           ) : user ? (
             <NotFound />
           ) : (
-            <Navigate to="/signin" replace />
+            <Navigate to="/" replace />
           )
         }
       />
     </Routes>
   );
 }
-// >>>>>>> Stashed changes
 
 function App() {
   const queryClient = new QueryClient();
@@ -235,32 +233,24 @@ function App() {
   }, []);
 
   return (
-    <ClickSpark
-      sparkColor="#fff"
-      sparkSize={10}
-      sparkRadius={15}
-      sparkCount={8}
-      duration={400}
-    >
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Router>
-            <AuthProvider>
-              <SidebarProvider>
-                <div className="relative flex min-h-screen ">
-                  <div className="flex-1">
-                    <MainContent />
-                  </div>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Router>
+          <AuthProvider>
+            <SidebarProvider>
+              <div className="relative flex min-h-screen ">
+                <div className="flex-1">
+                  <MainContent />
                 </div>
-                <CommandPalette />
-                <Toaster />
-                <Sonner />
-              </SidebarProvider>
-            </AuthProvider>
-          </Router>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ClickSpark>
+              </div>
+              <CommandPalette />
+              <Toaster />
+              <Sonner />
+            </SidebarProvider>
+          </AuthProvider>
+        </Router>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 
