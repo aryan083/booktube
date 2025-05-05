@@ -58,9 +58,21 @@
               "icon": "excalidraw-icon",
               "title": "Drawing 2025-04-11 21.38.48.excalidraw"
             }
+          },
+          {
+            "id": "64599001eff1794d",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/Drawing 2025-05-03 19.59.01.excalidraw.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Drawing 2025-05-03 19.59.01.excalidraw"
+            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -117,8 +129,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "cbd752dd9e9dad91",
@@ -134,7 +145,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "2025-03-13 (Meet Notes).md",
+                "file": "Excalidraw/Drawing 2025-05-03 19.59.01.excalidraw.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -144,7 +155,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 2025-03-13 (Meet Notes)"
+              "title": "Backlinks for Drawing 2025-05-03 19.59.01.excalidraw"
             }
           },
           {
@@ -153,12 +164,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "2025-03-13 (Meet Notes).md",
+                "file": "Excalidraw/Drawing 2025-05-03 19.59.01.excalidraw.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from 2025-03-13 (Meet Notes)"
+              "title": "Outgoing links from Drawing 2025-05-03 19.59.01.excalidraw"
             }
           },
           {
@@ -191,11 +202,12 @@
               "title": "Outline of 2025-03-13 (Meet Notes)"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 200,
     "collapsed": true
   },
   "left-ribbon": {
@@ -209,8 +221,10 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "056e611c3deac934",
+  "active": "64599001eff1794d",
   "lastOpenFiles": [
+    "Excalidraw/Drawing 2025-05-03 19.59.01.excalidraw.md",
+    "Pasted Image 20250503201202_619.png",
     "Excalidraw/Drawing 2025-04-11 21.38.48.excalidraw.md",
     "Excalidraw/Drawing 2025-03-21 20.51.36.excalidraw.md",
     "2025-03-21.md",
