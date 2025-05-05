@@ -38,7 +38,7 @@ export const fetchArticles = async (userId: string) => {
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: true })
-      .limit(20);
+      // .limit(20);
 
     // Log raw response for debugging
     console.log('Raw Supabase Response:', { 
