@@ -26,10 +26,10 @@ export const fetchCourseDetails = async (courseId: string): Promise<CourseDetail
       .eq('course_id', courseId)
       .single();
 
-    console.log('courseId:', courseId);
-    console.log('Raw Course Data:', courseData);
-    console.log('chapters_json type:', typeof courseData?.chapters_json);
-    console.log('chapters_json value:', JSON.stringify(courseData?.chapters_json, null, 2));
+    // console.log('courseId:', courseId);
+    // console.log('Raw Course Data:', courseData);
+    // console.log('chapters_json type:', typeof courseData?.chapters_json);
+    // console.log('chapters_json value:', JSON.stringify(courseData?.chapters_json, null, 2));
 
     if (courseError) {
       console.error('Error fetching course:', courseError);

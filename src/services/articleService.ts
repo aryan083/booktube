@@ -38,7 +38,7 @@ export const fetchArticles = async (userId: string) => {
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: true })
-      // .limit(20);
+      .limit(20);
 
     // Log raw response for debugging
     console.log('Raw Supabase Response:', { 
@@ -85,3 +85,48 @@ export const fetchArticles = async (userId: string) => {
 };
 
 
+
+
+export const fetchRecommendedArticles = async (user_id: string): Promise<{ data: ArticleData[] | null, error: string | null }> => {
+  try {
+    const { data: recommendedData, error: recommendedError } =
+      await supabase
+        .from("users")
+        .select("recommended_json")
+        .eq("user_id", user_id)
+        .single();
+
+    if (recommendedError) {
+      console.error("Error fetching recommended articles:", recommendedError);
+      return { data: null, error: recommendedError.message };
+    }
+
+    // Validate data
+    if (!recommendedData?.recommended_json || recommendedData.recommended_json.length === 0) {
+      console.warn('No recommended articles found in the database');
+      return { data: [], error: null };
+    }
+
+    // Type-safe data transformation
+    const recommendedArticles: ArticleData[] = recommendedData.recommended_json.map(article => {
+      return {
+        article_name: article.article_name || 'Untitled',
+        tags: article.tags || null,
+        content_text: article.content_text || null,
+        created_at: article.created_at || new Date().toISOString(),
+        id: article.article_id, // Use the actual article_id from database
+        article_id: article.article_id || '',
+        image_path: article.content_img,
+        is_completed: article.is_completed || false
+      };
+    });
+
+    // Log processed articles
+    console.log('Processed Recommended Articles:', recommendedArticles);
+
+    return { data: recommendedArticles, error: null };
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return { data: null, error: 'Failed to fetch recommended articles' };
+  }
+};

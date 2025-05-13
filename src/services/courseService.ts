@@ -132,9 +132,9 @@ export const fetchUserCourses = async () => {
       console.error('Error fetching user data:', userDataError);
       return { data: null, error: userDataError };
     }
-    console.log('dtype:', typeof userData.courses_json);
-    console.log('Full user data:', userData);
-    console.log('Raw courses_json:', userData.courses_json);
+    // console.log('dtype:', typeof userData.courses_json);
+    // console.log('Full user data:', userData);
+    // console.log('Raw courses_json:', userData.courses_json);
 
     // Check if courses_json is null or undefined
     if (!userData.courses_json) {
@@ -154,7 +154,7 @@ export const fetchUserCourses = async () => {
     }
 
     const courseIds = coursesJson || [];
-    console.log('Extracted course IDs:', courseIds);
+    // console.log('Extracted course IDs:', courseIds);
 
     if (courseIds.length === 0) {
       console.log('User has no courses');
@@ -172,9 +172,9 @@ export const fetchUserCourses = async () => {
       return { data: null, error: coursesError };
     }
 
-    console.log('Raw courses data from Supabase:', courses);
-    console.log('Course IDs:', courses?.map(c => c.course_id));
-    console.log('Course names:', courses?.map(c => c.course_name));
+    // console.log('Raw courses data from Supabase:', courses);
+    // console.log('Course IDs:', courses?.map(c => c.course_id));
+    // console.log('Course names:', courses?.map(c => c.course_name));
 
     return { data: courses, error: null };
 

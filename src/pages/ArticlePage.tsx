@@ -27,7 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function ArticlePage() {
   const { article_id } = useParams();
 
-  const [ArticleArray,setArticleArray]  = useState([])
+  const [ArticleArray, setArticleArray] = useState([]);
 
   // cosnt [articleIDstate,setArticleIDState] = useState
   const navigate = useNavigate();
@@ -233,96 +233,72 @@ export default function ArticlePage() {
 
   const { user } = useAuth();
 
-  async function get_recommended_articles(ArticleArray: any){
+  async function get_recommended_articles(ArticleArray: any) {
+    const { data: RecommendedarticleData, error: RecommendedarticleError } =
+      await supabase
+        .from("articles")
+        .select("*")
+        .in("article_id", ArticleArray);
 
-    const { data: RecommendedarticleData, error: RecommendedarticleError } = await supabase
-      .from("articles")
-      .select("*")
-      .in("article_id", ArticleArray);
+    console.log(RecommendedarticleData?.length);
 
-    console.log(RecommendedarticleData?.length)
+    console.log(RecommendedarticleData);
+    console.log(RecommendedarticleError);
 
-    console.log(RecommendedarticleData)
-    console.log(RecommendedarticleError)
-
-    return RecommendedarticleData
-
-
-
-
-
-    
-    
+    return RecommendedarticleData;
   }
 
-  async function get_recommendation(){
-            try {
-              const formData = new FormData();
-              if (user) {
-                if (user?.id) {
-                  formData.append("user_id", user.id);
-                } else {
-                  console.warn("No user id found, skipping recommendation upload");
-                  return;
-                }
-                if (article_id) {
-                  formData.append("article_id", article_id);
-                } else {
-                  console.warn("No article id found, skipping recommendation upload");
-                  return;
-                }
-              } else {
-                console.warn("No user found, skipping recommendation upload");
-                return;
-              }
+  async function get_recommendation() {
+    try {
+      const formData = new FormData();
+      if (user) {
+        if (user?.id) {
+          formData.append("user_id", user.id);
+        } else {
+          console.warn("No user id found, skipping recommendation upload");
+          return;
+        }
+        if (article_id) {
+          formData.append("article_id", article_id);
+        } else {
+          console.warn("No article id found, skipping recommendation upload");
+          return;
+        }
+      } else {
+        console.warn("No user found, skipping recommendation upload");
+        return;
+      }
 
-              const response = await fetch(
-                `${API_BASE_URL}/api/recommendation`,
-                {
-                  method: "POST",
-                  body: formData,
-                }
-              );
-              if (!response.ok) {
-                throw new Error("Recommendation failed");
-              }
-    
-              const data = await response.json();
+      const response = await fetch(`${API_BASE_URL}/api/recommendation`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Recommendation failed");
+      }
 
-              setArticleArray(data.data)
+      const data = await response.json();
 
-              const ResponseData = await get_recommended_articles(ArticleArray)
+      setArticleArray(data.data);
 
-              const RecommendedJSX = ResponseData?.map(function(element){
-                return (
-                  <div key={element.article_id}>
-                    <h3>{element.title}</h3>
-                    <p>{element.description}</p>
-                  </div>
-                )
-              })
+      const ResponseData = await get_recommended_articles(ArticleArray);
 
-              console.log("Recommendation successful:", data);
-              return RecommendedJSX
+      const RecommendedJSX = ResponseData?.map(function (element) {
+        return (
+          <div key={element.article_id}>
+            <h3>{element.title}</h3>
+            <p>{element.description}</p>
+          </div>
+        );
+      });
 
+      console.log("Recommendation successful:", data);
+      return RecommendedJSX;
+    } catch (error) {
+      console.error("Recommendation error:", error);
+    }
 
-
-
-
-
-
-            } catch (error) {
-              console.error("Recommendation error:", error);
-            }
-
-
-            //  console.log(ArticleArray)
-
-
-
-
-
-            
+    //  console.log(ArticleArray)
   }
 
   return (
@@ -530,9 +506,7 @@ export default function ArticlePage() {
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
-          >
-
-          </div>
+          ></div>
 
           <div className="space-y-6">
             {/* For the article title - keep it simple with the text color (no gradient) */}
@@ -583,9 +557,10 @@ export default function ArticlePage() {
               </div>
             )}
           </div>
+          <div className="mt-7">
+          <Recommended article_id={article_id || ""} theme={themePalette} colorMode={colorMode} />          </div>
         </article>
         {/* <div>{get_recommendation()}</div> */}
-        <Recommended article_id = {article_id} />
         <div className="w-full flex mt-8">
           {[
             ...(themeColors

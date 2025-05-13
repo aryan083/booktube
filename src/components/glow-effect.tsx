@@ -1,10 +1,11 @@
 "use client";
-import VariableProximity from "./VariableProximity";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
+// import VariableProximity from "./VariableProximity";
+// import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { Blendy, createBlendy } from "blendy";
 import { useEffect, useId, useRef, useState } from "react";
-import { fetchUserCourses } from "@/services/courseService";
+// import { fetchUserCourses } from "@/services/courseService";
 import { fetchArticles, ArticleData } from "@/services/articleService";
+import { fetchRecommendedArticles } from "@/services/fetchRecommendedArticles";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Clock, Plus } from "lucide-react";
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { PlaylistCombobox } from "./playlist-combobox";
 import Booktubing from "./ui/booktubing";
+import { API_BASE_URL } from "@/config/api";
 
 export function GlowingEffectDemo() {
   const [processedArticles, setProcessedArticles] = useState<{
@@ -43,44 +45,90 @@ export function GlowingEffectDemo() {
     setProcessedArticles({ names, images, ids });
   };
 
-  useEffect(() => {
-    const loadArticles = async () => {
-      try {
-        setIsLoading(true);
 
+  useEffect(() => {
+    const fetchRecommended = async () => {
+      try {
         // Get current user ID
         const { data: userData } = await supabase.auth.getUser();
         const userId = userData?.user?.id;
 
         if (!userId) {
+          console.warn("No user ID found, skipping recommended fetch");
+          return;
+        }
+
+        // Fetch the recommended articles from the users table
+        const { data: recommendedData, error: recommendedError } =
+          await supabase
+            .from("users")
+            .select("recommended_json")
+            .eq("user_id", userId)
+            .single();
+
+        if (recommendedError) {
+          console.error("Error fetching recommended articles:", recommendedError);
+          return;
+        }
+
+        console.log("Recommended JSON:", recommendedData?.recommended_json);
+      } catch (error) {
+        console.error("Error fetching recommended articles:", error);
+      }
+    };
+
+    fetchRecommended();
+  }, []);
+
+
+  useEffect(() => {
+    const loadArticles = async () => {
+      console.log("✨ [loadArticles] Started loading articles");
+      try {
+        setIsLoading(true);
+        console.log("🔵 [loadArticles] Set loading to true");
+
+        // Get current user ID
+        console.log("🟢 [loadArticles] Fetching current user from supabase.auth.getUser()");
+        const { data: userData } = await supabase.auth.getUser();
+        console.log("🟢 [loadArticles] supabase.auth.getUser() result:", userData);
+        const userId = userData?.user?.id;
+        console.log("🟢 [loadArticles] Extracted userId:", userId);
+
+        if (!userId) {
+          console.warn("⚠️ [loadArticles] No user ID found, aborting article fetch");
           setError("Please log in to view your articles");
           setIsLoading(false);
+          console.log("🛑 [loadArticles] Exiting due to missing userId");
           return;
         }
 
         // Fetch articles with user_id filter
-        const { data, error } = await fetchArticles(userId);
-        const { error: coursesError } = await fetchUserCourses();
-
-        if (coursesError) {
-          setError("Error loading courses");
-          return;
-        }
+        console.log("🟡 [loadArticles] Calling fetchRecommendedArticles with userId:", userId);
+        const { data, error } = await fetchRecommendedArticles(userId);
+        console.log("💎 [loadArticles] fetchRecommendedArticles returned:", { data, error });
 
         if (error) {
+          console.error("❌ [loadArticles] Error from fetchRecommendedArticles:", error);
           setError(error);
-        } else if (data) {
-          console.log(
-            "Hello there these are the effin articles mate !!!!!!!!!!!!!!!!"
-          );
-          console.log(data);
+        } else if (Array.isArray(data)) {
+          if (data.length === 0) {
+            console.warn("⚠️ [loadArticles] No recommended articles found for this user.");
+          } else {
+            console.log("🌟 [loadArticles] Recommended articles loaded successfully:");
+            console.log("🌟 [loadArticles] Recommended articles data:", data);
+          }
+          console.log("🔷 [loadArticles] Processing article arrays");
           processArticleArrays(data);
+        } else {
+          console.warn("⚠️ [loadArticles] Data returned is not an array:", data);
         }
       } catch (err) {
         setError("Failed to load articles");
-        console.error("Error loading articles:", err);
+        console.error("🔥 [loadArticles] Error loading articles:", err);
       } finally {
         setIsLoading(false);
+        console.log("✨ [loadArticles] Finished loading articles (set loading to false)");
       }
     };
 
@@ -93,6 +141,10 @@ export function GlowingEffectDemo() {
 
   if (error) {
     return <div className="py-8 text-center text-red-500">Error: {error}</div>;
+  }
+
+  if (!isLoading && processedArticles.ids.length === 0) {
+    return <div className="py-8 text-center text-gray-400">No recommended articles found.</div>;
   }
 
   // Create a structured layered layout
@@ -447,6 +499,43 @@ const GridItem = ({
       }
     };
   }, [showModal]);
+
+  useEffect(() => {
+    async function get_recommendation() {
+      const { data: userData, error } = await supabase.auth.getUser();
+      if (error) {
+        console.warn("No user information available, skipping recommendation upload");
+        return;
+      }
+      const userId = userData?.user?.id;
+      try {
+        if (!userId || !article_id) {
+          console.warn("No user or article information available, skipping recommendation upload");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("user_id", userId);
+        // formData.append("article_id", article_id);
+
+        const response = await fetch(`${API_BASE_URL}/api/recommendationHome`, {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error("Recommendation failed");
+        }
+      } catch (error) {
+        console.error("Recommendation error:", error);
+      }
+    }
+
+    get_recommendation();
+  }, []);
+
+
+
+
 
   const navigate = useNavigate();
 
