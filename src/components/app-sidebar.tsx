@@ -211,7 +211,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
           return;
         }
         if (courses) {
-          console.log("Courses received in sidebar:", courses);
+          // console.log("Courses received in sidebar:", courses);
           const sortedCourses = [...courses].sort(
             (a, b) =>
               new Date(b.created_at).getTime() -
@@ -220,7 +220,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
 
           // Take only the 5 most recent courses
           const recentCourses = sortedCourses.slice(0, 5);
-          console.log("Recent courses:", recentCourses);
+          // console.log("Recent courses:", recentCourses);
 
           setNavMainItems((prev) => {
             const newItems = [...prev];
@@ -229,7 +229,7 @@ export function AppSidebar({ onCreateClick, ...props }: AppSidebarProps) {
             );
             if (coursesIndex !== -1) {
               newItems[coursesIndex].items = recentCourses.map((course) => {
-                console.log("Creating nav item for course:", course);
+                // console.log("Creating nav item for course:", course);
                 const truncatedTitle =
                   course.course_name.length > 30
                     ? course.course_name.substring(0, 25) + "..."
