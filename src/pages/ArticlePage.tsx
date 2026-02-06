@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Sun, Moon, ArrowLeft } from "lucide-react";
 import DOMPurify from "dompurify";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { css } from "@emotion/react";
 
 import Recommended from "@/components/Recommended";
 import {
@@ -104,7 +102,7 @@ export default function ArticlePage() {
             if (userData?.bookmarked_articles) {
               const isBookmarkedArticle = userData.bookmarked_articles.some(
                 (article: { article_id: string }) =>
-                  article.article_id === article_id
+                  article.article_id === article_id,
               );
               console.log("Is article bookmarked:", isBookmarkedArticle); // Debug log
               setIsBookmarked(isBookmarkedArticle);
@@ -186,7 +184,7 @@ export default function ArticlePage() {
     const primaryHsv = hexToHsv(
       colorMode === "light"
         ? themePalette.light.primary
-        : themePalette.dark.primary
+        : themePalette.dark.primary,
     );
 
     if (!primaryHsv) return colorMode === "light" ? "#1A1A1A" : "#F5F5F5";
@@ -387,7 +385,7 @@ export default function ArticlePage() {
                         setIsCompleted(false);
                         console.error(
                           "Failed to update completion status:",
-                          result.error
+                          result.error,
                         );
                       }
                     }
@@ -440,7 +438,7 @@ export default function ArticlePage() {
                       const result = await toggleArticleBookmark(
                         user_id,
                         article_id,
-                        title
+                        title,
                       );
                       if (!result.error) {
                         setIsBookmarked(!isBookmarked);
@@ -558,7 +556,12 @@ export default function ArticlePage() {
             )}
           </div>
           <div className="mt-7">
-          <Recommended article_id={article_id || ""} theme={themePalette} colorMode={colorMode} />          </div>
+            <Recommended
+              article_id={article_id || ""}
+              theme={themePalette}
+              colorMode={colorMode}
+            />{" "}
+          </div>
         </article>
         {/* <div>{get_recommendation()}</div> */}
         <div className="w-full flex mt-8">
