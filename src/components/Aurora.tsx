@@ -1,5 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
+
+// Check if WebGL is available
+function isWebGLAvailable(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext("webgl") || canvas.getContext("webgl2"))
+    );
+  } catch {
+    return false;
+  }
+}
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -125,17 +138,39 @@ export default function Aurora(props: AuroraProps) {
   propsRef.current = props;
 
   const ctnDom = useRef<HTMLDivElement>(null);
+  const [webglSupported, setWebglSupported] = useState(true);
 
   useEffect(() => {
+    // Check WebGL support first
+    if (!isWebGLAvailable()) {
+      console.warn("WebGL is not available. Aurora effect disabled.");
+      setWebglSupported(false);
+      return;
+    }
+
     const ctn = ctnDom.current;
     if (!ctn) return;
 
-    const renderer = new Renderer({
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: true,
-    });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: true,
+      });
+    } catch (error) {
+      console.warn("Failed to create WebGL renderer:", error);
+      setWebglSupported(false);
+      return;
+    }
+
     const gl = renderer.gl;
+    if (!gl || !gl.canvas) {
+      console.warn("WebGL context not available");
+      setWebglSupported(false);
+      return;
+    }
+
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -203,12 +238,30 @@ export default function Aurora(props: AuroraProps) {
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener("resize", resize);
-      if (ctn && gl.canvas.parentNode === ctn) {
+      if (ctn && gl.canvas && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      try {
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+      } catch {
+        // Ignore cleanup errors
+      }
     };
   }, [amplitude]);
 
-  return <div ref={ctnDom} className="w-full  " />;
+  // Fallback gradient when WebGL is not available
+  if (!webglSupported) {
+    return (
+      <div
+        ref={ctnDom}
+        className="w-full h-full"
+        style={{
+          background: `linear-gradient(90deg, ${colorStops.join(", ")})`,
+          opacity: 0.3,
+        }}
+      />
+    );
+  }
+
+  return <div ref={ctnDom} className="w-full h-full" />;
 }
